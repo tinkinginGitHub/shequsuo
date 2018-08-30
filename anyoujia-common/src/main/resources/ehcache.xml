@@ -1,0 +1,13 @@
+<ehcache xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="ehcache.xsd">
+    <diskStore path="java.io.tmpdir" />
+    <defaultCache name="defaultCache" maxElementsInMemory="300" timeToLiveSeconds="1800"
+        eternal="false" overflowToDisk="true" />
+        
+        <!--<cache name="codeService" maxElementsInMemory="300" timeToLiveSeconds="0"-->
+        <!--eternal="false" overflowToDisk="true"/>-->
+        <!--<cache name="areaService" maxElementsInMemory="300" timeToLiveSeconds="0"-->
+        <!--eternal="false" overflowToDisk="true"/>-->
+        <!--<cache name="subwayService" maxElementsInMemory="300" timeToLiveSeconds="0"-->
+        <!--eternal="false" overflowToDisk="true"/>-->
+</ehcache>

@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="cn.anyoufang.dao.SysCodeDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+	<resultMap type="cn.anyoufang.entity.SysCode" id="sysCodeMap">
+		<result property="id" column="id"/>
+		<result property="code" column="code"/>
+		<result property="codeName" column="code_name"/>
+		<result property="value" column="value"/>
+		<result property="name" column="name"/>
+		<result property="status" column="status"/>
+		<result property="remark" column="remark"/>
+	</resultMap>
+
+	<select id="queryObject" resultType="cn.anyoufang.entity.SysCode">
+		select * from sys_code where id = #{value}
+	</select>
+
+	<select id="queryList" resultType="cn.anyoufang.entity.SysCode">
+		select * from sys_code where 1=1
+		<if test="codeName != null and codeName.trim() != ''">
+			and `code_name` like concat('%',#{codeName},'%')
+		</if>
+		<if test="status != null and status.trim() != ''">
+			and `status` =#{status}
+		</if>
+		<if test="value != null and value.trim() != ''">
+			and `value` like concat('%',#{value},'%')
+		</if>
+		<choose>
+			<when test="sidx != null and sidx.trim() != ''">
+				order by ${sidx} ${order}
+			</when>
+			<otherwise>
+				order by code_name desc
+			</otherwise>
+		</choose>
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+
+	<select id="queryTotal" resultType="int">
+		select count(*) from sys_code where 1=1
+		<if test="code != null and code.trim() != ''">
+			and `code` like concat('%',#{code},'%')
+		</if>
+		<if test="name != null and name.trim() != ''">
+			and `name` like concat('%',#{name},'%')
+		</if>
+		<if test="status != null and status.trim() != ''">
+			and `status` =#{status}
+		</if>
+	</select>
+
+	<select id="findByVerify" resultType="cn.anyoufang.entity.SysCode">
+		select * from sys_code where code_name = #{codeName} and code=#{code}
+	</select>
+
+
+	<insert id="save" parameterType="cn.anyoufang.entity.SysCode" useGeneratedKeys="true" keyProperty="id">
+		insert into sys_code
+		(
+		`code`,
+		`code_name`,
+		`value`,
+		`name`,
+		`status`,
+		`remark`
+		)
+		values
+		(
+		#{code},
+		#{codeName},
+		#{value},
+		#{name},
+		#{status},
+		#{remark}
+		)
+	</insert>
+
+	<update id="update" parameterType="cn.anyoufang.entity.SysCode">
+		update sys_code
+		<set>
+			<if test="code != null">`code` = #{code}, </if>
+			<if test="codeName != null">`code_name` = #{codeName}, </if>
+			<if test="value != null">`value` = #{value}, </if>
+			<if test="name != null">`name` = #{name}, </if>
+			<if test="status != null">`status` = #{status}, </if>
+			<if test="remark != null">`remark` = #{remark}</if>
+		</set>
+		where id = #{id}
+	</update>
+
+	<delete id="delete">
+		delete from sys_code where id = #{value}
+	</delete>
+
+	<delete id="deleteBatch">
+		delete from sys_code where id in
+		<foreach item="id" collection="array" open="(" separator="," close=")">
+			#{id}
+		</foreach>
+	</delete>
+
+
+	<select id="getCodeValues" resultType="cn.anyoufang.entity.SysCode">
+		select code,value from sys_code where  `code_name` =#{codeName} and status !='0'
+	</select>
+</mapper>

@@ -1,0 +1,258 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.anyoufang.mapper.TbAdMapper" >
+  <resultMap id="BaseResultMap" type="cn.anyoufang.entity.TbAd" >
+    <id column="id" property="id" jdbcType="VARCHAR" />
+    <result column="ad_sort_order" property="adSortOrder" jdbcType="TINYINT" />
+    <result column="ad_status" property="adStatus" jdbcType="VARCHAR" />
+    <result column="ad_pic_href" property="adPicHref" jdbcType="VARCHAR" />
+    <result column="ad_pic_link" property="adPicLink" jdbcType="VARCHAR" />
+    <result column="ad_type" property="adType" jdbcType="VARCHAR" />
+    <result column="ad_created" property="adCreated" jdbcType="TIMESTAMP" />
+    <result column="ad_updated" property="adUpdated" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Example_Where_Clause" >
+    <where >
+      <foreach collection="oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause" >
+    <where >
+      <foreach collection="example.oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List" >
+    id, ad_sort_order, ad_status, ad_pic_href, ad_pic_link, ad_type, ad_created, ad_updated
+  </sql>
+  <select id="selectByExample" resultMap="BaseResultMap" parameterType="cn.anyoufang.entity.TbAdExample" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from tb_ad
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from tb_ad
+    where id = #{id,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from tb_ad
+    where id = #{id,jdbcType=VARCHAR}
+  </delete>
+  <delete id="deleteByExample" parameterType="cn.anyoufang.entity.TbAdExample" >
+    delete from tb_ad
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="cn.anyoufang.entity.TbAd" >
+    insert into tb_ad (id, ad_sort_order, ad_status, 
+      ad_pic_href, ad_pic_link, ad_type, 
+      ad_created, ad_updated)
+    values (#{id,jdbcType=VARCHAR}, #{adSortOrder,jdbcType=TINYINT}, #{adStatus,jdbcType=VARCHAR}, 
+      #{adPicHref,jdbcType=VARCHAR}, #{adPicLink,jdbcType=VARCHAR}, #{adType,jdbcType=VARCHAR}, 
+      #{adCreated,jdbcType=TIMESTAMP}, #{adUpdated,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" parameterType="cn.anyoufang.entity.TbAd" >
+    insert into tb_ad
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="adSortOrder != null" >
+        ad_sort_order,
+      </if>
+      <if test="adStatus != null" >
+        ad_status,
+      </if>
+      <if test="adPicHref != null" >
+        ad_pic_href,
+      </if>
+      <if test="adPicLink != null" >
+        ad_pic_link,
+      </if>
+      <if test="adType != null" >
+        ad_type,
+      </if>
+      <if test="adCreated != null" >
+        ad_created,
+      </if>
+      <if test="adUpdated != null" >
+        ad_updated,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=VARCHAR},
+      </if>
+      <if test="adSortOrder != null" >
+        #{adSortOrder,jdbcType=TINYINT},
+      </if>
+      <if test="adStatus != null" >
+        #{adStatus,jdbcType=VARCHAR},
+      </if>
+      <if test="adPicHref != null" >
+        #{adPicHref,jdbcType=VARCHAR},
+      </if>
+      <if test="adPicLink != null" >
+        #{adPicLink,jdbcType=VARCHAR},
+      </if>
+      <if test="adType != null" >
+        #{adType,jdbcType=VARCHAR},
+      </if>
+      <if test="adCreated != null" >
+        #{adCreated,jdbcType=TIMESTAMP},
+      </if>
+      <if test="adUpdated != null" >
+        #{adUpdated,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="cn.anyoufang.entity.TbAdExample" resultType="java.lang.Integer" >
+    select count(*) from tb_ad
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map" >
+    update tb_ad
+    <set >
+      <if test="record.id != null" >
+        id = #{record.id,jdbcType=VARCHAR},
+      </if>
+      <if test="record.adSortOrder != null" >
+        ad_sort_order = #{record.adSortOrder,jdbcType=TINYINT},
+      </if>
+      <if test="record.adStatus != null" >
+        ad_status = #{record.adStatus,jdbcType=VARCHAR},
+      </if>
+      <if test="record.adPicHref != null" >
+        ad_pic_href = #{record.adPicHref,jdbcType=VARCHAR},
+      </if>
+      <if test="record.adPicLink != null" >
+        ad_pic_link = #{record.adPicLink,jdbcType=VARCHAR},
+      </if>
+      <if test="record.adType != null" >
+        ad_type = #{record.adType,jdbcType=VARCHAR},
+      </if>
+      <if test="record.adCreated != null" >
+        ad_created = #{record.adCreated,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.adUpdated != null" >
+        ad_updated = #{record.adUpdated,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map" >
+    update tb_ad
+    set id = #{record.id,jdbcType=VARCHAR},
+      ad_sort_order = #{record.adSortOrder,jdbcType=TINYINT},
+      ad_status = #{record.adStatus,jdbcType=VARCHAR},
+      ad_pic_href = #{record.adPicHref,jdbcType=VARCHAR},
+      ad_pic_link = #{record.adPicLink,jdbcType=VARCHAR},
+      ad_type = #{record.adType,jdbcType=VARCHAR},
+      ad_created = #{record.adCreated,jdbcType=TIMESTAMP},
+      ad_updated = #{record.adUpdated,jdbcType=TIMESTAMP}
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="cn.anyoufang.entity.TbAd" >
+    update tb_ad
+    <set >
+      <if test="adSortOrder != null" >
+        ad_sort_order = #{adSortOrder,jdbcType=TINYINT},
+      </if>
+      <if test="adStatus != null" >
+        ad_status = #{adStatus,jdbcType=VARCHAR},
+      </if>
+      <if test="adPicHref != null" >
+        ad_pic_href = #{adPicHref,jdbcType=VARCHAR},
+      </if>
+      <if test="adPicLink != null" >
+        ad_pic_link = #{adPicLink,jdbcType=VARCHAR},
+      </if>
+      <if test="adType != null" >
+        ad_type = #{adType,jdbcType=VARCHAR},
+      </if>
+      <if test="adCreated != null" >
+        ad_created = #{adCreated,jdbcType=TIMESTAMP},
+      </if>
+      <if test="adUpdated != null" >
+        ad_updated = #{adUpdated,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="cn.anyoufang.entity.TbAd" >
+    update tb_ad
+    set ad_sort_order = #{adSortOrder,jdbcType=TINYINT},
+      ad_status = #{adStatus,jdbcType=VARCHAR},
+      ad_pic_href = #{adPicHref,jdbcType=VARCHAR},
+      ad_pic_link = #{adPicLink,jdbcType=VARCHAR},
+      ad_type = #{adType,jdbcType=VARCHAR},
+      ad_created = #{adCreated,jdbcType=TIMESTAMP},
+      ad_updated = #{adUpdated,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+</mapper>
