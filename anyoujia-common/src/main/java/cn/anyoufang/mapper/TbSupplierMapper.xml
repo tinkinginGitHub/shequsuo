@@ -1,0 +1,400 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.anyoufang.mapper.TbSupplierMapper" >
+  <resultMap id="BaseResultMap" type="cn.anyoufang.entity.TbSupplier" >
+    <id column="id" property="id" jdbcType="VARCHAR" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="status" property="status" jdbcType="TINYINT" />
+    <result column="area_id" property="areaId" jdbcType="VARCHAR" />
+    <result column="juridical" property="juridical" jdbcType="VARCHAR" />
+    <result column="licences" property="licences" jdbcType="VARCHAR" />
+    <result column="Housekeeper_id" property="housekeeperId" jdbcType="VARCHAR" />
+    <result column="cardholder" property="cardholder" jdbcType="VARCHAR" />
+    <result column="credit_id" property="creditId" jdbcType="VARCHAR" />
+    <result column="supplier_type" property="supplierType" jdbcType="VARCHAR" />
+    <result column="logo" property="logo" jdbcType="VARCHAR" />
+    <result column="phone" property="phone" jdbcType="VARCHAR" />
+    <result column="bail" property="bail" jdbcType="INTEGER" />
+    <result column="bank" property="bank" jdbcType="VARCHAR" />
+    <result column="account" property="account" jdbcType="VARCHAR" />
+    <result column="pwd" property="pwd" jdbcType="VARCHAR" />
+    <result column="role" property="role" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Example_Where_Clause" >
+    <where >
+      <foreach collection="oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause" >
+    <where >
+      <foreach collection="example.oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List" >
+    id, name, status, area_id, juridical, licences, Housekeeper_id, cardholder, credit_id, 
+    supplier_type, logo, phone, bail, bank, account, pwd, role
+  </sql>
+  <select id="selectByExample" resultMap="BaseResultMap" parameterType="cn.anyoufang.entity.TbSupplierExample" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from tb_supplier
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from tb_supplier
+    where id = #{id,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from tb_supplier
+    where id = #{id,jdbcType=VARCHAR}
+  </delete>
+  <delete id="deleteByExample" parameterType="cn.anyoufang.entity.TbSupplierExample" >
+    delete from tb_supplier
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="cn.anyoufang.entity.TbSupplier" >
+    insert into tb_supplier (id, name, status, 
+      area_id, juridical, licences, 
+      Housekeeper_id, cardholder, credit_id, 
+      supplier_type, logo, phone, 
+      bail, bank, account, 
+      pwd, role)
+    values (#{id,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR}, #{status,jdbcType=TINYINT}, 
+      #{areaId,jdbcType=VARCHAR}, #{juridical,jdbcType=VARCHAR}, #{licences,jdbcType=VARCHAR}, 
+      #{housekeeperId,jdbcType=VARCHAR}, #{cardholder,jdbcType=VARCHAR}, #{creditId,jdbcType=VARCHAR}, 
+      #{supplierType,jdbcType=VARCHAR}, #{logo,jdbcType=VARCHAR}, #{phone,jdbcType=VARCHAR}, 
+      #{bail,jdbcType=INTEGER}, #{bank,jdbcType=VARCHAR}, #{account,jdbcType=VARCHAR}, 
+      #{pwd,jdbcType=VARCHAR}, #{role,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="cn.anyoufang.entity.TbSupplier" >
+    insert into tb_supplier
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="name != null" >
+        name,
+      </if>
+      <if test="status != null" >
+        status,
+      </if>
+      <if test="areaId != null" >
+        area_id,
+      </if>
+      <if test="juridical != null" >
+        juridical,
+      </if>
+      <if test="licences != null" >
+        licences,
+      </if>
+      <if test="housekeeperId != null" >
+        Housekeeper_id,
+      </if>
+      <if test="cardholder != null" >
+        cardholder,
+      </if>
+      <if test="creditId != null" >
+        credit_id,
+      </if>
+      <if test="supplierType != null" >
+        supplier_type,
+      </if>
+      <if test="logo != null" >
+        logo,
+      </if>
+      <if test="phone != null" >
+        phone,
+      </if>
+      <if test="bail != null" >
+        bail,
+      </if>
+      <if test="bank != null" >
+        bank,
+      </if>
+      <if test="account != null" >
+        account,
+      </if>
+      <if test="pwd != null" >
+        pwd,
+      </if>
+      <if test="role != null" >
+        role,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=VARCHAR},
+      </if>
+      <if test="name != null" >
+        #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=TINYINT},
+      </if>
+      <if test="areaId != null" >
+        #{areaId,jdbcType=VARCHAR},
+      </if>
+      <if test="juridical != null" >
+        #{juridical,jdbcType=VARCHAR},
+      </if>
+      <if test="licences != null" >
+        #{licences,jdbcType=VARCHAR},
+      </if>
+      <if test="housekeeperId != null" >
+        #{housekeeperId,jdbcType=VARCHAR},
+      </if>
+      <if test="cardholder != null" >
+        #{cardholder,jdbcType=VARCHAR},
+      </if>
+      <if test="creditId != null" >
+        #{creditId,jdbcType=VARCHAR},
+      </if>
+      <if test="supplierType != null" >
+        #{supplierType,jdbcType=VARCHAR},
+      </if>
+      <if test="logo != null" >
+        #{logo,jdbcType=VARCHAR},
+      </if>
+      <if test="phone != null" >
+        #{phone,jdbcType=VARCHAR},
+      </if>
+      <if test="bail != null" >
+        #{bail,jdbcType=INTEGER},
+      </if>
+      <if test="bank != null" >
+        #{bank,jdbcType=VARCHAR},
+      </if>
+      <if test="account != null" >
+        #{account,jdbcType=VARCHAR},
+      </if>
+      <if test="pwd != null" >
+        #{pwd,jdbcType=VARCHAR},
+      </if>
+      <if test="role != null" >
+        #{role,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="cn.anyoufang.entity.TbSupplierExample" resultType="java.lang.Integer" >
+    select count(*) from tb_supplier
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map" >
+    update tb_supplier
+    <set >
+      <if test="record.id != null" >
+        id = #{record.id,jdbcType=VARCHAR},
+      </if>
+      <if test="record.name != null" >
+        name = #{record.name,jdbcType=VARCHAR},
+      </if>
+      <if test="record.status != null" >
+        status = #{record.status,jdbcType=TINYINT},
+      </if>
+      <if test="record.areaId != null" >
+        area_id = #{record.areaId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.juridical != null" >
+        juridical = #{record.juridical,jdbcType=VARCHAR},
+      </if>
+      <if test="record.licences != null" >
+        licences = #{record.licences,jdbcType=VARCHAR},
+      </if>
+      <if test="record.housekeeperId != null" >
+        Housekeeper_id = #{record.housekeeperId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.cardholder != null" >
+        cardholder = #{record.cardholder,jdbcType=VARCHAR},
+      </if>
+      <if test="record.creditId != null" >
+        credit_id = #{record.creditId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.supplierType != null" >
+        supplier_type = #{record.supplierType,jdbcType=VARCHAR},
+      </if>
+      <if test="record.logo != null" >
+        logo = #{record.logo,jdbcType=VARCHAR},
+      </if>
+      <if test="record.phone != null" >
+        phone = #{record.phone,jdbcType=VARCHAR},
+      </if>
+      <if test="record.bail != null" >
+        bail = #{record.bail,jdbcType=INTEGER},
+      </if>
+      <if test="record.bank != null" >
+        bank = #{record.bank,jdbcType=VARCHAR},
+      </if>
+      <if test="record.account != null" >
+        account = #{record.account,jdbcType=VARCHAR},
+      </if>
+      <if test="record.pwd != null" >
+        pwd = #{record.pwd,jdbcType=VARCHAR},
+      </if>
+      <if test="record.role != null" >
+        role = #{record.role,jdbcType=VARCHAR},
+      </if>
+    </set>
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map" >
+    update tb_supplier
+    set id = #{record.id,jdbcType=VARCHAR},
+      name = #{record.name,jdbcType=VARCHAR},
+      status = #{record.status,jdbcType=TINYINT},
+      area_id = #{record.areaId,jdbcType=VARCHAR},
+      juridical = #{record.juridical,jdbcType=VARCHAR},
+      licences = #{record.licences,jdbcType=VARCHAR},
+      Housekeeper_id = #{record.housekeeperId,jdbcType=VARCHAR},
+      cardholder = #{record.cardholder,jdbcType=VARCHAR},
+      credit_id = #{record.creditId,jdbcType=VARCHAR},
+      supplier_type = #{record.supplierType,jdbcType=VARCHAR},
+      logo = #{record.logo,jdbcType=VARCHAR},
+      phone = #{record.phone,jdbcType=VARCHAR},
+      bail = #{record.bail,jdbcType=INTEGER},
+      bank = #{record.bank,jdbcType=VARCHAR},
+      account = #{record.account,jdbcType=VARCHAR},
+      pwd = #{record.pwd,jdbcType=VARCHAR},
+      role = #{record.role,jdbcType=VARCHAR}
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="cn.anyoufang.entity.TbSupplier" >
+    update tb_supplier
+    <set >
+      <if test="name != null" >
+        name = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        status = #{status,jdbcType=TINYINT},
+      </if>
+      <if test="areaId != null" >
+        area_id = #{areaId,jdbcType=VARCHAR},
+      </if>
+      <if test="juridical != null" >
+        juridical = #{juridical,jdbcType=VARCHAR},
+      </if>
+      <if test="licences != null" >
+        licences = #{licences,jdbcType=VARCHAR},
+      </if>
+      <if test="housekeeperId != null" >
+        Housekeeper_id = #{housekeeperId,jdbcType=VARCHAR},
+      </if>
+      <if test="cardholder != null" >
+        cardholder = #{cardholder,jdbcType=VARCHAR},
+      </if>
+      <if test="creditId != null" >
+        credit_id = #{creditId,jdbcType=VARCHAR},
+      </if>
+      <if test="supplierType != null" >
+        supplier_type = #{supplierType,jdbcType=VARCHAR},
+      </if>
+      <if test="logo != null" >
+        logo = #{logo,jdbcType=VARCHAR},
+      </if>
+      <if test="phone != null" >
+        phone = #{phone,jdbcType=VARCHAR},
+      </if>
+      <if test="bail != null" >
+        bail = #{bail,jdbcType=INTEGER},
+      </if>
+      <if test="bank != null" >
+        bank = #{bank,jdbcType=VARCHAR},
+      </if>
+      <if test="account != null" >
+        account = #{account,jdbcType=VARCHAR},
+      </if>
+      <if test="pwd != null" >
+        pwd = #{pwd,jdbcType=VARCHAR},
+      </if>
+      <if test="role != null" >
+        role = #{role,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="cn.anyoufang.entity.TbSupplier" >
+    update tb_supplier
+    set name = #{name,jdbcType=VARCHAR},
+      status = #{status,jdbcType=TINYINT},
+      area_id = #{areaId,jdbcType=VARCHAR},
+      juridical = #{juridical,jdbcType=VARCHAR},
+      licences = #{licences,jdbcType=VARCHAR},
+      Housekeeper_id = #{housekeeperId,jdbcType=VARCHAR},
+      cardholder = #{cardholder,jdbcType=VARCHAR},
+      credit_id = #{creditId,jdbcType=VARCHAR},
+      supplier_type = #{supplierType,jdbcType=VARCHAR},
+      logo = #{logo,jdbcType=VARCHAR},
+      phone = #{phone,jdbcType=VARCHAR},
+      bail = #{bail,jdbcType=INTEGER},
+      bank = #{bank,jdbcType=VARCHAR},
+      account = #{account,jdbcType=VARCHAR},
+      pwd = #{pwd,jdbcType=VARCHAR},
+      role = #{role,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+</mapper>
