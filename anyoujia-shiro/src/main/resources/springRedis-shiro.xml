@@ -27,19 +27,6 @@
                 <property name="connectionFactory" ref="jedisConnectionFactory" />
                 <!-- 开启事务 -->
                 <property name="enableTransactionSupport" value="true" />
-                 <!-- 序列化策略 推荐使用StringRedisSerializer -->
-                 <!--  <property name="keySerializer">
-             <bean class="org.springframework.data.redis.serializer.StringRedisSerializer"/>
-         </property> -->
-                 <!-- <property name="valueSerializer">
-            <bean class="org.springframework.data.redis.serializer.StringRedisSerializer"/>
-         </property> -->
-                <!--<property name="hashKeySerializer">
-             <bean class="org.springframework.data.redis.serializer.StringRedisSerializer"/>
-        </property>
-         <property name="hashValueSerializer">
-             <bean class="org.springframework.data.redis.serializer.StringRedisSerializer"/>
-        </property> -->
                  <property name="keySerializer">
                     <bean class="org.springframework.data.redis.serializer.JdkSerializationRedisSerializer"></bean>
                  </property>
@@ -75,12 +62,18 @@
         <property name="cacheManager" ref="cacheManager"/>
     </bean>
     <!-- 继承自AuthorizingRealm的自定义Realm,即指定Shiro验证用户登录的类为自定义的SupplyUserRealm.java -->
-	<!--<bean id="supplyUserRealm" class="cn.anyoufang.shiro.SupplyUserRealm">-->
-		<!--<property name="authenticationCachingEnabled" value="true"/>-->
-		<!--<property name="cachingEnabled" value="true"/>-->
-		<!--<property name="cacheManager" ref="jedisCacheManager"/>-->
-	<!--</bean>-->
-    <bean id="userRealm" class="cn.anyoufang.shiro.UserRealm"/>
+	<bean id="supplyUserRealm" class="cn.anyoufang.shiro.MemberRealm">
+		<property name="authenticationCachingEnabled" value="true"/>
+		<property name="cachingEnabled" value="true"/>
+		<property name="cacheManager" ref="jedisCacheManager"/>
+        <property name="credentialsMatcher">
+            <bean class="org.apache.shiro.authc.credential.HashedCredentialsMatcher">
+                <property name="hashAlgorithmName" value="MD5"></property> <!-- 加密算法的名称 -->
+                <!--<property name="hashIterations" value="1024"></property> &lt;!&ndash; 配置加密的次数 &ndash;&gt;-->
+            </bean>
+        </property>
+	</bean>
+    <!--<bean id="userRealm" class="cn.anyoufang.shiro.UserRealm"/>-->
     <!-- redis集群 -->
     <!-- <bean id="jedisCluster" class="redis.clients.jedis.JedisCluster">
         <constructor-arg>
