@@ -1,7 +1,6 @@
 package cn.anyoufang.utils;
 
 import cn.anyoufang.entity.SysUser;
-import cn.anyoufang.entity.TbSupplier;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.session.Session;
 import org.apache.shiro.subject.Subject;
@@ -26,9 +25,6 @@ public class ShiroUtils {
 	public static SysUser getUserEntity() {
 		return (SysUser)SecurityUtils.getSubject().getPrincipal();
 	}
-	public static TbSupplier getSupplierEntity() {
-		return (TbSupplier) SecurityUtils.getSubject().getPrincipal();
-	}
 
 	public static Long getUserId() {
 		return getUserEntity().getUserId();
@@ -36,7 +32,6 @@ public class ShiroUtils {
 	public static String getUserName() {
 		return getUserEntity().getUsername();
 	}
-    public static String getSupplierId(){return getSupplierEntity().getId();}
 	public static void setSessionAttribute(Object key, Object value) {
 		getSession().setAttribute(key, value);
 	}
