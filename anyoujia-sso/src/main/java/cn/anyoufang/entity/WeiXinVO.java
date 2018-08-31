@@ -1,18 +1,21 @@
 package cn.anyoufang.entity;
 
-public class WeiXinVO {
+import java.io.Serializable;
+
+public class WeiXinVO implements Serializable {
+    //微信昵称
     private String nickname;
-
+   //城市
     private String city;
-
+    //省份
     private String province;
-
+    //国家
     private String country;
-
+    //头像
     private String headimgurl;
 
     private String openid;
-
+    //性别  1 男  2 女  0 未知
     private Integer sex;
 
     public Integer getSex() {
