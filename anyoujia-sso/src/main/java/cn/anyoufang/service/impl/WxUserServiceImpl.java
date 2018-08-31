@@ -1,6 +1,8 @@
 package cn.anyoufang.service.impl;
 
+import cn.anyoufang.entity.SpMemberWx;
 import cn.anyoufang.entity.WeiXinVO;
+import cn.anyoufang.mapper.SpMemberWxMapper;
 import cn.anyoufang.service.WxUserService;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -9,6 +11,7 @@ import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.BasicResponseHandler;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -16,9 +19,11 @@ import java.io.IOException;
 @Service
 public class WxUserServiceImpl implements WxUserService {
 
+    @Autowired
+    private SpMemberWxMapper wxMapper;
 
     @Override
-    public WeiXinVO getAndSaveUserInfoFromWx(String code, String myUrl)
+    public WeiXinVO getAndSaveUserInfoFromWx(String code)
             throws IOException {
         if (code != null) {
             //获取openid和access_token的连接
@@ -53,8 +58,17 @@ public class WxUserServiceImpl implements WxUserService {
             String headimgurl = jsonObject1.get("headimgurl").getAsString();
             String openid = jsonObject1.get("openid").getAsString();
             Integer sex = jsonObject1.get("sex").getAsInt();
+            SpMemberWx wx = new SpMemberWx();
+            int now = (int) (System.currentTimeMillis()/1000);
+            wx.setAddtime(now);
+            wx.setImg(headimgurl);
+            wx.setNickname(nickname);
+            wx.setOpenid(openid);
+            wx.setSubscribe(true);
+            int wxid = wxMapper.insert(wx);//TODO
             WeiXinVO weiXinVO = new WeiXinVO(nickname, city, province, country,
                     headimgurl, openid, sex);
+            weiXinVO.setWxid(wxid);
           return weiXinVO;
         }
 

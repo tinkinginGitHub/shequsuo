@@ -1,6 +1,6 @@
 package cn.anyoufang.utils;
 
-import cn.anyoufang.entity.SysUser;
+import cn.anyoufang.entity.SpMember;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.session.Session;
 import org.apache.shiro.subject.Subject;
@@ -10,7 +10,7 @@ import org.apache.shiro.subject.Subject;
  * 
  * @author
  * @email
- * @date 2016年11月12日 上午9:49:19
+ * @date
  */
 public class ShiroUtils {
 
@@ -22,15 +22,15 @@ public class ShiroUtils {
 		return SecurityUtils.getSubject();
 	}
 
-	public static SysUser getUserEntity() {
-		return (SysUser)SecurityUtils.getSubject().getPrincipal();
+	public static SpMember getUserEntity() {
+		return (SpMember)SecurityUtils.getSubject().getPrincipal();
 	}
 
-	public static Long getUserId() {
-		return getUserEntity().getUserId();
+	public static Integer getUserId() {
+		return getUserEntity().getUid();
 	}
 	public static String getUserName() {
-		return getUserEntity().getUsername();
+		return getUserEntity().getName();
 	}
 	public static void setSessionAttribute(Object key, Object value) {
 		getSession().setAttribute(key, value);

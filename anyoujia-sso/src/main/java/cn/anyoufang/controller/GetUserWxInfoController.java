@@ -16,9 +16,9 @@ import java.io.IOException;
 
 @Controller
 @RequestMapping("/weixinInfo")
-public class GetUserOpenController {
+public class GetUserWxInfoController {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(GetUserOpenController.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(GetUserWxInfoController.class);
 
     @Autowired
     private WxUserService wxUserService;
@@ -32,7 +32,7 @@ public class GetUserOpenController {
 
         WeiXinVO weiXinVO = null;
         try {
-            weiXinVO = wxUserService.getAndSaveUserInfoFromWx(code,myUrl);
+            weiXinVO = wxUserService.getAndSaveUserInfoFromWx(code);
         } catch (IOException e) {
             if(LOGGER.isInfoEnabled()) {
                 LOGGER.info(e.getMessage());

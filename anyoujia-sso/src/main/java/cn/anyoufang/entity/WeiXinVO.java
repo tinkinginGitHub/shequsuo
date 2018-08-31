@@ -3,6 +3,8 @@ package cn.anyoufang.entity;
 import java.io.Serializable;
 
 public class WeiXinVO implements Serializable {
+
+    private static final long serialVersionUID = 1L;
     //微信昵称
     private String nickname;
    //城市
@@ -17,6 +19,16 @@ public class WeiXinVO implements Serializable {
     private String openid;
     //性别  1 男  2 女  0 未知
     private Integer sex;
+
+    private int wxid;
+
+    public int getWxid() {
+        return wxid;
+    }
+
+    public void setWxid(int wxid) {
+        this.wxid = wxid;
+    }
 
     public Integer getSex() {
         return sex;

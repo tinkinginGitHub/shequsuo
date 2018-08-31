@@ -1,10 +1,10 @@
 package cn.anyoufang.interceptor;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 public class ProcessInterceptor implements HandlerInterceptor {
 
@@ -13,7 +13,7 @@ public class ProcessInterceptor implements HandlerInterceptor {
                              HttpServletResponse httpServletResponse,
                              Object o) throws Exception {
         String originHeader = httpServletRequest.getHeader("Origin");
-        String refer = httpServletRequest.getHeader("Referer");
+//        String refer = httpServletRequest.getHeader("Referer");
         if ("http://192.168.0.133:8081".equals(originHeader)) {
             httpServletResponse.setHeader("Access-Control-Allow-Origin",
                     "http://192.168.0.133:8081");

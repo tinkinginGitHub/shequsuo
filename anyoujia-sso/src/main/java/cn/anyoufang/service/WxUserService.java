@@ -7,5 +7,5 @@ import java.io.IOException;
 
 public interface WxUserService {
 
-    WeiXinVO getAndSaveUserInfoFromWx(String code, String myUrl)throws IOException;
+    WeiXinVO getAndSaveUserInfoFromWx(String code)throws IOException;
 }

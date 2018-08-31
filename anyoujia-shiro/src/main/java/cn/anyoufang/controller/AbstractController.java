@@ -1,6 +1,6 @@
 package cn.anyoufang.controller;
 
-import cn.anyoufang.entity.SysUser;
+import cn.anyoufang.entity.SpMember;
 import cn.anyoufang.utils.ShiroUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,19 +10,13 @@ import org.slf4j.LoggerFactory;
  * 
  * @author
  * @email
- * @date 2016年11月9日 下午9:42:26
+ * @date 2018年08月31日
  */
 public abstract class AbstractController {
 	protected Logger logger = LoggerFactory.getLogger(getClass());
 	
-	protected SysUser getUser() {
+	protected SpMember getUser() {
 		return ShiroUtils.getUserEntity();
 	}
 
-	protected Long getUserId() {
-		if(getUser() == null){
-			return 1L;
-		}
-		return getUser().getUserId();
-	}
 }
