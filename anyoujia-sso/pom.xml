@@ -9,10 +9,8 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>anyoujia-sso</artifactId>
-
-
+    <packaging>war</packaging>
     <dependencies>
-
         <dependency>
             <groupId>cn.anyoufang</groupId>
             <artifactId>anyoujia-common</artifactId>
@@ -27,6 +25,10 @@
             <groupId>javax.servlet</groupId>
             <artifactId>javax.servlet-api</artifactId>
             <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.mangofactory</groupId>
+            <artifactId>swagger-springmvc</artifactId>
         </dependency>
     </dependencies>
 

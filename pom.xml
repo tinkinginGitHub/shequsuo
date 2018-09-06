@@ -61,6 +61,16 @@
 		<fastdfs-client-version>1.27.0.0</fastdfs-client-version>
 		<commons-fileupload-version>1.2</commons-fileupload-version>
 		<alipay-sdk-java-version>3.0.0</alipay-sdk-java-version>
+		<swagger-springmvc-version>1.0.2</swagger-springmvc-version>
+		<aliyun-java-sdk-iot-version>5.0.0</aliyun-java-sdk-iot-version>
+		<aliyun-java-sdk-core-version>3.5.1</aliyun-java-sdk-core-version>
+		<javax.websocket-api-version>1.1</javax.websocket-api-version>
+		<spring-websocket-version>4.3.7.RELEASE</spring-websocket-version>
+		<spring-messaging-version>4.3.7.RELEASE</spring-messaging-version>
+		<xstream-version>1.4.10</xstream-version>
+		<wechat-version>1.0.0</wechat-version>
+		<dom4j-version>1.6.1</dom4j-version>
+		<commons-codec-version>1.9</commons-codec-version>
 	</properties>
 
 	<!-- 阿里云maven仓库 -->
@@ -90,6 +100,47 @@
 
 	<dependencyManagement>
 		<dependencies>
+			<dependency>
+				<groupId>commons-codec</groupId>
+				<artifactId>commons-codec</artifactId>
+				<version>${commons-codec-version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.aliyun</groupId>
+				<artifactId>aliyun-java-sdk-core</artifactId>
+				<version>${aliyun-java-sdk-core-version}</version>
+			</dependency>
+			<dependency>
+				<groupId>javax.websocket</groupId>
+				<artifactId>javax.websocket-api</artifactId>
+				<version>${javax.websocket-api-version}</version>
+				<scope>provided</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework</groupId>
+				<artifactId>spring-websocket</artifactId>
+				<version>${spring-websocket-version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework</groupId>
+				<artifactId>spring-messaging</artifactId>
+				<version>${spring-messaging-version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.thoughtworks.xstream</groupId>
+				<artifactId>xstream</artifactId>
+				<version>${xstream-version}</version>
+			</dependency>
+			<dependency>
+				<groupId>me.hao0</groupId>
+				<artifactId>wechat</artifactId>
+				<version>${wechat-version}</version>
+			</dependency>
+			<dependency>
+				<groupId>dom4j</groupId>
+				<artifactId>dom4j</artifactId>
+				<version>${dom4j-version}</version>
+			</dependency>
 			<dependency>
 				<groupId>com.alipay.sdk</groupId>
 				<artifactId>alipay-sdk-java</artifactId>
@@ -176,8 +227,6 @@
 				<artifactId>spring-data-redis</artifactId>
 				<version>${spring-data-redis-version}</version>
 			</dependency>
-
-
 			<dependency>
 				<groupId>net.sourceforge.jexcelapi</groupId>
 				<artifactId>jxl</artifactId>
@@ -419,6 +468,16 @@
 				<groupId>org.freemarker</groupId>
 				<artifactId>freemarker</artifactId>
 				<version>${freemarker-version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.aliyun</groupId>
+				<artifactId>aliyun-java-sdk-iot</artifactId>
+				<version>${aliyun-java-sdk-iot-version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.mangofactory</groupId>
+				<artifactId>swagger-springmvc</artifactId>
+				<version>${swagger-springmvc-version}</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>

@@ -1,5 +1,6 @@
 package cn.anyoufang.utils;
 
+import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -9,16 +10,23 @@ import java.util.Date;
 public class DateUtil {
 
 	// 鏃堕棿鏍煎紡
-	private static SimpleDateFormat SDF_YMDHMS = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-	private static SimpleDateFormat SDF_Y_M_D = new SimpleDateFormat("yyyy-MM-dd");
-	private static SimpleDateFormat SDF_YMDHMS_FNAME = new SimpleDateFormat("yyyyMMddHHmmss");
-	private static SimpleDateFormat SDF_YMD = new SimpleDateFormat("yyyyMMdd");
-	private static SimpleDateFormat SDF_MD = new SimpleDateFormat("MMdd");
+	private static final SimpleDateFormat SDF_YMDHMS = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+	private static final SimpleDateFormat SDF_Y_M_D = new SimpleDateFormat("yyyy-MM-dd");
+	private static final SimpleDateFormat SDF_YMDHMS_FNAME = new SimpleDateFormat("yyyyMMddHHmmss");
+	private static final SimpleDateFormat SDF_YMD = new SimpleDateFormat("yyyyMMdd");
+	private static final SimpleDateFormat SDF_MD = new SimpleDateFormat("MMdd");
 
 
 	public static String getYmdhms() {
+
 		return SDF_YMDHMS.format(new Date());
 	}
+	private static final ThreadLocal<DateFormat> DATE_FORMATTER = new ThreadLocal<DateFormat>(){
+		@Override
+		protected DateFormat initialValue() {
+			return new SimpleDateFormat("yyyy-MM-dd");
+		}
+	};
 	public static String getY_m_d(Date date) {
 		return SDF_Y_M_D.format(date);
 	}

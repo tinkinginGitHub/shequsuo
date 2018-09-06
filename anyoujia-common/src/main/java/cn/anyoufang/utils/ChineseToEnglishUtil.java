@@ -54,9 +54,9 @@ public class ChineseToEnglishUtil {
 		for (int j = 0; j < first.length(); j++) {
 			char word = str.charAt(j);
 			String[] pinyinArray = PinyinHelper.toHanyuPinyinStringArray(word);
-			if (pinyinArray != null)
-				convert = convert + pinyinArray[0].charAt(0);
-			else {
+			if (pinyinArray != null) {
+                convert = convert + pinyinArray[0].charAt(0);
+            } else {
 				convert = convert + word;
 			}
 		}

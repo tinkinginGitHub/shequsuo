@@ -13,7 +13,9 @@ public class AmountUtil {
 	 * @date 2017-5-17 下午4:31:40
 	 */
     public static String amountToBranch(String amount) {
-    	if(StringUtil.isEmpty(amount)) return "0";
+    	if(StringUtil.isEmpty(amount)) {
+            return "0";
+        }
     	BigDecimal bigAmount = new BigDecimal(amount);
     	BigDecimal divisor = new BigDecimal(100);
     	DecimalFormat df =new DecimalFormat("#0.000"); 
@@ -31,7 +33,9 @@ public class AmountUtil {
 	 * @date 2018-4-29
 	 */
 	public static String amountToBranchNoDecimal(String amount) {
-		if(StringUtil.isEmpty(amount)) return "0";
+		if(StringUtil.isEmpty(amount)) {
+            return "0";
+        }
 		BigDecimal bigAmount = new BigDecimal(amount);
 		BigDecimal divisor = new BigDecimal(100);
 		DecimalFormat df =new DecimalFormat("#0.000");
@@ -51,7 +55,9 @@ public class AmountUtil {
 	 * @date 2017-5-17 下午4:37:39
 	 */
 	public static String amountToPrimary(String amount) {
-		if(StringUtil.isEmpty(amount)) return "0";
+		if(StringUtil.isEmpty(amount)) {
+            return "0";
+        }
 		BigDecimal bigAmount = new BigDecimal(amount);
 		BigDecimal divisor = new BigDecimal(100);
 		DecimalFormat df =new DecimalFormat("#0.000");
@@ -71,7 +77,9 @@ public class AmountUtil {
 	 * @date 2017年7月18日 下午3:03:49 
 	 */
 	public static String amountTransferUnit(String amount) {
-		if(StringUtil.isEmpty(amount)) return "0";
+		if(StringUtil.isEmpty(amount)) {
+            return "0";
+        }
 		BigDecimal bigAmount = new BigDecimal(amount);
 		BigDecimal divisor = new BigDecimal(100);
 		DecimalFormat df =new DecimalFormat("#0");
@@ -111,7 +119,9 @@ public class AmountUtil {
 	 * @date 2017-5-17 下午4:37:39
 	 */
     public static String formatMoney(String amount) {
-    	if(StringUtil.isEmpty(amount)) return "0";
+    	if(StringUtil.isEmpty(amount)) {
+            return "0";
+        }
     	BigDecimal bigAmount = new BigDecimal(amount);
     	BigDecimal divisor = new BigDecimal(100);
     	DecimalFormat df =new DecimalFormat("#0.000");
@@ -131,7 +141,9 @@ public class AmountUtil {
     }
 
 	public static String formatBigDecimal(String amount) {
-		if(StringUtil.isEmpty(amount)) return "0";
+		if(StringUtil.isEmpty(amount)) {
+            return "0";
+        }
 		BigDecimal  money= new BigDecimal(amount);
 		DecimalFormat df =new DecimalFormat("#0.000");
 		String newAmount =  df.format(money);
@@ -158,7 +170,9 @@ public class AmountUtil {
 	 *
 	 */
 	public static String formatCash(String amount) {
-		if(StringUtil.isEmpty(amount)) return "0";
+		if(StringUtil.isEmpty(amount)) {
+            return "0";
+        }
 		BigDecimal bigAmount = new BigDecimal(amount);
 		BigDecimal divisor = new BigDecimal(1);
 		DecimalFormat df =new DecimalFormat("#0.000");
@@ -184,9 +198,11 @@ public class AmountUtil {
 	 * @date 2017年9月25日 下午8:50:02 
 	 */
 	public static String priceCarry(String amount){
-		if(amount.length()<3) return "100";//小于一元的，都当一元处理
+		if(amount.length()<3) {
+            return "100";//小于一元的，都当一元处理
+        }
 		//如果尾数是00则不进位
-		if(amount.substring(amount.length()-2, amount.length()).equals("00")){
+		if("00".equals(amount.substring(amount.length() - 2, amount.length()))){
 			return amount;
 		}else{
 			int carryAmount = (Integer.parseInt(amount.substring(0, amount.length()-2))+1)*100;

@@ -120,6 +120,10 @@
 	</bean>
 	<!--配置Mapper映射文件的包扫描 -->
 	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
-		<property name="basePackage" value="cn.anyoufang.mapper,cn.anyoufang.dao" />
+		<property name="basePackage" value="cn.anyoufang.mapper" />
 	</bean>
+
+	<!-- 将 springSwaggerConfig加载到spring容器 -->
+	<bean class="com.mangofactory.swagger.configuration.SpringSwaggerConfig" />
+	<!-- 将自定义的swagger配置类加载到spring容器 -->
 </beans>

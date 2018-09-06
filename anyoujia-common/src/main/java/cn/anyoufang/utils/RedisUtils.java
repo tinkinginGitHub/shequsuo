@@ -149,7 +149,7 @@ public class RedisUtils {
         Jedis jedis = null;
         try {
             jedis = pool.getResource();
-            if(jedis.exists(key)== Boolean.TRUE){
+            if(jedis.exists(key).equals(Boolean.TRUE)){
                 return true;
             }else {
                 return false;
@@ -1581,7 +1581,7 @@ public class RedisUtils {
      */
     public static void returnResource(JedisPool pool, Jedis jedis) {
         if (jedis != null) {
-            pool.returnResource(jedis);
+            jedis.close();
         }
     }
 

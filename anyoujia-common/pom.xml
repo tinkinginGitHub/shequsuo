@@ -220,5 +220,9 @@
             <artifactId>spring-beans</artifactId>
            <!-- <version>5.0.5.RELEASE</version>-->
         </dependency>
+		<dependency>
+			<groupId>com.mangofactory</groupId>
+			<artifactId>swagger-springmvc</artifactId>
+		</dependency>
     </dependencies>
 </project>

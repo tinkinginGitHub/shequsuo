@@ -1,15 +1,14 @@
 package cn.anyoufang.utils;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JavaType;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import net.sf.json.JSONObject;
+
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-
-import net.sf.json.JSONObject;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JavaType;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * 淘淘商城自定义响应结构
@@ -80,9 +79,10 @@ public class JsonUtils {
      */
     @SuppressWarnings("unchecked")
     public static Map<String, Object> jsonToMap(String jsonStr) {
-        Map<String, Object> map = new HashMap<String, Object>();
+        Map<String, Object> map = new HashMap();
         JSONObject jsonObject = JSONObject.fromObject(jsonStr);
-        Iterator<String> keys = jsonObject.keys();//定义迭代器
+        //定义迭代器
+        Iterator<String> keys = jsonObject.keys();
         String key = null;
         Object value = null;
         while (keys.hasNext()) {

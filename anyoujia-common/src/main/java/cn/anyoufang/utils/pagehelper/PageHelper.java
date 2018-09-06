@@ -106,6 +106,7 @@ public class PageHelper implements Interceptor {
      * @return 返回执行结果
      * @throws Throwable 抛出异常
      */
+    @Override
     public Object intercept(Invocation invocation) throws Throwable {
         final Object[] args = invocation.getArgs();
         RowBounds rowBounds = (RowBounds) args[2];
@@ -168,6 +169,7 @@ public class PageHelper implements Interceptor {
      * @param target
      * @return
      */
+    @Override
     public Object plugin(Object target) {
         if (target instanceof Executor) {
             return Plugin.wrap(target, this);
@@ -181,6 +183,7 @@ public class PageHelper implements Interceptor {
      *
      * @param p 属性值
      */
+    @Override
     public void setProperties(Properties p) {
         //数据库方言
         String dialect = p.getProperty("dialect");

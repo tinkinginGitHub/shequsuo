@@ -40,20 +40,24 @@ public class SqlParser implements SqlUtil.Parser {
         simpleParser = SqlUtil.SimpleParser.newParser(dialect);
     }
 
+    @Override
     public void isSupportedSql(String sql) {
         simpleParser.isSupportedSql(sql);
     }
 
+    @Override
     public String getCountSql(String sql) {
         //校验是否支持该sql
         isSupportedSql(sql);
         return parse(sql);
     }
 
+    @Override
     public String getPageSql(String sql) {
         return simpleParser.getPageSql(sql);
     }
 
+    @Override
     public Map setPageParameter(MappedStatement ms, Object parameterObject, BoundSql boundSql, Page page) {
         return simpleParser.setPageParameter(ms, parameterObject, boundSql, page);
     }

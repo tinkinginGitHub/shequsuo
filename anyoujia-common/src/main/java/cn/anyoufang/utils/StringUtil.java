@@ -17,7 +17,9 @@ public class StringUtil {
 	 * @date 2017-2-16 下午3:40:32
 	 */
 	public static String toLowerCaseFirstChar(String s){
-		if(s==null || s.equals("")) return null;
+		if(s==null || "".equals(s)) {
+            return null;
+        }
 		return s.replaceFirst(s.substring(0, 1),s.substring(0, 1).toLowerCase()) ;
 	}
 	
@@ -29,7 +31,9 @@ public class StringUtil {
 	 * @date 2017-2-16 下午3:40:42
 	 */
     public static String toUpCaseFirstChar(String s) {
-    	if(s==null || s.equals("")) return null;
+    	if(s==null || "".equals(s)) {
+            return null;
+        }
 		return s.replaceFirst(s.substring(0, 1),s.substring(0, 1).toUpperCase()) ;
     }
     
@@ -45,24 +49,28 @@ public class StringUtil {
 	 * @date 2017-2-16 下午3:40:52
 	 */
     public static boolean isEmpty(String s){
-    	if(s!=null && !s.trim().equals("")){
+    	if(s!=null && !"".equals(s.trim())){
     		return false;
     	}
     	return true;
     }
     
     public static boolean isNullOrEmpty(Object obj) {  
-        if (obj == null)  
-            return true;  
+        if (obj == null) {
+            return true;
+        }
   
-        if (obj instanceof CharSequence)  
-            return ((CharSequence) obj).length() == 0;  
+        if (obj instanceof CharSequence) {
+            return ((CharSequence) obj).length() == 0;
+        }
   
-        if (obj instanceof Collection)  
-            return ((Collection) obj).isEmpty();  
+        if (obj instanceof Collection) {
+            return ((Collection) obj).isEmpty();
+        }
   
-        if (obj instanceof Map)  
-            return ((Map) obj).isEmpty();  
+        if (obj instanceof Map) {
+            return ((Map) obj).isEmpty();
+        }
   
         if (obj instanceof Object[]) {  
             Object[] object = (Object[]) obj;  
@@ -149,8 +157,9 @@ public class StringUtil {
 	 * @date 2017-5-2 下午4:02:07
 	 */
     public static String getStandDate(String date){
-    	if(date!=null && date.indexOf(".0")>-1)
-    		date = date.replace(".0", "");
+    	if(date!=null && date.indexOf(".0")>-1) {
+            date = date.replace(".0", "");
+        }
     	return date;
     }
     

@@ -24,6 +24,10 @@ import java.util.regex.Pattern;
  * 2017/5/25.
  */
 public class ExportExcel<T> {
+
+
+    private static final  Pattern P = Pattern.compile("^//d+(//.//d+)?$");
+
     public void exportExcel(Collection<T> dataset, OutputStream out) {
         exportExcel("测试POI导出EXCEL文档", null, dataset, out, "yyyy-MM-dd");
     }
@@ -79,7 +83,7 @@ public class ExportExcel<T> {
         // 生成一个表格
         HSSFSheet sheet = workbook.createSheet(title);
         // 设置表格默认列宽度为15个字节
-        sheet.setDefaultColumnWidth((short) 20);
+        sheet.setDefaultColumnWidth(20);
         // 生成一个样式
         // HSSFCellStyle style = workbook.createCellStyle();
         // 设置这些样式
@@ -124,7 +128,7 @@ public class ExportExcel<T> {
 
         // 产生表格标题行
         HSSFRow row = sheet.createRow(0);
-        for (short i = 0; i < headers.length; i++) {
+        for (int i = 0; i < headers.length; i++) {
             HSSFCell cell = row.createCell(i);
             //cell.setCellStyle(style);
             HSSFRichTextString text = new HSSFRichTextString(headers[i]);
@@ -140,7 +144,7 @@ public class ExportExcel<T> {
             T t = (T) it.next();
             // 利用反射，根据javabean属性的先后顺序，动态调用getXxx()方法得到属性值
             Field[] fields = t.getClass().getDeclaredFields();
-            for (short i = 0; i < fields.length; i++) {
+            for (int i = 0; i < fields.length; i++) {
                 HSSFCell cell = row.createCell(i);
                 // cell.setCellStyle(style2);
                 Field field = fields[i];
@@ -169,7 +173,7 @@ public class ExportExcel<T> {
                         // 有图片时，设置行高为60px;
                         row.setHeightInPoints(60);
                         // 设置图片所在列宽度为80px,注意这里单位的一个换算
-                        sheet.setColumnWidth(i, (short) (35.7 * 80));
+                        sheet.setColumnWidth(i, (int)(35.7 * 80));
                         // sheet.autoSizeColumn(i);
                         byte[] bsValue = (byte[]) value;
                         HSSFClientAnchor anchor = new HSSFClientAnchor(0, 0,
@@ -186,8 +190,7 @@ public class ExportExcel<T> {
                     }
                     // 如果不是图片数据，就利用正则表达式判断textValue是否全部由数字组成
                     if (textValue != null) {
-                        Pattern p = Pattern.compile("^//d+(//.//d+)?$");
-                        Matcher matcher = p.matcher(textValue);
+                        Matcher matcher = P.matcher(textValue);
                         if (matcher.matches()) {
                             // 是数字当作double处理
                             cell.setCellValue(Double.parseDouble(textValue));

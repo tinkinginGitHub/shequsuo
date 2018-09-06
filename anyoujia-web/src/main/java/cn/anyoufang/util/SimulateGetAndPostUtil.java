@@ -15,6 +15,7 @@ import java.util.Map;
 
 /**
  * 本类主要用于服务端模拟发送GET和POST请求
+ * @author daiping
  */
 public class SimulateGetAndPostUtil {
     private static final Logger logger = LoggerFactory.getLogger(MethodUtil.class);

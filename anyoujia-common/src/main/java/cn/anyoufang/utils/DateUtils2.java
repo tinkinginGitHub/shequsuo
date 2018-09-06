@@ -11,7 +11,7 @@ import java.util.Date;
  */
 public class DateUtils2 extends org.apache.commons.lang3.time.DateUtils {
 
-    public static String ymdhsChinese = "yyyy年MM月dd日 HH时mm分";
+    private static final String YMD_SH_CHINESE = "yyyy年MM月dd日HH时mm分";
 
     private static String[] parsePatterns = {"yyyy-MM-dd", "yyyy-MM-dd HH:mm:ss",
             "yyyy-MM-dd HH:mm", "yyyy/MM/dd", "yyyy/MM/dd HH:mm:ss", "yyyy/MM/dd HH:mm", "yyyyMMdd"};
@@ -140,7 +140,7 @@ public class DateUtils2 extends org.apache.commons.lang3.time.DateUtils {
      * @return
      */
     public static long pastDays(Date date) {
-        long t = new Date().getTime() - date.getTime();
+        long t = System.currentTimeMillis() - date.getTime();
         System.out.println("=================>"+t / (24 * 60 * 60 * 1000));
         return t / (24 * 60 * 60 * 1000);
     }
@@ -152,7 +152,7 @@ public class DateUtils2 extends org.apache.commons.lang3.time.DateUtils {
      * @return
      */
     public static long pastHour(Date date) {
-        long t = new Date().getTime() - date.getTime();
+        long t = System.currentTimeMillis() - date.getTime();
         return t / (60 * 60 * 1000);
     }
 
@@ -163,7 +163,7 @@ public class DateUtils2 extends org.apache.commons.lang3.time.DateUtils {
      * @return
      */
     public static long pastMinutes(Date date) {
-        long t = new Date().getTime() - date.getTime();
+        long t = System.currentTimeMillis() - date.getTime();
         return t / (60 * 1000);
     }
 
@@ -283,7 +283,7 @@ public class DateUtils2 extends org.apache.commons.lang3.time.DateUtils {
     }
 
 
-    public static Date StringParseDate(String str, String type) {
+    public static Date stringParseDate(String str, String type) {
         try {
             return parseDate(str, type);
         } catch (ParseException e) {
@@ -316,7 +316,7 @@ public class DateUtils2 extends org.apache.commons.lang3.time.DateUtils {
     }
 
     public static void main(String[] args) {
-        System.out.println(formatDateTime(new Date(),ymdhsChinese));
+        System.out.println(formatDateTime(new Date(),YMD_SH_CHINESE));
     }
 
 
