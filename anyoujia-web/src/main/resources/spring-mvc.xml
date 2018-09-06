@@ -28,6 +28,7 @@
 	<mvc:default-servlet-handler />
 	<aop:aspectj-autoproxy proxy-target-class="true" />
 	<!--<mvc:resources mapping="/common/**" location="/common/"/>-->
+	<!-- 启用MVC注解 -->
 	<mvc:annotation-driven>
 		<mvc:message-converters register-defaults="true">
             <bean class="com.alibaba.fastjson.support.spring.FastJsonHttpMessageConverter">

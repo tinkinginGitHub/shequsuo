@@ -1,5 +1,15 @@
 package cn.anyoufang.util;
 
+import cn.anyoufang.utils.RedisUtils;
+import net.sf.json.JSONException;
+import net.sf.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSocketFactory;
+import javax.net.ssl.TrustManager;
 import java.io.*;
 import java.net.ConnectException;
 import java.net.URL;
@@ -9,26 +19,17 @@ import java.util.Formatter;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
-import javax.net.ssl.HttpsURLConnection;
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLSocketFactory;
-import javax.net.ssl.TrustManager;
-
-import cn.anyoufang.utils.RedisUtils;
-import net.sf.json.JSONException;
-import net.sf.json.JSONObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * 微信公众平台通用接口工具类
  */
 public class WeixinUtil {
     private static final Logger LOGGER = LoggerFactory.getLogger(WeixinUtil.class);
-    private static final String jsapiTicket = "jsapiTicket";
-    private static final String accessToken1 = "accessToken1";
-    private static final String appid = "wxaa510935818c342a";
-    private static final String appSecret = "6b58ad8650e4f2b0e91bd9f039f0c968";
+    private static final String JS_API_TICKET = "jsapiTicket";
+    private static final String ACCESS_TOKEN = "accessToken1";
+    private static final String APP_ID = "wxaa510935818c342a";
+    private static final String APP_SECRET = "6b58ad8650e4f2b0e91bd9f039f0c968";
+    private static final String GET = "GET";
 
 
     /**
@@ -60,8 +61,9 @@ public class WeixinUtil {
             // 设置请求方式（GET/POST）
             httpUrlConn.setRequestMethod(requestMethod);
 
-            if ("GET".equalsIgnoreCase(requestMethod))
+            if (GET.equalsIgnoreCase(requestMethod)) {
                 httpUrlConn.connect();
+            }
 
             // 当有数据需要提交时
             if (null != outputStr) {
@@ -105,15 +107,15 @@ public class WeixinUtil {
      */
     public static String getAccessToken() {
         // 获取公众号access_token的链接
-        String access_token = "https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=APPID&secret=APPSECRET";
-        String requestUrl = access_token.replace("APPID", appid).replace("APPSECRET", appSecret);
+        String accessTokenUrl = "https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=APPID&secret=APPSECRET";
+        String requestUrl = accessTokenUrl.replace("APPID", APP_ID).replace("APPSECRET", APP_SECRET);
         JSONObject jsonObject = httpRequest(requestUrl, "GET", null);
         if (null != jsonObject) {
             // 如果请求成功
             try{
                 String accessToken = jsonObject.getString("access_token");
                 int expires = jsonObject.getInt("expires_in");
-                RedisUtils.setex(accessToken1,accessToken,expires);
+                RedisUtils.setex(ACCESS_TOKEN,accessToken,expires);
                 return accessToken;
             }catch (Exception e) {
                 if(LOGGER.isInfoEnabled()) {
@@ -133,16 +135,16 @@ public class WeixinUtil {
      */
     public static String getJsapiTicket(String accessToken) {
         // 获取公众号jsapi_ticket的链接
-        String jsapi_ticket_url = "https://api.weixin.qq.com/cgi-bin/ticket/getticket?access_token=ACCESS_TOKEN&type=jsapi";
+        String jsapiTicketUrl = "https://api.weixin.qq.com/cgi-bin/ticket/getticket?access_token=ACCESS_TOKEN&type=jsapi";
         if (accessToken != null) {
-            String requestUrl = jsapi_ticket_url.replace("ACCESS_TOKEN", accessToken);
+            String requestUrl = jsapiTicketUrl.replace("ACCESS_TOKEN", accessToken);
             JSONObject jsonObject = httpRequest(requestUrl, "GET", null);
             // 如果请求成功
             if (null != jsonObject) {
                 try {
                     String ticket = jsonObject.getString("ticket");
                     int expire = jsonObject.getInt("expires_in");
-                    RedisUtils.setex(jsapiTicket,ticket,expire);
+                    RedisUtils.setex(JS_API_TICKET,ticket,expire);
                     return ticket;
                 } catch (JSONException e) {
                     if(LOGGER.isInfoEnabled()) {
@@ -153,47 +155,50 @@ public class WeixinUtil {
         }
         return null;
     }
-    public static Map<String, String> sign(String url) {
-        Map<String, String> ret = new HashMap();
-        String nonce_str = create_nonce_str();
-        String timestamp = create_timestamp();
+
+    /**
+     * 获取jsapi 所需基本信息
+     * @param url
+     * @return
+     * @throws NoSuchAlgorithmException
+     * @throws UnsupportedEncodingException
+     */
+    public static Map<String, String> sign(String url) throws NoSuchAlgorithmException, UnsupportedEncodingException{
+        Map<String, String> ret = new HashMap(3);
+        String nonceStr = createNonceStr();
+        String timestamp = createTimestamp();
         String string1;
         String at;
-        String jsapi_ticket;
+        String jsapiTicket;
         String signature = "";
-        if(RedisUtils.get(jsapiTicket)!=null&&RedisUtils.get(accessToken1)!=null) {
-            jsapi_ticket = RedisUtils.get(jsapiTicket);
+        if(RedisUtils.get(JS_API_TICKET)!=null&&RedisUtils.get(ACCESS_TOKEN)!=null) {
+            jsapiTicket = RedisUtils.get(JS_API_TICKET);
         }else {
             at = getAccessToken();
-            jsapi_ticket = getJsapiTicket(at);
+            jsapiTicket = getJsapiTicket(at);
         }
         //注意这里参数名必须全部小写，且必须有序
-        string1 = "jsapi_ticket=" + jsapi_ticket +
-                "&noncestr=" + nonce_str +
+        string1 = "jsapi_ticket=" + jsapiTicket +
+                "&noncestr=" + nonceStr +
                 "&timestamp=" + timestamp +
                 "&url=" + url;
-        try
-        {
-            MessageDigest crypt = MessageDigest.getInstance("SHA-1");
-            crypt.reset();
-            crypt.update(string1.getBytes("UTF-8"));
-            signature = byteToHex(crypt.digest());
-        }
-        catch (NoSuchAlgorithmException e) {
-            if(LOGGER.isInfoEnabled()) {
-                LOGGER.info(e.getMessage());
-            }
-        } catch (UnsupportedEncodingException e) {
-            if(LOGGER.isInfoEnabled()) {
-                LOGGER.info(e.getMessage());
-            }
-        }
-        ret.put("nonceStr", nonce_str);
+
+        MessageDigest crypt = MessageDigest.getInstance("SHA-1");
+        crypt.reset();
+        crypt.update(string1.getBytes("UTF-8"));
+        signature = byteToHex(crypt.digest());
+        ret.put("nonceStr", nonceStr);
         ret.put("timestamp", timestamp);
         ret.put("signature", signature);
 
         return ret;
     }
+
+    /**
+     *
+     * @param hash
+     * @return
+     */
     private static String byteToHex(final byte[] hash) {
         Formatter formatter = new Formatter();
         for (byte b : hash) {
@@ -204,11 +209,19 @@ public class WeixinUtil {
         return result;
     }
 
-    private static String create_nonce_str() {
+    /**
+     *
+     * @return
+     */
+    private static String createNonceStr() {
         return UUID.randomUUID().toString();
     }
 
-    private static String create_timestamp() {
+    /**
+     *
+     * @return
+     */
+    private static String createTimestamp() {
         return Long.toString(System.currentTimeMillis() / 1000);
     }
 }

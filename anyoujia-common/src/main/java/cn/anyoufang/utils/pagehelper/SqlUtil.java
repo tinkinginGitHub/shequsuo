@@ -102,7 +102,7 @@ public class SqlUtil {
                 Class.forName("net.sf.jsqlparser.statement.select.Select");
                 sqlParser = (Parser) Class.forName(sqlParserClass).getConstructor(Dialect.class).newInstance(dialect);
             } catch (Exception e) {
-                //找不到时，不用处理
+               e.printStackTrace();
             }
             if (sqlParser == null) {
                 sqlParser = SimpleParser.newParser(dialect);
@@ -192,6 +192,7 @@ public class SqlUtil {
             return parser;
         }
 
+        @Override
         public void isSupportedSql(String sql) {
             if (sql.trim().toUpperCase().endsWith("FOR UPDATE")) {
                 throw new RuntimeException("分页插件不支持包含for update的sql");
@@ -204,6 +205,7 @@ public class SqlUtil {
          * @param sql 原查询sql
          * @return 返回count查询sql
          */
+        @Override
         public String getCountSql(final String sql) {
             isSupportedSql(sql);
             StringBuilder stringBuilder = new StringBuilder(sql.length() + 40);
@@ -219,8 +221,10 @@ public class SqlUtil {
          * @param sql 原查询sql
          * @return 返回分页sql
          */
+        @Override
         public abstract String getPageSql(String sql);
 
+        @Override
         public Map setPageParameter(MappedStatement ms, Object parameterObject, BoundSql boundSql, Page page) {
             Map paramMap = null;
             if (parameterObject == null) {
@@ -361,6 +365,7 @@ public class SqlUtil {
             this.count = count;
         }
 
+        @Override
         public BoundSql getBoundSql(Object parameterObject) {
             DynamicContext context = new DynamicContext(configuration, parameterObject);
             rootSqlNode.apply(context);
@@ -437,7 +442,7 @@ public class SqlUtil {
         try {
             qs = ms.getConfiguration().getMappedStatement(ms.getId() + suffix);
         } catch (Exception e) {
-            //ignore
+           e.printStackTrace();
         }
         if (qs == null) {
             //创建一个新的MappedStatement

@@ -62,9 +62,9 @@ public class ProcessInterceptor implements HandlerInterceptor {
             httpServletResponse.setHeader("Access-Control-Allow-Credentials",
                     "true");
             httpServletResponse.setHeader("X-Powered-By", "Jetty");
-        }else if("http://192.168.31.196:8080".equals(originHeader)) {
+        }else if("http://192.168.31.114:8091".equals(originHeader)) {
             httpServletResponse.setHeader("Access-Control-Allow-Origin",
-                    "http://192.168.31.196:8080");
+                    "http://192.168.31.114:8091");
             httpServletResponse.setHeader("Access-Control-Allow-Headers",
                     "Content-Type,Content-Length, Authorization, Accept,X-Requested-With");
             httpServletResponse.setHeader("Access-Control-Allow-Methods",
@@ -78,7 +78,7 @@ public class ProcessInterceptor implements HandlerInterceptor {
 
         String method = httpServletRequest.getMethod();
 
-        if (method.equals("OPTIONS")) {
+        if ("OPTIONS".equals(method)) {
             httpServletResponse.setStatus(200);
             return true;
         }

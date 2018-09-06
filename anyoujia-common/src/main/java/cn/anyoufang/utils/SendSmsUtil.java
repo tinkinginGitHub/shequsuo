@@ -18,13 +18,13 @@ public class SendSmsUtil {
 
 
     //产品名称:云通信短信API产品,开发者无需替换
-    static final String product = "Dysmsapi";
+    static final String PRODUCT = "Dysmsapi";
     //产品域名,开发者无需替换
-    static final String domain = "dysmsapi.aliyuncs.com";
+    static final String DOMAIN = "dysmsapi.aliyuncs.com";
 
     // TODO 此处需要替换成开发者自己的AK(在阿里云访问控制台寻找)
-    static final String accessKeyId = "LTAIYNQialGwuYkO";
-    static final String accessKeySecret = "5ka697idTwud2u7joSnmfFE18LIzU8";
+    static final String ACCESS_KEY_ID = "LTAIYNQialGwuYkO";
+    static final String ACCESS_KEY_SECRET = "5ka697idTwud2u7joSnmfFE18LIzU8";
 
 
     public static SendSmsResponse sendSms(String phone, String signName, String templcateCode, String outId, String templateParam) throws ClientException {
@@ -33,8 +33,8 @@ public class SendSmsUtil {
         System.setProperty("sun.net.client.defaultReadTimeout", "10000");
 
         //初始化acsClient,暂不支持region化
-        IClientProfile profile = DefaultProfile.getProfile("cn-hangzhou", accessKeyId, accessKeySecret);
-        DefaultProfile.addEndpoint("cn-hangzhou", "cn-hangzhou", product, domain);
+        IClientProfile profile = DefaultProfile.getProfile("cn-hangzhou", ACCESS_KEY_ID, ACCESS_KEY_SECRET);
+        DefaultProfile.addEndpoint("cn-hangzhou", "cn-hangzhou", PRODUCT, DOMAIN);
         IAcsClient acsClient = new DefaultAcsClient(profile);
 
         //组装请求对象-具体描述见控制台-文档部分内容
@@ -69,8 +69,8 @@ public class SendSmsUtil {
         System.setProperty("sun.net.client.defaultReadTimeout", "10000");
 
         //初始化acsClient,暂不支持region化
-        IClientProfile profile = DefaultProfile.getProfile("cn-hangzhou", accessKeyId, accessKeySecret);
-        DefaultProfile.addEndpoint("cn-hangzhou", "cn-hangzhou", product, domain);
+        IClientProfile profile = DefaultProfile.getProfile("cn-hangzhou", ACCESS_KEY_ID, ACCESS_KEY_SECRET);
+        DefaultProfile.addEndpoint("cn-hangzhou", "cn-hangzhou", PRODUCT, DOMAIN);
         IAcsClient acsClient = new DefaultAcsClient(profile);
 
         //组装请求对象

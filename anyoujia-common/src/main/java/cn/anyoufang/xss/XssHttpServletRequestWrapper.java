@@ -24,7 +24,7 @@ public class XssHttpServletRequestWrapper extends HttpServletRequestWrapper {
     //没被包装过的HttpServletRequest（特殊场景，需要自己过滤）
     HttpServletRequest orgRequest;
     //html过滤
-   private final static HTMLFilter htmlFilter = new HTMLFilter();
+   private final static HTMLFilter HTML_FILTER = new HTMLFilter();
 
     public XssHttpServletRequestWrapper(HttpServletRequest request) {
         super(request);
@@ -49,16 +49,19 @@ public class XssHttpServletRequestWrapper extends HttpServletRequestWrapper {
         final ByteArrayInputStream bis = new ByteArrayInputStream(json.getBytes("utf-8"));
         return new ServletInputStream() {
 
+            @Override
             public boolean isFinished() {
                 return true;
             }
 
 
+            @Override
             public boolean isReady() {
                 return true;
             }
 
 
+            @Override
             public void setReadListener(ReadListener readListener) {
             }
 
@@ -95,12 +98,12 @@ public class XssHttpServletRequestWrapper extends HttpServletRequestWrapper {
     public Map<String,String[]> getParameterMap() {
         Map<String,String[]> map = new LinkedHashMap<>();
         Map<String,String[]> parameters = super.getParameterMap();
-        for (String key : parameters.keySet()) {
-            String[] values = parameters.get(key);
+        for (Map.Entry<String, String[]> entry : parameters.entrySet()) {
+            String[] values = parameters.get(entry.getKey());
             for (int i = 0; i < values.length; i++) {
                 values[i] = xssEncode(values[i]);
             }
-            map.put(key, values);
+            map.put(entry.getKey(), values);
         }
         return map;
     }
@@ -115,7 +118,7 @@ public class XssHttpServletRequestWrapper extends HttpServletRequestWrapper {
     }
 
     private String xssEncode(String input) {
-        return htmlFilter.filter(input);
+        return HTML_FILTER.filter(input);
     }
 
     /**

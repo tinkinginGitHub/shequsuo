@@ -13,13 +13,14 @@ import java.util.Date;
 
 public class JwtHelper {
 
-    private final static String base64Secret = "MDk4ZjZiY2Q0NjIxZDM3M2NhZGU0ZTgzMjYyN2I0ZjY=";
-    private final static int expiresSecond = 604800000;//7天
+    private final static String BASE64_SECRET = "MDk4ZjZiY2Q0NjIxZDM3M2NhZGU0ZTgzMjYyN2I0ZjY=";
+    //7天
+    private final static int EXPIRES_SECOND = 604800000;
 
     public static Claims parseJWT(String jsonWebToken) {
         try {
             Claims claims = Jwts.parser()
-                    .setSigningKey(DatatypeConverter.parseBase64Binary(base64Secret))
+                    .setSigningKey(DatatypeConverter.parseBase64Binary(BASE64_SECRET))
                     .parseClaimsJws(jsonWebToken).getBody();
             return claims;
         } catch (Exception ex) {
@@ -34,7 +35,7 @@ public class JwtHelper {
         Date now = new Date(nowMillis);
 
         //生成签名密钥
-        byte[] apiKeySecretBytes = DatatypeConverter.parseBase64Binary(base64Secret);
+        byte[] apiKeySecretBytes = DatatypeConverter.parseBase64Binary(BASE64_SECRET);
         Key signingKey = new SecretKeySpec(apiKeySecretBytes, signatureAlgorithm.getJcaName());
 
         //添加构成JWT的参数
@@ -44,8 +45,8 @@ public class JwtHelper {
                 .claim("user_privilege", privileges)
                 .signWith(signatureAlgorithm, signingKey);
         //添加Token过期时间
-        if (expiresSecond >= 0) {
-            long expMillis = nowMillis + expiresSecond;
+        if (EXPIRES_SECOND >= 0) {
+            long expMillis = nowMillis + EXPIRES_SECOND;
             Date exp = new Date(expMillis);
             builder.setExpiration(exp).setNotBefore(now);
         }

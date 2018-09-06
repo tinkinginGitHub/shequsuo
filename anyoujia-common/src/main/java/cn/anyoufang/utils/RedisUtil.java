@@ -1,8 +1,5 @@
 package cn.anyoufang.utils;
 
-import java.util.Map;
-
-
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.PropertiesConfiguration;
@@ -10,6 +7,8 @@ import org.apache.log4j.Logger;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
+
+import java.util.Map;
 
 
 public class RedisUtil {
@@ -54,7 +53,7 @@ public class RedisUtil {
 	@SuppressWarnings("deprecation")
 	private static void returnJedis(Jedis jedis) {
 		if(jedis != null){
-			jedisPool.returnResource(jedis);
+			jedis.close();
 		}
 	}
 

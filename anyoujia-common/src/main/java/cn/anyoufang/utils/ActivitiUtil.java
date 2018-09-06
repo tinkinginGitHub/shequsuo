@@ -16,8 +16,8 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Created by 陈熠
- * 2017/10/20.
+ *@author daiping
+ * @date 2018-09-05
  */
 public class ActivitiUtil {
 

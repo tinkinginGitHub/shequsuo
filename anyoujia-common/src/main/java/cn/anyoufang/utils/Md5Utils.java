@@ -22,7 +22,7 @@ public class Md5Utils {
 	 *            需要签名的参数
 	 * @return 签名的字符串
 	 */
-	public static StringBuilder CreateLinkString(Map<String, String> params) {
+	public static StringBuilder createLinkString(Map<String, String> params) {
 		List<String> keys = new ArrayList<String>(params.keySet());
 		Collections.sort(keys);
 		StringBuilder prestr = new StringBuilder();
@@ -32,8 +32,8 @@ public class Md5Utils {
 			key = (String) keys.get(i);
 			value = (String) params.get(key);
 			if ("".equals(value) || value == null
-					|| key.equalsIgnoreCase("sign")
-					|| key.equalsIgnoreCase("sign_type")) {
+					|| "sign".equalsIgnoreCase(key)
+					|| "sign_type".equalsIgnoreCase(key)) {
 				continue;
 			}
 			prestr.append(key).append("=").append(value).append("&");
@@ -50,11 +50,9 @@ public class Md5Utils {
 	 *            密钥
 	 * @return 签名结果
 	 */
-	public static String BuildMysign(Map<String, String> sArray, String key) {
+	public static String buildMysign(Map<String, String> sArray, String key) {
 		if (sArray != null && sArray.size() > 0) {
-			StringBuilder prestr = CreateLinkString(sArray);
-			System.out.println("********************代签名字符串为："
-					+ prestr.toString() + key);
+			StringBuilder prestr = createLinkString(sArray);
 			return md5(prestr.toString() + key, "UTF-8");
 		}
 		return null;
