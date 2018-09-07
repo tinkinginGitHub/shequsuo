@@ -14,7 +14,7 @@ public class SignUtil {
     /**
      * 与开发模式接口配置信息中的Token保持一致
      */
-    private static final String TOKEN = "wxxwhome";
+    private static final String TOKEN = "smart";
 
     /**
      *

@@ -106,11 +106,4 @@ public class Md5Utils {
 		return out;
 	}
 
-	public static void main(String[] args) {
-
-		String ss = Md5Utils.md5("notify_id=8650bbfcb5734539844ba1a617a0d347&order_no=20170331100141&retMsg=failed&status=TRADE_FINISHED&total_fee=200&trade_no=10170331021931805611ea78578fg560f7gf60540c098ga624eg3520g80a55ged4629dd9g7bd77592", "UTF-8");
-
-		System.out.println(ss);
-	}
-
 }

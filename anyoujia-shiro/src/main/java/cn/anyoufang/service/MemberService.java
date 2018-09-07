@@ -46,10 +46,18 @@ public interface MemberService {
     void getVerifCode(String phone) throws ClientException;
 
     /**
-     * 重置密码
+     * 未登录状态下重置密码
      * @param phone
      * @param newPwd
      */
     void resetPwd(String phone,String newPwd);
+
+    /**
+     * 已经登录状态下重置密码
+     * @param oldPassword
+     * @param newPassword
+     * @return
+     */
+    boolean resetPasswordLogined(String oldPassword,String newPassword);
 
 }

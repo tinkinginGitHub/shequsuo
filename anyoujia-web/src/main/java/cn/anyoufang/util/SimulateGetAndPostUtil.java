@@ -125,8 +125,16 @@ public class SimulateGetAndPostUtil {
         return result;
     }
 
-//    public static void main(String[] args) {
-//        String result = sendGet("http://fcgi.video.qcloud.com/common_access?appid=1257229165&interface=Live_Channel_GetStatus&Param.s.channel_id=29496_IIII742583FCBFA&t=1534389171&sign=8bca2d67ca9447ad1c0a10da75745d4a","");
-//        System.out.println(result);
-//    }
+    public static void main(String[] args) {
+//        “mod”:”user”,//控制器
+//“fun”:”register”,//方法
+//“data”:{“phone”:”17092368880”,”password”:”123456”……}//数据
+        //
+        String s = EncryptionUtil.encrypt("{\"phone\":\"18580558719\",\"password\":\"123456\"}","u798y79H87BUii7g");
+        String hearBeat = EncryptionUtil.encrypt("{\"ping\": \"1\"}","u798y79H87BUii7g");
+       // System.out.println(s);
+        String param = "{\"mod\":\"Common\",\"fun\":\"ping\",\"data\":"+s+"}";
+        String result = sendPost("http://47.106.227.81:9501",param);
+        System.out.println(result);
+    }
 }
