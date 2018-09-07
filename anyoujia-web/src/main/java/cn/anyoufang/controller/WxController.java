@@ -79,7 +79,7 @@ public class WxController {
         String timestamp = request.getParameter("timestamp");
         String nonce = request.getParameter("nonce");
         String echostr = request.getParameter("echostr");
-
+        LOGGER.info("微信token" + echostr);
         PrintWriter out = null;
         try {
             out = response.getWriter();

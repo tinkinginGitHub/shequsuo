@@ -99,6 +99,8 @@ public class MessageServiceImpl implements MessageService {
                     if(accessToken ==null) {
                         accessToken = WeixinUtil.getAccessToken();
                     }
+                    System.out.println(accessToken+" 后");
+                    System.out.println("openId: " + fromUserName);
                     userService.saveWxUserBasicInfo(accessToken,fromUserName);
                 }else {
                     LOGGER.info("下面进来了");
