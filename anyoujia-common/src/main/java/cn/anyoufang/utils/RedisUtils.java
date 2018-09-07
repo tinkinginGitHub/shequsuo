@@ -70,7 +70,6 @@ public class RedisUtils {
             jedis = pool.getResource();
             value = jedis.get(key);
         } catch (Exception e) {
-            System.out.println(e.getMessage());
             LOGGER.error(e.getMessage());
         } finally {
             returnResource(pool, jedis);
@@ -196,6 +195,7 @@ public class RedisUtils {
         try {
             jedis = pool.getResource();
             res = jedis.setex(key, seconds, value);
+            System.out.println("设置成功或者失败：" + res);
         } catch (Exception e) {
 
             LOGGER.error(e.getMessage());

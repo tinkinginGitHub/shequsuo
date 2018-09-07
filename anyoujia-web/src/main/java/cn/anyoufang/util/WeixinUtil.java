@@ -114,6 +114,7 @@ public class WeixinUtil {
             try {
                 String accessToken = jsonObject.getString("access_token");
                 int expires = jsonObject.getInt("expires_in");
+                System.out.println("过期时间：" + expires);
                 RedisUtils.setex(ACCESS_TOKEN, accessToken, expires);
                 return accessToken;
             } catch (Exception e) {

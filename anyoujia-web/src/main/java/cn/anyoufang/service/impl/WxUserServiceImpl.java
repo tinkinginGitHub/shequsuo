@@ -1,6 +1,7 @@
 package cn.anyoufang.service.impl;
 
 import cn.anyoufang.entity.SpMemberWx;
+import cn.anyoufang.entity.SpMemberWxExample;
 import cn.anyoufang.entity.WeiXinVO;
 import cn.anyoufang.mapper.SpMemberWxMapper;
 import cn.anyoufang.service.WxUserService;
@@ -15,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.util.List;
 
 @Service
 public class WxUserServiceImpl implements WxUserService {
@@ -58,28 +60,39 @@ public class WxUserServiceImpl implements WxUserService {
             String headimgurl = jsonObject1.get("headimgurl").getAsString();
             String openid = jsonObject1.get("openid").getAsString();
             Integer sex = jsonObject1.get("sex").getAsInt();
-            SpMemberWx wx = new SpMemberWx();
-            int now = (int) (System.currentTimeMillis()/1000);
-            wx.setAddtime(now);
-            wx.setImg(headimgurl);
-            wx.setNickname(nickname);
-            wx.setOpenid(openid);
-            wx.setSubscribe(true);
-            //TODO
-            int wxid = wxMapper.insert(wx);
+            SpMemberWxExample example = new SpMemberWxExample();
+            SpMemberWxExample.Criteria criteria = example.createCriteria();
+            criteria.andOpenidEqualTo(openid);
+            List<SpMemberWx> list = wxMapper.selectByExample(example);
+            int wxid;
+            if (list == null || list.size() == 0) {
+                SpMemberWx wx = new SpMemberWx();
+                int now = (int) (System.currentTimeMillis() / 1000);
+                wx.setAddtime(now);
+                wx.setImg(headimgurl);
+                wx.setNickname(nickname);
+                wx.setOpenid(openid);
+                wx.setSubscribe(true);
+                wxid = wxMapper.insert(wx);
+
+            } else {
+                SpMemberWx user = list.get(0);
+                wxid = user.getWx();
+            }
+
             WeiXinVO weiXinVO = new WeiXinVO(nickname, city, province, country,
                     headimgurl, openid, sex);
             weiXinVO.setWxid(wxid);
-          return weiXinVO;
+            return weiXinVO;
         }
 
         return null;
     }
 
     @Override
-    public void saveWxUserBasicInfo(String accessToken,String openId ) throws Exception{
+    public void saveWxUserBasicInfo(String accessToken, String openId) throws Exception {
         //获取用户基本信息的连接
-        String getUserInfo = "https://api.weixin.qq.com/sns/userinfo?access_token=ACCESS_TOKEN&openid=OPENID&lang=zh_CN";
+        String getUserInfo = "https://api.weixin.qq.com/cgi-bin/user/info?access_token=ACCESS_TOKEN&openid=OPENID&lang=zh_CN";
         String userInfoUrl = getUserInfo
                 .replace("ACCESS_TOKEN", accessToken)
                 .replace("OPENID", openId);
@@ -90,6 +103,7 @@ public class WxUserServiceImpl implements WxUserService {
                 responseHandler);
         //微信那边采用的编码方式为ISO8859-1所以需要转化
         String json = new String(userInfo.getBytes("ISO-8859-1"), "UTF-8");
+        System.out.println(json);
         JsonParser parser = new JsonParser();
         JsonObject jsonObject1 = (JsonObject) parser.parse(json);
         String nickname = jsonObject1.get("nickname").getAsString();
@@ -101,12 +115,13 @@ public class WxUserServiceImpl implements WxUserService {
         //int subscribe = jsonObject1.get("subscribe").getAsInt();
         Integer sex = jsonObject1.get("sex").getAsInt();
         SpMemberWx wx = new SpMemberWx();
-        int now = (int) (System.currentTimeMillis()/1000);
+        int now = (int) (System.currentTimeMillis() / 1000);
         wx.setAddtime(now);
         wx.setImg(headimgurl);
         wx.setNickname(nickname);
         wx.setOpenid(openid);
         wx.setSubscribe(true);
-        wxMapper.insertSelective(wx);
+        int i = wxMapper.insertSelective(wx);
+        System.out.println("i是： " + i);
     }
 }
