@@ -175,12 +175,5 @@ public class StringUtil {
         }
         return true;
 	}
-    
-	/**
-	 * @param args
-	 */
-	public static void main(String[] args) {
-		System.out.println(flushLeft(10,"aaafaa"));
-	}
 
 }

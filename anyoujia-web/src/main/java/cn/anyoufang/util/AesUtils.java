@@ -7,8 +7,8 @@ import cn.anyoufang.message.aes.WXBizMsgCrypt;
 public class AesUtils {
 
     private static final String APP_ID = "wxaa510935818c342a";
-    private static final String TOKEN = "wxxwhome";
-    private static final String ENCODING_AES_KEY ="yourkey";
+    private static final String TOKEN = "smart";
+    private static final String ENCODING_AES_KEY ="aE0jr293UmO30kKDF6Mrlg9bL4KQUaAeWaV1jC55VrH";
 
     /*
      * 解密

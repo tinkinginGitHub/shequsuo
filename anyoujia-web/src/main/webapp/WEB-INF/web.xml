@@ -20,7 +20,7 @@
 	
 	<context-param>
 		<param-name>webAppRootKey</param-name>
-		<param-value>webPath</param-value>
+		<param-value>anyoujia</param-value>
 	</context-param>
 	<listener>
 		<listener-class>org.springframework.web.util.WebAppRootListener</listener-class>

@@ -4,6 +4,7 @@ package cn.anyoufang.controller;
 import cn.anyoufang.entity.SpMember;
 import cn.anyoufang.entity.WeiXinVO;
 import cn.anyoufang.service.MemberService;
+import cn.anyoufang.utils.IPUtils;
 import cn.anyoufang.utils.RedisUtils;
 import com.aliyuncs.exceptions.ClientException;
 import com.wordnik.swagger.annotations.Api;
@@ -31,6 +32,14 @@ public class MemberController extends AbstractController {
     private MemberService memberService;
 
 
+    /**
+     * 注册
+     * @param phone
+     * @param code
+     * @param pwd
+     * @param request
+     * @return
+     */
     @RequestMapping("/regist")
     @ApiOperation(value = "注册用户信息", httpMethod = "GET", notes = "member regist", response = Boolean.class)
     public boolean register(@ApiParam(required = true, value = "用户手机号", name = "phone") @RequestParam String phone,
@@ -56,29 +65,50 @@ public class MemberController extends AbstractController {
         return memberService.memberRegister(phone, pwd, weiXinVO);
     }
 
+    /**
+     * 用户密码登录
+     * @param account
+     * @param pwd
+     * @param request
+     * @return
+     */
     @RequestMapping("/login")
     @ApiOperation(value = "用户密码登录", httpMethod = "POST", notes = "member login", response = SpMember.class)
     public SpMember loginByPassword(@ApiParam(required = true, value = "手机号", name = "account") @RequestParam String account,
                                     @ApiParam(required = true, value = "密码", name = "pwd") @RequestParam String pwd,
                                     HttpServletRequest request) {
-        return memberService.memberLoginByPwd(account, pwd, request.getRemoteAddr());
+        return memberService.memberLoginByPwd(account, pwd, IPUtils.getIpAddr(request));
     }
 
 
+    /**
+     * 手机验证码登录
+     * @param account
+     * @param code
+     * @param request
+     * @return
+     */
     @RequestMapping("/loginbycode")
     @ApiOperation(value = "用户手机验证码登录", httpMethod = "POST", notes = "member login", response = SpMember.class)
     public SpMember loginByVerifyCode(@ApiParam(required = true, value = "手机号", name = "account") @RequestParam String account,
-                                    @ApiParam(required = true, value = "验证码", name = "code") @RequestParam String code,
-                                    HttpServletRequest request) {
-        return memberService.memberLoginByVerifyCode(account, code, request.getRemoteAddr());
+                                      @ApiParam(required = true, value = "验证码", name = "code") @RequestParam String code,
+                                      HttpServletRequest request) {
+        return memberService.memberLoginByVerifyCode(account, code, IPUtils.getIpAddr(request));
     }
 
+    /**
+     * 登出
+     */
     @RequestMapping("/logout")
     @ApiOperation(value = "用户登出", httpMethod = "GET", notes = "member loginout")
     public void logout() {
         memberService.memberLogout();
     }
 
+    /**
+     * 获取验证码
+     * @param phone
+     */
     @RequestMapping("/verifycode")
     @ApiOperation(value = "获取验证码", httpMethod = "POST", notes = "member get code")
     public void verifyCode(@RequestParam String phone) {
@@ -91,10 +121,26 @@ public class MemberController extends AbstractController {
         }
     }
 
+    /**
+     * 未登录状态下重置密码
+     */
+
     @RequestMapping("/reset")
-    @ApiOperation(value = "重置", httpMethod = "POST", notes = "member reset password")
+    @ApiOperation(value = "未登录状态下重置密码", httpMethod = "POST", notes = "member reset password")
     public void resetPassword(@RequestParam String phone, @RequestParam String newpwd) {
         memberService.resetPwd(phone, newpwd);
+    }
+
+    /**
+     * 已经登录状态下重置密码
+     */
+    @RequestMapping("/loginreset")
+    @ApiOperation(value = "登录状态下重置密码", httpMethod = "POST", notes = "member reset password")
+    public boolean resetPwd(@RequestParam String oldPwd, @RequestParam String newPwd) {
+        if (!isLogin()) {
+            return false;
+        }
+        return memberService.resetPasswordLogined(oldPwd, newPwd);
     }
 
 }

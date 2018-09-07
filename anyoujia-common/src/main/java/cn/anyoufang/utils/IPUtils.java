@@ -14,7 +14,7 @@ import javax.servlet.http.HttpServletRequest;
  * @date 2017年3月8日 下午12:57:02
  */
 public class IPUtils {
-	private static Logger logger = LoggerFactory.getLogger(IPUtils.class);
+	private static Logger LOGGER = LoggerFactory.getLogger(IPUtils.class);
 
 	/**
 	 * 获取IP地址 测试提交
@@ -42,7 +42,7 @@ public class IPUtils {
                 ip = request.getRemoteAddr();
             }
         } catch (Exception e) {
-        	logger.error("IPUtils ERROR ", e);
+            LOGGER.error("IPUtils ERROR ", e.getMessage());
         }
         
 //        //使用代理，则获取第一个IP地址

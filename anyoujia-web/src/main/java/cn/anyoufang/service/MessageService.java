@@ -8,5 +8,5 @@ import java.util.Map;
  */
 public interface MessageService {
 
-    String handleTypesOfMessageFromWx(Map<String, String> requestMap );
+    String handleTypesOfMessageFromWx(Map<String, String> requestMap ) throws Exception;
 }

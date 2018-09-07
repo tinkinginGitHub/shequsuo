@@ -70,7 +70,7 @@ public class RedisUtils {
             jedis = pool.getResource();
             value = jedis.get(key);
         } catch (Exception e) {
-
+            System.out.println(e.getMessage());
             LOGGER.error(e.getMessage());
         } finally {
             returnResource(pool, jedis);

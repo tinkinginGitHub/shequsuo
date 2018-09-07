@@ -5,21 +5,31 @@ import cn.anyoufang.entity.SpMemberWxExample;
 import cn.anyoufang.mapper.SpMemberWxMapper;
 import cn.anyoufang.message.resp.TextMessage;
 import cn.anyoufang.service.MessageService;
+import cn.anyoufang.service.WxUserService;
 import cn.anyoufang.util.MessageUtil;
+import cn.anyoufang.util.WeixinUtil;
+import cn.anyoufang.utils.RedisUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Map;
 
 @Service
 public class MessageServiceImpl implements MessageService {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(MessageServiceImpl.class);
     @Autowired
     private SpMemberWxMapper wxMapper;
 
+    @Autowired
+    private WxUserService userService;
+
 
     @Override
-    public String handleTypesOfMessageFromWx(Map<String, String> requestMap) {
+    public String handleTypesOfMessageFromWx(Map<String, String> requestMap) throws Exception {
 
         String respMessage = "";
 
@@ -43,7 +53,7 @@ public class MessageServiceImpl implements MessageService {
         // 进行消息分发
         // 用户发来的是文本消息
         if (messageType.equals(MessageUtil.REQ_MESSAGE_TYPE_TEXT)) {
-            respMessage="";
+            respMessage="您发的是文本信息";
         }
         // 用户发来的是图片消息
         else if (messageType.equals(MessageUtil.REQ_MESSAGE_TYPE_IMAGE)) {
@@ -59,7 +69,7 @@ public class MessageServiceImpl implements MessageService {
         }
         // 用户发来音频消息
         else if (messageType.equals(MessageUtil.REQ_MESSAGE_TYPE_VOICE)) {
-            respMessage="";
+            respMessage="您发的是语音信息";
         }
         /* 事件推送的处理 */
         else if (messageType.equals(MessageUtil.REQ_MESSAGE_TYPE_EVENT)) {
@@ -74,9 +84,28 @@ public class MessageServiceImpl implements MessageService {
                 contentMsg.append("2  我木有").append("\n");
                 contentMsg.append("3  我是多图文").append("\n");
                 respMessage = respMessage+contentMsg.toString();
-                SpMemberWx user = new SpMemberWx();
-                user.setSubscribe(true);
-                wxMapper.updateByExampleSelective(user,getWxExample(fromUserName));
+                SpMemberWxExample example = new SpMemberWxExample();
+                SpMemberWxExample.Criteria criteria = example.createCriteria();
+                criteria.andOpenidEqualTo(fromUserName);
+                List<SpMemberWx> list = wxMapper.selectByExample(example);
+                System.out.println(list);
+                if(list ==null || list.size() == 0) {
+                    System.out.println("这是测试");
+                    //LOGGER.info("这是测试");
+                    LOGGER.info("进来了");
+                    String accessToken = RedisUtils.get(WeixinUtil.ACCESS_TOKEN);
+                    LOGGER.info("看到你就成功了");
+                    System.out.println(accessToken);
+                    if(accessToken ==null) {
+                        accessToken = WeixinUtil.getAccessToken();
+                    }
+                    userService.saveWxUserBasicInfo(accessToken,fromUserName);
+                }else {
+                    LOGGER.info("下面进来了");
+                    SpMemberWx user = new SpMemberWx();
+                    user.setSubscribe(true);
+                    wxMapper.updateByExampleSelective(user,getWxExample(fromUserName));
+                }
             }
             /* 取消订阅 */
             else if (eventType.equals(MessageUtil.EVENT_TYPE_UNSUBSCRIBE)) {

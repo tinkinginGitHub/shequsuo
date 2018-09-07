@@ -26,9 +26,9 @@ public class EncryptionUtil {
             if (sKey == null) {
                 return null;
             }
-            if (sKey.length() != 128) {
-                return null;
-            }
+//            if (sKey.length() != 128) {
+//                return null;
+//            }
             byte[] raw = sKey.getBytes("utf-8");
             SecretKeySpec skeySpec = new SecretKeySpec(raw, "AES");
             Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");//"算法/模式/补码方式"
@@ -83,5 +83,6 @@ public class EncryptionUtil {
 
     public static void main(String[] args) {
         System.out.println(System.currentTimeMillis()/1000);
+
     }
 }

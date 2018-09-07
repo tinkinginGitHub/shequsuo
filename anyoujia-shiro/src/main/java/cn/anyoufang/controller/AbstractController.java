@@ -18,5 +18,6 @@ public abstract class AbstractController {
 	protected SpMember getUser() {
 		return ShiroUtils.getUserEntity();
 	}
+	protected boolean isLogin() {return ShiroUtils.isLogin();}
 
 }
