@@ -90,20 +90,13 @@ public class MessageServiceImpl implements MessageService {
                 List<SpMemberWx> list = wxMapper.selectByExample(example);
                 System.out.println(list);
                 if(list ==null || list.size() == 0) {
-                    System.out.println("这是测试");
-                    //LOGGER.info("这是测试");
-                    LOGGER.info("进来了");
                     String accessToken = RedisUtils.get(WeixinUtil.ACCESS_TOKEN);
-                    LOGGER.info("看到你就成功了");
                     System.out.println(accessToken);
                     if(accessToken ==null) {
                         accessToken = WeixinUtil.getAccessToken();
                     }
-                    System.out.println(accessToken+" 后");
-                    System.out.println("openId: " + fromUserName);
                     userService.saveWxUserBasicInfo(accessToken,fromUserName);
                 }else {
-                    LOGGER.info("下面进来了");
                     SpMemberWx user = new SpMemberWx();
                     user.setSubscribe(true);
                     wxMapper.updateByExampleSelective(user,getWxExample(fromUserName));
