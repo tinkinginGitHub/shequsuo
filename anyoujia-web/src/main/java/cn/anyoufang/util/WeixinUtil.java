@@ -22,6 +22,7 @@ import java.util.UUID;
 
 /**
  * 微信公众平台通用接口工具类
+ * @author daiping
  */
 public class WeixinUtil {
     private static final Logger LOGGER = LoggerFactory.getLogger(WeixinUtil.class);
@@ -103,27 +104,35 @@ public class WeixinUtil {
 
     /**
      * 获取access_token
+     * 增加双重检查机制，避免多线程问题
      */
     public static String getAccessToken() {
         // 获取公众号access_token的链接
-        String accessTokenUrl = "https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=APPID&secret=APPSECRET";
-        String requestUrl = accessTokenUrl.replace("APPID", APP_ID).replace("APPSECRET", APP_SECRET);
-        JSONObject jsonObject = httpRequest(requestUrl, "GET", null);
-        if (null != jsonObject) {
-            // 如果请求成功
-            try {
-                String accessToken = jsonObject.getString("access_token");
-                int expires = jsonObject.getInt("expires_in");
-                System.out.println("过期时间：" + expires);
-                RedisUtils.setex(ACCESS_TOKEN, accessToken, expires);
-                return accessToken;
-            } catch (Exception e) {
-                if (LOGGER.isInfoEnabled()) {
-                    LOGGER.info(e.getMessage() + "," + jsonObject);
+        if(RedisUtils.get(ACCESS_TOKEN) == null) {
+            synchronized (RedisUtils.class){
+                if(RedisUtils.get(ACCESS_TOKEN) == null){
+                    String accessTokenUrl = "https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=APPID&secret=APPSECRET";
+                    String requestUrl = accessTokenUrl.replace("APPID", APP_ID).replace("APPSECRET", APP_SECRET);
+                    JSONObject jsonObject = httpRequest(requestUrl, "GET", null);
+                    if (null != jsonObject) {
+                        // 如果请求成功
+                        try {
+                            String accessToken = jsonObject.getString("access_token");
+                            int expires = jsonObject.getInt("expires_in");
+                            System.out.println("过期时间：" + expires);
+                            RedisUtils.setex(ACCESS_TOKEN, accessToken, expires);
+                            return accessToken;
+                        } catch (Exception e) {
+                            if (LOGGER.isInfoEnabled()) {
+                                LOGGER.info(e.getMessage() + "," + jsonObject);
+                            }
+                        }
+                    }
                 }
+                return RedisUtils.get(ACCESS_TOKEN);
             }
         }
-        return null;
+        return RedisUtils.get(ACCESS_TOKEN);
     }
 
     /**
