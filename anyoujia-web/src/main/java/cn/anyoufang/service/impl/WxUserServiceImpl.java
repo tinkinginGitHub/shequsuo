@@ -12,6 +12,8 @@ import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.BasicResponseHandler;
 import org.apache.http.impl.client.HttpClientBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -21,8 +23,11 @@ import java.util.List;
 @Service
 public class WxUserServiceImpl implements WxUserService {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(WxUserServiceImpl.class);
     @Autowired
     private SpMemberWxMapper wxMapper;
+
+    public static final String ACCESS_TOKEN = "accessToken1";
 
     @Override
     public WeiXinVO getAndSaveUserInfoFromWx(String code)
@@ -91,6 +96,7 @@ public class WxUserServiceImpl implements WxUserService {
 
     @Override
     public void saveWxUserBasicInfo(String accessToken, String openId) throws Exception {
+
         //获取用户基本信息的连接
         String getUserInfo = "https://api.weixin.qq.com/cgi-bin/user/info?access_token=ACCESS_TOKEN&openid=OPENID&lang=zh_CN";
         String userInfoUrl = getUserInfo
@@ -103,7 +109,7 @@ public class WxUserServiceImpl implements WxUserService {
                 responseHandler);
         //微信那边采用的编码方式为ISO8859-1所以需要转化
         String json = new String(userInfo.getBytes("ISO-8859-1"), "UTF-8");
-        System.out.println(json);
+
         JsonParser parser = new JsonParser();
         JsonObject jsonObject1 = (JsonObject) parser.parse(json);
         String nickname = jsonObject1.get("nickname").getAsString();
@@ -121,7 +127,7 @@ public class WxUserServiceImpl implements WxUserService {
         wx.setNickname(nickname);
         wx.setOpenid(openid);
         wx.setSubscribe(true);
-        int i = wxMapper.insertSelective(wx);
-        System.out.println("i是： " + i);
+        wxMapper.insertSelective(wx);
     }
+
 }

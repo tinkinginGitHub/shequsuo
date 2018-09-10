@@ -103,7 +103,7 @@ public class RedisUtils {
      * @param keys 一个key  也可以使 string 数组
      * @return 返回删除成功的个数
      */
-    public Long del(String...keys){
+    public static Long del(String...keys){
         Jedis jedis = null;
         try {
             jedis = pool.getResource();

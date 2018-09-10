@@ -57,7 +57,7 @@ public class MessageServiceImpl implements MessageService {
         }
         // 用户发来的是图片消息
         else if (messageType.equals(MessageUtil.REQ_MESSAGE_TYPE_IMAGE)) {
-            respMessage="";
+            respMessage="您发的是图片信息";
         }
         // 用户发来地理位置信息
         else if (messageType.equals(MessageUtil.REQ_MESSAGE_TYPE_LOCATION)) {
@@ -91,7 +91,6 @@ public class MessageServiceImpl implements MessageService {
                 System.out.println(list);
                 if(list ==null || list.size() == 0) {
                     String accessToken = RedisUtils.get(WeixinUtil.ACCESS_TOKEN);
-                    System.out.println(accessToken);
                     if(accessToken ==null) {
                         accessToken = WeixinUtil.getAccessToken();
                     }
