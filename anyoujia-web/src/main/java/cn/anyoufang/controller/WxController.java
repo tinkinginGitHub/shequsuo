@@ -5,6 +5,7 @@ import cn.anyoufang.util.AesUtils;
 import cn.anyoufang.util.MessageUtil;
 import cn.anyoufang.util.SignUtil;
 import cn.anyoufang.util.WeixinUtil;
+import com.github.sd4324530.fastweixin.servlet.WeixinControllerSupport;
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
@@ -32,7 +33,7 @@ import java.util.Map;
 @Api(value = "Wx",description = "处理微信jsapi签名，以及微信公众号消息的发送")
 @RestController
 @RequestMapping("/api")
-public class WxController {
+public class WxController extends WeixinControllerSupport {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(WxController.class);
 
@@ -147,5 +148,9 @@ public class WxController {
             }
 
         }
+    }
+    @Override
+    protected String getToken() {
+        return null;
     }
 }
