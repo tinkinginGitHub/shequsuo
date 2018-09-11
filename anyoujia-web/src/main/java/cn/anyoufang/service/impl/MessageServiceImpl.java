@@ -61,11 +61,11 @@ public class MessageServiceImpl implements MessageService {
         }
         // 用户发来地理位置信息
         else if (messageType.equals(MessageUtil.REQ_MESSAGE_TYPE_LOCATION)) {
-            respMessage="";
+            respMessage="您发的是一条地理位置信息";
         }
         // 用户发来链接消息
         else if (messageType.equals(MessageUtil.REQ_MESSAGE_TYPE_LINK)) {
-            respMessage="";
+            respMessage="您发的是一条连接信息";
         }
         // 用户发来音频消息
         else if (messageType.equals(MessageUtil.REQ_MESSAGE_TYPE_VOICE)) {
@@ -77,25 +77,21 @@ public class MessageServiceImpl implements MessageService {
             String eventType = requestMap.get("Event");
             /* 订阅 */
             if (eventType.equals(MessageUtil.EVENT_TYPE_SUBSCRIBE)) {
-                respMessage="欢迎关注安优家智慧社区公众号!\n";
                 StringBuffer contentMsg = new StringBuffer();
-                contentMsg.append("您还可以回复下列数字，体验相应服务").append("\n\n");
-                contentMsg.append("1  我就是个测试的").append("\n");
-                contentMsg.append("2  我木有").append("\n");
-                contentMsg.append("3  我是多图文").append("\n");
-                respMessage = respMessage+contentMsg.toString();
                 SpMemberWxExample example = new SpMemberWxExample();
                 SpMemberWxExample.Criteria criteria = example.createCriteria();
                 criteria.andOpenidEqualTo(fromUserName);
                 List<SpMemberWx> list = wxMapper.selectByExample(example);
                 System.out.println(list);
                 if(list ==null || list.size() == 0) {
+                    respMessage="欢迎关注安优家智慧社区公众号!\n";
                     String accessToken = RedisUtils.get(WeixinUtil.ACCESS_TOKEN);
                     if(accessToken ==null) {
                         accessToken = WeixinUtil.getAccessToken();
                     }
                     userService.saveWxUserBasicInfo(accessToken,fromUserName);
                 }else {
+                    respMessage="你回来了真好，不然总担心你会错过我，么么哒!";
                     SpMemberWx user = new SpMemberWx();
                     user.setSubscribe(true);
                     wxMapper.updateByExampleSelective(user,getWxExample(fromUserName));
@@ -109,7 +105,7 @@ public class MessageServiceImpl implements MessageService {
             }
             // 点击按钮事件
             else if (eventType.equals(MessageUtil.EVENT_TYPE_CLICK)) {
-                respMessage="";
+                respMessage="这是一个测试菜单的点击事件";
             }
         }
         textMessage.setContent(respMessage);
