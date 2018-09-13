@@ -1,5 +1,6 @@
 package cn.anyoufang.util;
 
+import cn.anyoufang.enums.WxConstant;
 import cn.anyoufang.utils.RedisUtils;
 import net.sf.json.JSONException;
 import net.sf.json.JSONObject;
@@ -20,16 +21,13 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
+
 /**
  * 微信公众平台通用接口工具类
  * @author daiping
  */
 public class WeixinUtil {
     private static final Logger LOGGER = LoggerFactory.getLogger(WeixinUtil.class);
-    private static final String JS_API_TICKET = "jsapiTicket";
-    public static final String ACCESS_TOKEN = "accessToken1";
-    public static final String APP_ID = "wxaa510935818c342a";
-    public static final String APP_SECRET = "6b58ad8650e4f2b0e91bd9f039f0c968";
     public static final String GET = "GET";
 
 
@@ -108,18 +106,21 @@ public class WeixinUtil {
      */
     public static String getAccessToken() {
         // 获取公众号access_token的链接
-        if(RedisUtils.get(ACCESS_TOKEN) == null) {
+        String at = WxConstant.ACCESS_TOKEN.getValue();
+        String appId = WxConstant.APP_ID.getValue();
+        String appSecret = WxConstant.APP_SECRET.getValue();
+        if(RedisUtils.get(at) == null) {
             synchronized (RedisUtils.class){
-                if(RedisUtils.get(ACCESS_TOKEN) == null){
+                if(RedisUtils.get(at) == null){
                     String accessTokenUrl = "https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=APPID&secret=APPSECRET";
-                    String requestUrl = accessTokenUrl.replace("APPID", APP_ID).replace("APPSECRET", APP_SECRET);
+                    String requestUrl = accessTokenUrl.replace("APPID", appId).replace("APPSECRET", appSecret);
                     JSONObject jsonObject = httpRequest(requestUrl, "GET", null);
                     if (null != jsonObject) {
                         // 如果请求成功
                         try {
                             String accessToken = jsonObject.getString("access_token");
                             int expires = jsonObject.getInt("expires_in");
-                            RedisUtils.setex(ACCESS_TOKEN, accessToken, expires);
+                            RedisUtils.setex(at, accessToken, expires);
                             return accessToken;
                         } catch (Exception e) {
                             if (LOGGER.isInfoEnabled()) {
@@ -128,10 +129,10 @@ public class WeixinUtil {
                         }
                     }
                 }
-                return RedisUtils.get(ACCESS_TOKEN);
+                return RedisUtils.get(at);
             }
         }
-        return RedisUtils.get(ACCESS_TOKEN);
+        return RedisUtils.get(at);
     }
 
     /**
@@ -151,7 +152,8 @@ public class WeixinUtil {
                 try {
                     String ticket = jsonObject.getString("ticket");
                     int expire = jsonObject.getInt("expires_in");
-                    RedisUtils.setex(JS_API_TICKET, ticket, expire);
+                    String jsApiTicket = WxConstant.JS_API_TICKET.getValue();
+                    RedisUtils.setex(jsApiTicket, ticket, expire);
                     return ticket;
                 } catch (JSONException e) {
                     if (LOGGER.isInfoEnabled()) {
@@ -170,26 +172,24 @@ public class WeixinUtil {
         Map<String, String> ret = new HashMap(3);
         String nonceStr = createNonceStr();
         String timestamp = createTimestamp();
-        String string1;
-        String at;
+
+
         String jsapiTicket;
-        String signature = "";
-        if (RedisUtils.get(JS_API_TICKET) != null && RedisUtils.get(ACCESS_TOKEN) != null) {
-            jsapiTicket = RedisUtils.get(JS_API_TICKET);
+        if (RedisUtils.get(WxConstant.JS_API_TICKET.getValue()) != null && RedisUtils.get(WxConstant.ACCESS_TOKEN.getValue()) != null) {
+            jsapiTicket = RedisUtils.get(WxConstant.JS_API_TICKET.getValue());
         } else {
-            at = getAccessToken();
+            String at = getAccessToken();
             jsapiTicket = getJsapiTicket(at);
         }
         //注意这里参数名必须全部小写，且必须有序
-        string1 = "jsapi_ticket=" + jsapiTicket +
+        String string1 = "jsapi_ticket=" + jsapiTicket +
                 "&noncestr=" + nonceStr +
                 "&timestamp=" + timestamp +
                 "&url=" + url;
-
         MessageDigest crypt = MessageDigest.getInstance("SHA-1");
         crypt.reset();
         crypt.update(string1.getBytes("UTF-8"));
-        signature = byteToHex(crypt.digest());
+        String signature = byteToHex(crypt.digest());
         ret.put("nonceStr", nonceStr);
         ret.put("timestamp", timestamp);
         ret.put("signature", signature);
