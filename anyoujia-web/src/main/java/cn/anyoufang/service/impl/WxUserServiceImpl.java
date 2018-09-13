@@ -27,7 +27,6 @@ public class WxUserServiceImpl implements WxUserService {
     @Autowired
     private SpMemberWxMapper wxMapper;
 
-    public static final String ACCESS_TOKEN = "accessToken1";
 
     @Override
     public WeiXinVO getAndSaveUserInfoFromWx(String code)

@@ -2,6 +2,7 @@ package cn.anyoufang.service.impl;
 
 import cn.anyoufang.entity.SpMemberWx;
 import cn.anyoufang.entity.SpMemberWxExample;
+import cn.anyoufang.enums.WxConstant;
 import cn.anyoufang.mapper.SpMemberWxMapper;
 import cn.anyoufang.message.resp.TextMessage;
 import cn.anyoufang.service.MessageService;
@@ -82,10 +83,9 @@ public class MessageServiceImpl implements MessageService {
                 SpMemberWxExample.Criteria criteria = example.createCriteria();
                 criteria.andOpenidEqualTo(fromUserName);
                 List<SpMemberWx> list = wxMapper.selectByExample(example);
-                System.out.println(list);
                 if(list ==null || list.size() == 0) {
                     respMessage="欢迎关注安优家智慧社区公众号!\n";
-                    String accessToken = RedisUtils.get(WeixinUtil.ACCESS_TOKEN);
+                    String accessToken = RedisUtils.get(WxConstant.ACCESS_TOKEN.getValue());
                     if(accessToken ==null) {
                         accessToken = WeixinUtil.getAccessToken();
                     }

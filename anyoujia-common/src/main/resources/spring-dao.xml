@@ -15,12 +15,10 @@
 		http://www.springframework.org/schema/cache 
 		http://www.springframework.org/schema/cache/spring-cache.xsd">
 
-	<tx:annotation-driven />
 	<!-- 配置包扫描器，扫描所有带@Service注解的类 -->
 	<context:component-scan base-package="cn.anyoufang.service" />
 	<context:property-placeholder location="classpath:resouces.properties" />
-	<!-- 启用缓存注解功能 -->
-	<cache:annotation-driven cache-manager="ehcacheManager" />
+
 	<bean id="ehcacheManagerFactory"
 		class="org.springframework.cache.ehcache.EhCacheManagerFactoryBean">
 		<property name="configLocation" value="classpath:ehcache.xml" />
@@ -28,6 +26,8 @@
 	<bean id="ehcacheManager" class="org.springframework.cache.ehcache.EhCacheCacheManager">
 		<property name="cacheManager" ref="ehcacheManagerFactory" />
 	</bean>
+	<!-- 启用缓存注解功能 -->
+	<cache:annotation-driven cache-manager="ehcacheManager" />
 	
 	<bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource"
 		init-method="init" destroy-method="close">
@@ -69,10 +69,8 @@
 		<property name="multiStatementAllow" value="true" />
 	</bean>
 
-	<bean id="druid-stat-interceptor"
-		class="com.alibaba.druid.support.spring.stat.DruidStatInterceptor" />
-	<bean id="druid-stat-pointcut" class="org.springframework.aop.support.JdkRegexpMethodPointcut"
-		scope="prototype">
+	<bean id="druid-stat-interceptor" class="com.alibaba.druid.support.spring.stat.DruidStatInterceptor" />
+	<bean id="druid-stat-pointcut" class="org.springframework.aop.support.JdkRegexpMethodPointcut" scope="prototype">
 		<property name="patterns">
 			<list>
 				<value>cn.anyoufang.controller.*</value>
@@ -81,26 +79,26 @@
 		</property>
 	</bean>
 	<aop:config>
-		<aop:advisor advice-ref="druid-stat-interceptor"
-			pointcut-ref="druid-stat-pointcut" />
+		<aop:advisor advice-ref="druid-stat-interceptor" pointcut-ref="druid-stat-pointcut" />
 	</aop:config>
 
+	<!--开启spring事务注解-->
+	<tx:annotation-driven />
 	<!-- 事务管理器 -->
-	<bean id="transactionManager"
-		class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+	<bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
 		<!-- 数据源 -->
 		<property name="dataSource" ref="dataSource" />
 	</bean>
 	<!-- 通知 -->
-	<tx:advice id="txAdvice" transaction-manager="transactionManager">
+	<tx:advice id="txAdvice">
 		<tx:attributes>
 			<!-- 传播行为 -->
-			<tx:method name="save*" propagation="REQUIRED" />
-			<tx:method name="insert*" propagation="REQUIRED" />
-			<tx:method name="add*" propagation="REQUIRED" />
-			<tx:method name="create*" propagation="REQUIRED" />
-			<tx:method name="delete*" propagation="REQUIRED" />
-			<tx:method name="update*" propagation="REQUIRED" />
+			<tx:method name="save*" />
+			<tx:method name="insert*"  />
+			<tx:method name="add*"  />
+			<tx:method name="create*" />
+			<tx:method name="delete*" />
+			<tx:method name="update*"/>
 			<tx:method name="find*" propagation="SUPPORTS" read-only="true" />
 			<tx:method name="select*" propagation="SUPPORTS" read-only="true" />
 			<tx:method name="get*" propagation="SUPPORTS" read-only="true" />
@@ -108,8 +106,7 @@
 	</tx:advice>
 	<!-- 切面 -->
 	<aop:config>
-		<aop:advisor advice-ref="txAdvice"
-			pointcut="execution(* cn.anyoufang.service.*.*(..))" />
+		<aop:advisor advice-ref="txAdvice" pointcut="execution(* cn.anyoufang.service.*.*(..))" />
 	</aop:config>
 
 	<!--让spring管理sqlsessionFactory -->
