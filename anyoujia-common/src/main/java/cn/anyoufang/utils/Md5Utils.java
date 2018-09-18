@@ -3,10 +3,7 @@ package cn.anyoufang.utils;
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * 功能：融宝MD5签名处理核心文件，不需要修改 版本：3.1.2 修改日期：2015-08-15 说明：

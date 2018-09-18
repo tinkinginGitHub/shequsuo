@@ -53,7 +53,7 @@
 	<!--启用servlet容器的default servlet来处理静态资源，以下两种方式都可以-->
 	<!--<mvc:resources mapping="/**" location="/"/>-->
 	<mvc:default-servlet-handler />
-	<!--开启基于CGLIB的动态代理,默认情况下是基于java interface的动态代理-->
-	<aop:aspectj-autoproxy proxy-target-class="true" />
+<!--	开启基于CGLIB的动态代理,默认情况下是基于java interface的动态代理
+	<aop:aspectj-autoproxy proxy-target-class="true" />-->
 
 </beans>

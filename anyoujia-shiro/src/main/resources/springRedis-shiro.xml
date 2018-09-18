@@ -59,7 +59,7 @@
     <bean id="jedisCacheManager" class="cn.anyoufang.cache.JedisCacheManager">
         <property name="cacheManager" ref="cacheManager"/>
     </bean>
-    <!-- 继承自AuthorizingRealm的自定义Realm,即指定Shiro验证用户登录的类为自定义的SupplyUserRealm.java -->
+    <!-- 继承自AuthorizingRealm的自定义Realm,即指定Shiro验证用户登录的类为自定义的MemberRealm.java -->
 	<bean id="userRealm" class="cn.anyoufang.shiro.MemberRealm">
 		<property name="authenticationCachingEnabled" value="true"/>
 		<property name="cachingEnabled" value="true"/>
@@ -165,16 +165,18 @@
 	        	/login.html=anon
 				/index_bak.html=anon
 	        	/sys/login=anon
-	        	/captcha.jpg=anon
+	        	/captcha.jpg=anon,
 	        	/**=anon
 	        </value>
 	    </property>
 	</bean>
 	
 	<bean id="lifecycleBeanPostProcessor" class="org.apache.shiro.spring.LifecycleBeanPostProcessor"/>
-	
 	<!-- AOP式方法级权限检查  -->
+    <!-- Enable Shiro Annotations for Spring-configured beans.  Only run after -->
+    <!-- the lifecycleBeanProcessor has run: -->
 	<bean class="org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator" depends-on="lifecycleBeanPostProcessor">
+        <!--属性默认为false,设置为true时如果目标类是接口将会使用基于的JDK的动态代理，如果是其他类将会强制使用基于CGLIB的动态代理-->
 		<property name="proxyTargetClass" value="true" />
 	</bean>
 	<bean class="org.apache.shiro.spring.security.interceptor.AuthorizationAttributeSourceAdvisor">
