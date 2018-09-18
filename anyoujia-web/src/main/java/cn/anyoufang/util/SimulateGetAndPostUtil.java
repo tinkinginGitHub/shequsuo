@@ -18,8 +18,15 @@ import java.util.Map;
  * @author daiping
  */
 public class SimulateGetAndPostUtil {
+
     private static final Logger logger = LoggerFactory.getLogger(MethodUtil.class);
-	
+
+    /**
+     *
+     * @param url
+     * @param param 请求参数应该是 name1=value1&name2=value2 的形式
+     * @return
+     */
 	public static String sendPost(String url, String param) {
         PrintWriter out = null;
         BufferedReader in = null;
@@ -89,8 +96,7 @@ public class SimulateGetAndPostUtil {
             // 设置通用的请求属性
             connection.setRequestProperty("accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8");
             connection.setRequestProperty("connection", "Keep-Alive");
-            connection.setRequestProperty("user-agent",
-                    "Mozilla/5.0 (compatible; MSIE 6.0; Windows NT 5.1;SV1)");
+            connection.setRequestProperty("user-agent", "Mozilla/5.0 (compatible; MSIE 6.0; Windows NT 5.1;SV1)");
             //Authorization:
            // connection.setRequestProperty("Authorization","Basic YWRtaW46YWRtaW4=");
             connection.setRequestProperty("Accept-Encoding","gzip, deflate");
@@ -123,18 +129,5 @@ public class SimulateGetAndPostUtil {
             }
         }
         return result;
-    }
-
-    public static void main(String[] args) {
-//        “mod”:”user”,//控制器
-//“fun”:”register”,//方法
-//“data”:{“phone”:”17092368880”,”password”:”123456”……}//数据
-        //
-        String s = EncryptionUtil.encrypt("{\"phone\":\"18580558719\",\"password\":\"123456\"}","u798y79H87BUii7g");
-        String hearBeat = EncryptionUtil.encrypt("{\"ping\": \"1\"}","u798y79H87BUii7g");
-       // System.out.println(s);
-        String param = "{\"mod\":\"Common\",\"fun\":\"ping\",\"data\":"+s+"}";
-        String result = sendPost("http://47.106.227.81:9501",param);
-        System.out.println(result);
     }
 }

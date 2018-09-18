@@ -1611,4 +1611,44 @@ public class RedisUtils {
             returnResource(pool, jedis);
         }
     }
+
+    /**
+     * 发布主题
+     * @param key
+     * @param value
+     * @param seconds
+     * @return
+     */
+    public static void pub(String key,String value,int seconds){
+        Jedis jedis = null;
+        try {
+            jedis = pool.getResource();
+            jedis.publish("suoalarm","test11");
+        } catch (Exception e) {
+
+            LOGGER.error(e.getMessage());
+        } finally {
+            returnResource(pool, jedis);
+        }
+    }
+
+//    /**
+//     * 订阅
+//     * @param key
+//     * @param value
+//     * @param seconds
+//     */
+//    public static void sub(String key,String value,int seconds){
+//        Jedis jedis = null;
+//        try {
+//            jedis = pool.getResource();
+//            jedis.subscribe();
+//        } catch (Exception e) {
+//
+//            LOGGER.error(e.getMessage());
+//        } finally {
+//            returnResource(pool, jedis);
+//        }
+//    }
+
 }

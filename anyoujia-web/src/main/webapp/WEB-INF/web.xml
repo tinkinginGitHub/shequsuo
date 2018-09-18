@@ -116,28 +116,4 @@
 		<servlet-name>dispatcher</servlet-name>
 		<url-pattern>/</url-pattern>
 	</servlet-mapping>
-
-    <!--<servlet-mapping>
-      <servlet-name>DruidStatView</servlet-name>
-      <url-pattern>/druid/*</url-pattern>
-    </servlet-mapping>-->
-
-	<!--<welcome-file-list><welcome-file>/pages/index.html</welcome-file></welcome-file-list>-->
-	<!-- 404 数据不存在 -->
-	<!--<error-page>
-		<error-code>400</error-code>
-		<location>404.html</location>
-	</error-page>
-
-	&lt;!&ndash; 404 页面找不到 &ndash;&gt;
-	<error-page>
-		<error-code>404</error-code>
-		<location>404.html</location>
-	</error-page>
-
-	&lt;!&ndash; 500 服务器内部错误 &ndash;&gt;
-	<error-page>
-		<error-code>500</error-code>
-		<location>/pages/404.html</location>
-	</error-page>-->
 </web-app>
