@@ -9,9 +9,9 @@
     <result column="name" property="name" jdbcType="VARCHAR" />
     <result column="email" property="email" jdbcType="VARCHAR" />
     <result column="gender" property="gender" jdbcType="BIT" />
-    <result column="alarm" property="alarm" jdbcType="BIT" />
     <result column="wx" property="wx" jdbcType="INTEGER" />
     <result column="say" property="say" jdbcType="VARCHAR" />
+    <result column="securitypwd" property="securitypwd" jdbcType="VARCHAR" />
   </resultMap>
   <resultMap id="ResultMapWithBLOBs" type="cn.anyoufang.entity.SpMember" extends="BaseResultMap" >
     <result column="avatar" property="avatar" jdbcType="LONGVARCHAR" />
@@ -75,7 +75,7 @@
     </where>
   </sql>
   <sql id="Base_Column_List" >
-    uid, phone, password, bname, name, email, gender, alarm, wx, say
+    uid, phone, password, bname, name, email, gender, wx, say, securitypwd
   </sql>
   <sql id="Blob_Column_List" >
     avatar
@@ -131,14 +131,14 @@
   <insert id="insert" parameterType="cn.anyoufang.entity.SpMember" >
     insert into sp_member (uid, phone, password, 
       bname, name, email, 
-      gender, alarm, wx, say, 
+      gender, wx, say, securitypwd, 
       avatar)
     values (#{uid,jdbcType=INTEGER}, #{phone,jdbcType=VARCHAR}, #{password,jdbcType=VARCHAR}, 
       #{bname,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR}, #{email,jdbcType=VARCHAR}, 
-      #{gender,jdbcType=BIT}, #{alarm,jdbcType=BIT}, #{wx,jdbcType=INTEGER}, #{say,jdbcType=VARCHAR}, 
+      #{gender,jdbcType=BIT}, #{wx,jdbcType=INTEGER}, #{say,jdbcType=VARCHAR}, #{securitypwd,jdbcType=VARCHAR}, 
       #{avatar,jdbcType=LONGVARCHAR})
   </insert>
-  <insert id="insertSelective" parameterType="cn.anyoufang.entity.SpMember" useGeneratedKeys="true" >
+  <insert id="insertSelective" parameterType="cn.anyoufang.entity.SpMember" >
     insert into sp_member
     <trim prefix="(" suffix=")" suffixOverrides="," >
       <if test="uid != null" >
@@ -162,14 +162,14 @@
       <if test="gender != null" >
         gender,
       </if>
-      <if test="alarm != null" >
-        alarm,
-      </if>
       <if test="wx != null" >
         wx,
       </if>
       <if test="say != null" >
         say,
+      </if>
+      <if test="securitypwd != null" >
+        securitypwd,
       </if>
       <if test="avatar != null" >
         avatar,
@@ -197,14 +197,14 @@
       <if test="gender != null" >
         #{gender,jdbcType=BIT},
       </if>
-      <if test="alarm != null" >
-        #{alarm,jdbcType=BIT},
-      </if>
       <if test="wx != null" >
         #{wx,jdbcType=INTEGER},
       </if>
       <if test="say != null" >
         #{say,jdbcType=VARCHAR},
+      </if>
+      <if test="securitypwd != null" >
+        #{securitypwd,jdbcType=VARCHAR},
       </if>
       <if test="avatar != null" >
         #{avatar,jdbcType=LONGVARCHAR},
@@ -241,14 +241,14 @@
       <if test="record.gender != null" >
         gender = #{record.gender,jdbcType=BIT},
       </if>
-      <if test="record.alarm != null" >
-        alarm = #{record.alarm,jdbcType=BIT},
-      </if>
       <if test="record.wx != null" >
         wx = #{record.wx,jdbcType=INTEGER},
       </if>
       <if test="record.say != null" >
         say = #{record.say,jdbcType=VARCHAR},
+      </if>
+      <if test="record.securitypwd != null" >
+        securitypwd = #{record.securitypwd,jdbcType=VARCHAR},
       </if>
       <if test="record.avatar != null" >
         avatar = #{record.avatar,jdbcType=LONGVARCHAR},
@@ -267,9 +267,9 @@
       name = #{record.name,jdbcType=VARCHAR},
       email = #{record.email,jdbcType=VARCHAR},
       gender = #{record.gender,jdbcType=BIT},
-      alarm = #{record.alarm,jdbcType=BIT},
       wx = #{record.wx,jdbcType=INTEGER},
       say = #{record.say,jdbcType=VARCHAR},
+      securitypwd = #{record.securitypwd,jdbcType=VARCHAR},
       avatar = #{record.avatar,jdbcType=LONGVARCHAR}
     <if test="_parameter != null" >
       <include refid="Update_By_Example_Where_Clause" />
@@ -284,9 +284,9 @@
       name = #{record.name,jdbcType=VARCHAR},
       email = #{record.email,jdbcType=VARCHAR},
       gender = #{record.gender,jdbcType=BIT},
-      alarm = #{record.alarm,jdbcType=BIT},
       wx = #{record.wx,jdbcType=INTEGER},
-      say = #{record.say,jdbcType=VARCHAR}
+      say = #{record.say,jdbcType=VARCHAR},
+      securitypwd = #{record.securitypwd,jdbcType=VARCHAR}
     <if test="_parameter != null" >
       <include refid="Update_By_Example_Where_Clause" />
     </if>
@@ -312,14 +312,14 @@
       <if test="gender != null" >
         gender = #{gender,jdbcType=BIT},
       </if>
-      <if test="alarm != null" >
-        alarm = #{alarm,jdbcType=BIT},
-      </if>
       <if test="wx != null" >
         wx = #{wx,jdbcType=INTEGER},
       </if>
       <if test="say != null" >
         say = #{say,jdbcType=VARCHAR},
+      </if>
+      <if test="securitypwd != null" >
+        securitypwd = #{securitypwd,jdbcType=VARCHAR},
       </if>
       <if test="avatar != null" >
         avatar = #{avatar,jdbcType=LONGVARCHAR},
@@ -335,9 +335,9 @@
       name = #{name,jdbcType=VARCHAR},
       email = #{email,jdbcType=VARCHAR},
       gender = #{gender,jdbcType=BIT},
-      alarm = #{alarm,jdbcType=BIT},
       wx = #{wx,jdbcType=INTEGER},
       say = #{say,jdbcType=VARCHAR},
+      securitypwd = #{securitypwd,jdbcType=VARCHAR},
       avatar = #{avatar,jdbcType=LONGVARCHAR}
     where uid = #{uid,jdbcType=INTEGER}
   </update>
@@ -349,9 +349,9 @@
       name = #{name,jdbcType=VARCHAR},
       email = #{email,jdbcType=VARCHAR},
       gender = #{gender,jdbcType=BIT},
-      alarm = #{alarm,jdbcType=BIT},
       wx = #{wx,jdbcType=INTEGER},
-      say = #{say,jdbcType=VARCHAR}
+      say = #{say,jdbcType=VARCHAR},
+      securitypwd = #{securitypwd,jdbcType=VARCHAR}
     where uid = #{uid,jdbcType=INTEGER}
   </update>
 </mapper>

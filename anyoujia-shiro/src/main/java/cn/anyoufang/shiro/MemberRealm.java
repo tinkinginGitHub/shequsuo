@@ -23,6 +23,11 @@ public class MemberRealm extends AuthorizingRealm {
 
     @Override
     protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principals) {
+
+        if(principals != null&& !principals.isEmpty()) {
+            principals.getPrimaryPrincipal();
+        }
+
         return null;
     }
 

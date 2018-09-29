@@ -1,9 +1,6 @@
 package cn.anyoufang.entity;
 
-import java.io.Serializable;
-
-public class SpMember implements Serializable {
-    private static final long serialVersionUID = 1L;
+public class SpMember {
     private Integer uid;
 
     private String phone;
@@ -18,11 +15,11 @@ public class SpMember implements Serializable {
 
     private Boolean gender;
 
-    private Boolean alarm;
-
     private Integer wx;
 
     private String say;
+
+    private String securitypwd;
 
     private String avatar;
 
@@ -82,14 +79,6 @@ public class SpMember implements Serializable {
         this.gender = gender;
     }
 
-    public Boolean getAlarm() {
-        return alarm;
-    }
-
-    public void setAlarm(Boolean alarm) {
-        this.alarm = alarm;
-    }
-
     public Integer getWx() {
         return wx;
     }
@@ -104,6 +93,14 @@ public class SpMember implements Serializable {
 
     public void setSay(String say) {
         this.say = say == null ? null : say.trim();
+    }
+
+    public String getSecuritypwd() {
+        return securitypwd;
+    }
+
+    public void setSecuritypwd(String securitypwd) {
+        this.securitypwd = securitypwd == null ? null : securitypwd.trim();
     }
 
     public String getAvatar() {

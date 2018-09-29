@@ -574,66 +574,6 @@ public class SpMemberExample {
             return (Criteria) this;
         }
 
-        public Criteria andAlarmIsNull() {
-            addCriterion("alarm is null");
-            return (Criteria) this;
-        }
-
-        public Criteria andAlarmIsNotNull() {
-            addCriterion("alarm is not null");
-            return (Criteria) this;
-        }
-
-        public Criteria andAlarmEqualTo(Boolean value) {
-            addCriterion("alarm =", value, "alarm");
-            return (Criteria) this;
-        }
-
-        public Criteria andAlarmNotEqualTo(Boolean value) {
-            addCriterion("alarm <>", value, "alarm");
-            return (Criteria) this;
-        }
-
-        public Criteria andAlarmGreaterThan(Boolean value) {
-            addCriterion("alarm >", value, "alarm");
-            return (Criteria) this;
-        }
-
-        public Criteria andAlarmGreaterThanOrEqualTo(Boolean value) {
-            addCriterion("alarm >=", value, "alarm");
-            return (Criteria) this;
-        }
-
-        public Criteria andAlarmLessThan(Boolean value) {
-            addCriterion("alarm <", value, "alarm");
-            return (Criteria) this;
-        }
-
-        public Criteria andAlarmLessThanOrEqualTo(Boolean value) {
-            addCriterion("alarm <=", value, "alarm");
-            return (Criteria) this;
-        }
-
-        public Criteria andAlarmIn(List<Boolean> values) {
-            addCriterion("alarm in", values, "alarm");
-            return (Criteria) this;
-        }
-
-        public Criteria andAlarmNotIn(List<Boolean> values) {
-            addCriterion("alarm not in", values, "alarm");
-            return (Criteria) this;
-        }
-
-        public Criteria andAlarmBetween(Boolean value1, Boolean value2) {
-            addCriterion("alarm between", value1, value2, "alarm");
-            return (Criteria) this;
-        }
-
-        public Criteria andAlarmNotBetween(Boolean value1, Boolean value2) {
-            addCriterion("alarm not between", value1, value2, "alarm");
-            return (Criteria) this;
-        }
-
         public Criteria andWxIsNull() {
             addCriterion("wx is null");
             return (Criteria) this;
@@ -761,6 +701,76 @@ public class SpMemberExample {
 
         public Criteria andSayNotBetween(String value1, String value2) {
             addCriterion("say not between", value1, value2, "say");
+            return (Criteria) this;
+        }
+
+        public Criteria andSecuritypwdIsNull() {
+            addCriterion("securitypwd is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andSecuritypwdIsNotNull() {
+            addCriterion("securitypwd is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andSecuritypwdEqualTo(String value) {
+            addCriterion("securitypwd =", value, "securitypwd");
+            return (Criteria) this;
+        }
+
+        public Criteria andSecuritypwdNotEqualTo(String value) {
+            addCriterion("securitypwd <>", value, "securitypwd");
+            return (Criteria) this;
+        }
+
+        public Criteria andSecuritypwdGreaterThan(String value) {
+            addCriterion("securitypwd >", value, "securitypwd");
+            return (Criteria) this;
+        }
+
+        public Criteria andSecuritypwdGreaterThanOrEqualTo(String value) {
+            addCriterion("securitypwd >=", value, "securitypwd");
+            return (Criteria) this;
+        }
+
+        public Criteria andSecuritypwdLessThan(String value) {
+            addCriterion("securitypwd <", value, "securitypwd");
+            return (Criteria) this;
+        }
+
+        public Criteria andSecuritypwdLessThanOrEqualTo(String value) {
+            addCriterion("securitypwd <=", value, "securitypwd");
+            return (Criteria) this;
+        }
+
+        public Criteria andSecuritypwdLike(String value) {
+            addCriterion("securitypwd like", value, "securitypwd");
+            return (Criteria) this;
+        }
+
+        public Criteria andSecuritypwdNotLike(String value) {
+            addCriterion("securitypwd not like", value, "securitypwd");
+            return (Criteria) this;
+        }
+
+        public Criteria andSecuritypwdIn(List<String> values) {
+            addCriterion("securitypwd in", values, "securitypwd");
+            return (Criteria) this;
+        }
+
+        public Criteria andSecuritypwdNotIn(List<String> values) {
+            addCriterion("securitypwd not in", values, "securitypwd");
+            return (Criteria) this;
+        }
+
+        public Criteria andSecuritypwdBetween(String value1, String value2) {
+            addCriterion("securitypwd between", value1, value2, "securitypwd");
+            return (Criteria) this;
+        }
+
+        public Criteria andSecuritypwdNotBetween(String value1, String value2) {
+            addCriterion("securitypwd not between", value1, value2, "securitypwd");
             return (Criteria) this;
         }
     }

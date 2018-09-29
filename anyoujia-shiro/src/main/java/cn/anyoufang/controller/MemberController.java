@@ -1,11 +1,13 @@
 package cn.anyoufang.controller;
 
 
+import cn.anyoufang.entity.AnyoujiaResult;
 import cn.anyoufang.entity.SpMember;
 import cn.anyoufang.entity.WeiXinVO;
 import cn.anyoufang.service.MemberService;
 import cn.anyoufang.utils.IPUtils;
 import cn.anyoufang.utils.RedisUtils;
+import cn.anyoufang.utils.StringUtil;
 import com.aliyuncs.exceptions.ClientException;
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
@@ -143,4 +145,19 @@ public class MemberController extends AbstractController {
         return memberService.resetPasswordLogined(oldPwd, newPwd);
     }
 
+    @RequestMapping("/securitypwd")
+    @ApiOperation(value = "设置安全密码", httpMethod = "POST", notes = "member set security password")
+    public AnyoujiaResult setSecurityPwd(@RequestParam String password){
+        if(StringUtil.isEmpty(password)) {
+            return AnyoujiaResult.build(400,"请输入有效密码",null);
+        }
+       SpMember  user =  getUser();
+       if(user !=null) {
+           int id = user.getUid();
+           if(memberService.setSecurityPwd(password,id)){
+               return new AnyoujiaResult("");
+           }
+       }
+       return AnyoujiaResult.build(400,"用户尚未登录",null);
+    }
 }

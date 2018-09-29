@@ -128,6 +128,18 @@ public class MemberServiceImpl implements MemberService {
         return true;
     }
 
+    @Override
+    public boolean setSecurityPwd(String password,int id) {
+        SpMember member = new SpMember();
+        member.setSecuritypwd(password);
+        member.setUid(id);
+       int num =  memberMapper.updateByPrimaryKeySelective(member);
+       if(num == 1) {
+           return true;
+       }
+        return false;
+    }
+
     private SpMemberExample createExample(String phone) {
         SpMemberExample example = new SpMemberExample();
         SpMemberExample.Criteria criteria = example.createCriteria();
