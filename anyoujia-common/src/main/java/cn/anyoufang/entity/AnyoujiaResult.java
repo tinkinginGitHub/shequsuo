@@ -7,10 +7,9 @@ import java.io.Serializable;
 import java.util.List;
 
 /**
- * 自定义响应结构
+ * @author daiping
  */
-public class AnyoufangResult implements Serializable {
-
+public class AnyoujiaResult implements Serializable {
 
     // 定义jackson对象
     private static final ObjectMapper MAPPER = new ObjectMapper();
@@ -24,41 +23,38 @@ public class AnyoufangResult implements Serializable {
     // 响应中的数据
     private Object data;
 
-    public static AnyoufangResult build(Integer status, String msg, Object data) {
-        return new AnyoufangResult(status, msg, data);
+    public static AnyoujiaResult build(Integer status, String msg, Object data) {
+        return new AnyoujiaResult(status, msg, data);
     }
 
-    public static AnyoufangResult ok(Object data) {
-        return new AnyoufangResult(data);
+    public static AnyoujiaResult ok(Object data) {
+        return new AnyoujiaResult(data);
     }
 
-    public static AnyoufangResult ok() {
-        return new AnyoufangResult(null);
+    public static AnyoujiaResult ok() {
+        return new AnyoujiaResult(null);
     }
 
-    public AnyoufangResult() {
+    public AnyoujiaResult() {
 
     }
 
-    public static AnyoufangResult build(Integer status, String msg) {
-        return new AnyoufangResult(status, msg, null);
+    public static AnyoujiaResult build(Integer status, String msg) {
+        return new AnyoujiaResult(status, msg, null);
     }
 
-    public AnyoufangResult(Integer status, String msg, Object data) {
+    public AnyoujiaResult(Integer status, String msg, Object data) {
         this.status = status;
         this.msg = msg;
         this.data = data;
     }
 
-    public AnyoufangResult(Object data) {
+    public AnyoujiaResult(Object data) {
         this.status = 200;
-        this.msg = "OK";
+        this.msg = "success";
         this.data = data;
     }
 
-//    public Boolean isOK() {
-//        return this.status == 200;
-//    }
 
     public Integer getStatus() {
         return status;
@@ -85,16 +81,16 @@ public class AnyoufangResult implements Serializable {
     }
 
     /**
-     * 将json结果集转化为AnyoufangResult对象
+     * 将json结果集转化为AnyoujiaResult对象
      *
      * @param jsonData json数据
-     * @param clazz AnyoufangResult中的object类型
+     * @param clazz AnyoujiaResult中的object类型
      * @return
      */
-    public static AnyoufangResult formatToPojo(String jsonData, Class<?> clazz) {
+    public static AnyoujiaResult formatToPojo(String jsonData, Class<?> clazz) {
         try {
             if (clazz == null) {
-                return MAPPER.readValue(jsonData, AnyoufangResult.class);
+                return MAPPER.readValue(jsonData, AnyoujiaResult.class);
             }
             JsonNode jsonNode = MAPPER.readTree(jsonData);
             JsonNode data = jsonNode.get("data");
@@ -118,9 +114,9 @@ public class AnyoufangResult implements Serializable {
      * @param json
      * @return
      */
-    public static AnyoufangResult format(String json) {
+    public static AnyoujiaResult format(String json) {
         try {
-            return MAPPER.readValue(json, AnyoufangResult.class);
+            return MAPPER.readValue(json, AnyoujiaResult.class);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -134,7 +130,7 @@ public class AnyoufangResult implements Serializable {
      * @param clazz 集合中的类型
      * @return
      */
-    public static AnyoufangResult formatToList(String jsonData, Class<?> clazz) {
+    public static AnyoujiaResult formatToList(String jsonData, Class<?> clazz) {
         try {
             JsonNode jsonNode = MAPPER.readTree(jsonData);
             JsonNode data = jsonNode.get("data");
@@ -148,6 +144,4 @@ public class AnyoufangResult implements Serializable {
             return null;
         }
     }
-
 }
-

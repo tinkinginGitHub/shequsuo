@@ -60,4 +60,12 @@ public interface MemberService {
      */
     boolean resetPasswordLogined(String oldPassword,String newPassword);
 
+    /**
+     * 设置安全密码
+     * @param password
+     * @param id
+     * @return
+     */
+    boolean setSecurityPwd(String password,int id);
+
 }
