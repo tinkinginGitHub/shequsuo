@@ -4,6 +4,8 @@ import cn.anyoufang.util.SimulateGetAndPostUtil;
 import cn.anyoufang.utils.Md5Utils;
 import org.junit.Test;
 
+import java.util.Arrays;
+
 /**
  * @author daiping
  */
@@ -20,9 +22,9 @@ public class TestLockInterface {
     public void testRegister() {
         long timestamp = System.currentTimeMillis()/1000;
         StringBuilder sb = new StringBuilder();
-        String ss = sb.append("5CCF7F1BA457").append(timestamp).append(1).append(s).toString();
+        String ss = sb.append("5CCF7F1BA450").append(timestamp).append(2).append(s).toString();
         String sss = Md5Utils.md5(ss,"UTF-8");
-        String param = "method=register.lock.info&userid=1&locksn=5CCF7F1BA456&temptime="+timestamp+"&sign="+sss;
+        String param = "method=register.lock.info&userid=2&locksn=5CCF7F1BA450&temptime="+timestamp+"&sign="+sss;
         String result = SimulateGetAndPostUtil.sendPost(url,param);
         System.out.println(result);
         System.out.println(timestamp);
@@ -97,4 +99,28 @@ public class TestLockInterface {
         System.out.println(result);
     }
 
+    /**
+     * 测试获取开锁详情
+     */
+    @Test
+    public void testGetOpenLockRecords() {
+        long timestamp = System.currentTimeMillis()/1000;
+        StringBuilder sb = new StringBuilder();
+        String locksn = "5CCF7F1BA456";
+        int isalarm = 0; //0表示开锁记录，1表示报警记录
+        int page = 1;
+        int pagesize = 10;
+        String ss = sb.append(isalarm).append(locksn).append(page).append(pagesize).append(timestamp).append(s).toString();
+        String sss = Md5Utils.md5(ss,"UTF-8");
+        String param = "method=get.lock.openlist&page=1"+"&pagesize=20"+"&locksn="+locksn+"&temptime="+timestamp+"&sign="+sss + "&isalarm="+0;
+        String result = SimulateGetAndPostUtil.sendPost(url,param);
+        System.out.println(result);
+
+    }
+
+    public static void main(String[] args) {
+        String[] s = new String[]{"page","pagesize"};
+        Arrays.sort(s);
+        System.out.println(s[0]);
+    }
 }
