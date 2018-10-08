@@ -27,6 +27,7 @@ import javax.servlet.http.HttpSession;
  */
 @Api(value = "member")
 @RestController
+@RequestMapping("/api")
 public class MemberController extends AbstractController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MemberController.class);

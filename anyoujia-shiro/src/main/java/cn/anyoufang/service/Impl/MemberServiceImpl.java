@@ -6,6 +6,7 @@ import cn.anyoufang.mapper.SpMemberMapper;
 import cn.anyoufang.mapper.SpMemberWxMapper;
 import cn.anyoufang.service.MemberService;
 import cn.anyoufang.utils.*;
+import com.aliyuncs.dysmsapi.model.v20170525.SendSmsResponse;
 import com.aliyuncs.exceptions.ClientException;
 import org.apache.shiro.authc.UsernamePasswordToken;
 import org.apache.shiro.subject.Subject;
@@ -33,7 +34,7 @@ public class MemberServiceImpl implements MemberService {
     @Value("${signName}")
     private String signName;
 
-    @Value("${templcateCodebespeak}")
+    @Value("${templcateCodelogin}")
     private String tempCode;
 
 
@@ -166,5 +167,11 @@ public class MemberServiceImpl implements MemberService {
         }
         String password = list.get(0).getPassword();
         return password;
+    }
+
+    public static void main(String[] args) throws Exception {
+        String data = UUID.genarateCode();
+        SendSmsResponse sendSmsResponse = SendSmsUtil.sendSms("18580558719", "安优房", "SMS_134316579", null, "{\"code\":\"" + data + "\"}");
+        System.out.println(sendSmsResponse);
     }
 }

@@ -11,6 +11,7 @@ import java.util.List;
  */
 public class AnyoujiaResult implements Serializable {
 
+    private static final long serialVersionUID = 1L;
     // 定义jackson对象
     private static final ObjectMapper MAPPER = new ObjectMapper();
 
