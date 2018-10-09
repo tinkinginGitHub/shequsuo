@@ -9,25 +9,30 @@ import com.aliyuncs.dysmsapi.model.v20170525.SendSmsResponse;
 import com.aliyuncs.exceptions.ClientException;
 import com.aliyuncs.profile.DefaultProfile;
 import com.aliyuncs.profile.IClientProfile;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-
+/**
+ * 阿里云短信调用工具类
+ * @author  daiping
+ */
 public class SendSmsUtil {
 
-
+   private static final Logger LOG = LoggerFactory.getLogger(SendSmsUtil.class);
     //产品名称:云通信短信API产品,开发者无需替换
-    static final String PRODUCT = "Dysmsapi";
+    private static final String PRODUCT = "Dysmsapi";
     //产品域名,开发者无需替换
-    static final String DOMAIN = "dysmsapi.aliyuncs.com";
+    private static final String DOMAIN = "dysmsapi.aliyuncs.com";
 
-    // TODO 此处需要替换成开发者自己的AK(在阿里云访问控制台寻找)
-    static final String ACCESS_KEY_ID = "LTAIYNQialGwuYkO";
-    static final String ACCESS_KEY_SECRET = "5ka697idTwud2u7joSnmfFE18LIzU8";
+    //AK
+    private static final String ACCESS_KEY_ID = "LTAIYNQialGwuYkO";
+    private static final String ACCESS_KEY_SECRET = "5ka697idTwud2u7joSnmfFE18LIzU8";
 
 
-    public static SendSmsResponse sendSms(String phone, String signName, String templcateCode, String outId, String templateParam) throws ClientException {
+    public static SendSmsResponse sendSms(String phone, String templcateCode, String outId, String templateParam) throws ClientException {
         //可自助调整超时时间
         System.setProperty("sun.net.client.defaultConnectTimeout", "10000");
         System.setProperty("sun.net.client.defaultReadTimeout", "10000");
@@ -42,7 +47,7 @@ public class SendSmsUtil {
         //必填:待发送手机号
         request.setPhoneNumbers(phone);
         //必填:短信签名-可在短信控制台中找到
-        request.setSignName(signName);
+        request.setSignName("安优家");
         //必填:短信模板-可在短信控制台中找到
         request.setTemplateCode(templcateCode);
         //可选:模板中的变量替换JSON串,如模板内容为"亲爱的${name},您的验证码为${code}"时,此处的值为
@@ -56,9 +61,15 @@ public class SendSmsUtil {
         if(outId !=null) {
             request.setOutId(outId);
         }
-        //hint 此处可能会抛出异常，注意catch
-        SendSmsResponse sendSmsResponse = acsClient.getAcsResponse(request);
 
+        SendSmsResponse sendSmsResponse = null;
+        try{
+            sendSmsResponse = acsClient.getAcsResponse(request);
+        }catch (Exception e) {
+            if(LOG.isInfoEnabled()) {
+                LOG.info(e.getMessage());
+            }
+        }
         return sendSmsResponse;
     }
 
