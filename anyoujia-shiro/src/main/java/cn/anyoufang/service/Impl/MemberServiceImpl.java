@@ -6,7 +6,6 @@ import cn.anyoufang.mapper.SpMemberMapper;
 import cn.anyoufang.mapper.SpMemberWxMapper;
 import cn.anyoufang.service.MemberService;
 import cn.anyoufang.utils.*;
-import com.aliyuncs.dysmsapi.model.v20170525.SendSmsResponse;
 import com.aliyuncs.exceptions.ClientException;
 import org.apache.shiro.authc.UsernamePasswordToken;
 import org.apache.shiro.subject.Subject;
@@ -31,10 +30,9 @@ public class MemberServiceImpl implements MemberService {
     @Autowired
     private SpMemberLoginMapper loginMapper;
 
-    @Value("${signName}")
-    private String signName;
+    private  String signName;
 
-    @Value("${templcateCodelogin}")
+    @Value("${ANYOUJIACODE}")
     private String tempCode;
 
 
@@ -106,7 +104,7 @@ public class MemberServiceImpl implements MemberService {
     @Override
     public void getVerifCode(String phone) throws ClientException {
         String data = UUID.genarateCode();
-        SendSmsUtil.sendSms(phone, signName, tempCode, null, "{\"code\":\"" + data + "\"}");
+        SendSmsUtil.sendSms(phone, tempCode, null, "{\"code\":\"" + data + "\"}");
         RedisUtils.setex(phone, data, 600);
     }
 
@@ -169,9 +167,4 @@ public class MemberServiceImpl implements MemberService {
         return password;
     }
 
-    public static void main(String[] args) throws Exception {
-        String data = UUID.genarateCode();
-        SendSmsResponse sendSmsResponse = SendSmsUtil.sendSms("18580558719", "安优房", "SMS_134316579", null, "{\"code\":\"" + data + "\"}");
-        System.out.println(sendSmsResponse);
-    }
 }
