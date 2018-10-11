@@ -773,6 +773,146 @@ public class SpMemberExample {
             addCriterion("securitypwd not between", value1, value2, "securitypwd");
             return (Criteria) this;
         }
+
+        public Criteria andSecurityquestionIsNull() {
+            addCriterion("securityquestion is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andSecurityquestionIsNotNull() {
+            addCriterion("securityquestion is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andSecurityquestionEqualTo(String value) {
+            addCriterion("securityquestion =", value, "securityquestion");
+            return (Criteria) this;
+        }
+
+        public Criteria andSecurityquestionNotEqualTo(String value) {
+            addCriterion("securityquestion <>", value, "securityquestion");
+            return (Criteria) this;
+        }
+
+        public Criteria andSecurityquestionGreaterThan(String value) {
+            addCriterion("securityquestion >", value, "securityquestion");
+            return (Criteria) this;
+        }
+
+        public Criteria andSecurityquestionGreaterThanOrEqualTo(String value) {
+            addCriterion("securityquestion >=", value, "securityquestion");
+            return (Criteria) this;
+        }
+
+        public Criteria andSecurityquestionLessThan(String value) {
+            addCriterion("securityquestion <", value, "securityquestion");
+            return (Criteria) this;
+        }
+
+        public Criteria andSecurityquestionLessThanOrEqualTo(String value) {
+            addCriterion("securityquestion <=", value, "securityquestion");
+            return (Criteria) this;
+        }
+
+        public Criteria andSecurityquestionLike(String value) {
+            addCriterion("securityquestion like", value, "securityquestion");
+            return (Criteria) this;
+        }
+
+        public Criteria andSecurityquestionNotLike(String value) {
+            addCriterion("securityquestion not like", value, "securityquestion");
+            return (Criteria) this;
+        }
+
+        public Criteria andSecurityquestionIn(List<String> values) {
+            addCriterion("securityquestion in", values, "securityquestion");
+            return (Criteria) this;
+        }
+
+        public Criteria andSecurityquestionNotIn(List<String> values) {
+            addCriterion("securityquestion not in", values, "securityquestion");
+            return (Criteria) this;
+        }
+
+        public Criteria andSecurityquestionBetween(String value1, String value2) {
+            addCriterion("securityquestion between", value1, value2, "securityquestion");
+            return (Criteria) this;
+        }
+
+        public Criteria andSecurityquestionNotBetween(String value1, String value2) {
+            addCriterion("securityquestion not between", value1, value2, "securityquestion");
+            return (Criteria) this;
+        }
+
+        public Criteria andSecurityanswerIsNull() {
+            addCriterion("securityanswer is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andSecurityanswerIsNotNull() {
+            addCriterion("securityanswer is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andSecurityanswerEqualTo(String value) {
+            addCriterion("securityanswer =", value, "securityanswer");
+            return (Criteria) this;
+        }
+
+        public Criteria andSecurityanswerNotEqualTo(String value) {
+            addCriterion("securityanswer <>", value, "securityanswer");
+            return (Criteria) this;
+        }
+
+        public Criteria andSecurityanswerGreaterThan(String value) {
+            addCriterion("securityanswer >", value, "securityanswer");
+            return (Criteria) this;
+        }
+
+        public Criteria andSecurityanswerGreaterThanOrEqualTo(String value) {
+            addCriterion("securityanswer >=", value, "securityanswer");
+            return (Criteria) this;
+        }
+
+        public Criteria andSecurityanswerLessThan(String value) {
+            addCriterion("securityanswer <", value, "securityanswer");
+            return (Criteria) this;
+        }
+
+        public Criteria andSecurityanswerLessThanOrEqualTo(String value) {
+            addCriterion("securityanswer <=", value, "securityanswer");
+            return (Criteria) this;
+        }
+
+        public Criteria andSecurityanswerLike(String value) {
+            addCriterion("securityanswer like", value, "securityanswer");
+            return (Criteria) this;
+        }
+
+        public Criteria andSecurityanswerNotLike(String value) {
+            addCriterion("securityanswer not like", value, "securityanswer");
+            return (Criteria) this;
+        }
+
+        public Criteria andSecurityanswerIn(List<String> values) {
+            addCriterion("securityanswer in", values, "securityanswer");
+            return (Criteria) this;
+        }
+
+        public Criteria andSecurityanswerNotIn(List<String> values) {
+            addCriterion("securityanswer not in", values, "securityanswer");
+            return (Criteria) this;
+        }
+
+        public Criteria andSecurityanswerBetween(String value1, String value2) {
+            addCriterion("securityanswer between", value1, value2, "securityanswer");
+            return (Criteria) this;
+        }
+
+        public Criteria andSecurityanswerNotBetween(String value1, String value2) {
+            addCriterion("securityanswer not between", value1, value2, "securityanswer");
+            return (Criteria) this;
+        }
     }
 
     public static class Criteria extends GeneratedCriteria {

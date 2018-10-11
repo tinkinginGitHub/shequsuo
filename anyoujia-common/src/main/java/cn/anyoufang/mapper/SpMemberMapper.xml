@@ -12,6 +12,8 @@
     <result column="wx" property="wx" jdbcType="INTEGER" />
     <result column="say" property="say" jdbcType="VARCHAR" />
     <result column="securitypwd" property="securitypwd" jdbcType="VARCHAR" />
+    <result column="securityquestion" property="securityquestion" jdbcType="VARCHAR" />
+    <result column="securityanswer" property="securityanswer" jdbcType="VARCHAR" />
   </resultMap>
   <resultMap id="ResultMapWithBLOBs" type="cn.anyoufang.entity.SpMember" extends="BaseResultMap" >
     <result column="avatar" property="avatar" jdbcType="LONGVARCHAR" />
@@ -75,7 +77,8 @@
     </where>
   </sql>
   <sql id="Base_Column_List" >
-    uid, phone, password, bname, name, email, gender, wx, say, securitypwd
+    uid, phone, password, bname, name, email, gender, wx, say, securitypwd, securityquestion, 
+    securityanswer
   </sql>
   <sql id="Blob_Column_List" >
     avatar
@@ -132,11 +135,13 @@
     insert into sp_member (uid, phone, password, 
       bname, name, email, 
       gender, wx, say, securitypwd, 
-      avatar)
+      securityquestion, securityanswer, avatar
+      )
     values (#{uid,jdbcType=INTEGER}, #{phone,jdbcType=VARCHAR}, #{password,jdbcType=VARCHAR}, 
       #{bname,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR}, #{email,jdbcType=VARCHAR}, 
       #{gender,jdbcType=BIT}, #{wx,jdbcType=INTEGER}, #{say,jdbcType=VARCHAR}, #{securitypwd,jdbcType=VARCHAR}, 
-      #{avatar,jdbcType=LONGVARCHAR})
+      #{securityquestion,jdbcType=VARCHAR}, #{securityanswer,jdbcType=VARCHAR}, #{avatar,jdbcType=LONGVARCHAR}
+      )
   </insert>
   <insert id="insertSelective" parameterType="cn.anyoufang.entity.SpMember" >
     insert into sp_member
@@ -170,6 +175,12 @@
       </if>
       <if test="securitypwd != null" >
         securitypwd,
+      </if>
+      <if test="securityquestion != null" >
+        securityquestion,
+      </if>
+      <if test="securityanswer != null" >
+        securityanswer,
       </if>
       <if test="avatar != null" >
         avatar,
@@ -205,6 +216,12 @@
       </if>
       <if test="securitypwd != null" >
         #{securitypwd,jdbcType=VARCHAR},
+      </if>
+      <if test="securityquestion != null" >
+        #{securityquestion,jdbcType=VARCHAR},
+      </if>
+      <if test="securityanswer != null" >
+        #{securityanswer,jdbcType=VARCHAR},
       </if>
       <if test="avatar != null" >
         #{avatar,jdbcType=LONGVARCHAR},
@@ -250,6 +267,12 @@
       <if test="record.securitypwd != null" >
         securitypwd = #{record.securitypwd,jdbcType=VARCHAR},
       </if>
+      <if test="record.securityquestion != null" >
+        securityquestion = #{record.securityquestion,jdbcType=VARCHAR},
+      </if>
+      <if test="record.securityanswer != null" >
+        securityanswer = #{record.securityanswer,jdbcType=VARCHAR},
+      </if>
       <if test="record.avatar != null" >
         avatar = #{record.avatar,jdbcType=LONGVARCHAR},
       </if>
@@ -270,6 +293,8 @@
       wx = #{record.wx,jdbcType=INTEGER},
       say = #{record.say,jdbcType=VARCHAR},
       securitypwd = #{record.securitypwd,jdbcType=VARCHAR},
+      securityquestion = #{record.securityquestion,jdbcType=VARCHAR},
+      securityanswer = #{record.securityanswer,jdbcType=VARCHAR},
       avatar = #{record.avatar,jdbcType=LONGVARCHAR}
     <if test="_parameter != null" >
       <include refid="Update_By_Example_Where_Clause" />
@@ -286,7 +311,9 @@
       gender = #{record.gender,jdbcType=BIT},
       wx = #{record.wx,jdbcType=INTEGER},
       say = #{record.say,jdbcType=VARCHAR},
-      securitypwd = #{record.securitypwd,jdbcType=VARCHAR}
+      securitypwd = #{record.securitypwd,jdbcType=VARCHAR},
+      securityquestion = #{record.securityquestion,jdbcType=VARCHAR},
+      securityanswer = #{record.securityanswer,jdbcType=VARCHAR}
     <if test="_parameter != null" >
       <include refid="Update_By_Example_Where_Clause" />
     </if>
@@ -321,6 +348,12 @@
       <if test="securitypwd != null" >
         securitypwd = #{securitypwd,jdbcType=VARCHAR},
       </if>
+      <if test="securityquestion != null" >
+        securityquestion = #{securityquestion,jdbcType=VARCHAR},
+      </if>
+      <if test="securityanswer != null" >
+        securityanswer = #{securityanswer,jdbcType=VARCHAR},
+      </if>
       <if test="avatar != null" >
         avatar = #{avatar,jdbcType=LONGVARCHAR},
       </if>
@@ -338,6 +371,8 @@
       wx = #{wx,jdbcType=INTEGER},
       say = #{say,jdbcType=VARCHAR},
       securitypwd = #{securitypwd,jdbcType=VARCHAR},
+      securityquestion = #{securityquestion,jdbcType=VARCHAR},
+      securityanswer = #{securityanswer,jdbcType=VARCHAR},
       avatar = #{avatar,jdbcType=LONGVARCHAR}
     where uid = #{uid,jdbcType=INTEGER}
   </update>
@@ -351,7 +386,9 @@
       gender = #{gender,jdbcType=BIT},
       wx = #{wx,jdbcType=INTEGER},
       say = #{say,jdbcType=VARCHAR},
-      securitypwd = #{securitypwd,jdbcType=VARCHAR}
+      securitypwd = #{securitypwd,jdbcType=VARCHAR},
+      securityquestion = #{securityquestion,jdbcType=VARCHAR},
+      securityanswer = #{securityanswer,jdbcType=VARCHAR}
     where uid = #{uid,jdbcType=INTEGER}
   </update>
 </mapper>

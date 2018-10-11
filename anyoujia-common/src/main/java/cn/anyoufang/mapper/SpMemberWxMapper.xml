@@ -109,7 +109,7 @@
       #{openid,jdbcType=VARCHAR}, #{addtime,jdbcType=INTEGER}, #{subscribe,jdbcType=BIT}, 
       #{uid,jdbcType=INTEGER})
   </insert>
-  <insert id="insertSelective" parameterType="cn.anyoufang.entity.SpMemberWx" >
+  <insert id="insertSelective" parameterType="cn.anyoufang.entity.SpMemberWx" useGeneratedKeys="true" >
     insert into sp_member_wx
     <trim prefix="(" suffix=")" suffixOverrides="," >
       <if test="wx != null" >

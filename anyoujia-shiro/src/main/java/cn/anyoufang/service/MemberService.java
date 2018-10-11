@@ -1,5 +1,6 @@
 package cn.anyoufang.service;
 
+import cn.anyoufang.entity.AnyoujiaResult;
 import cn.anyoufang.entity.SpMember;
 import cn.anyoufang.entity.WeiXinVO;
 import com.aliyuncs.exceptions.ClientException;
@@ -15,7 +16,7 @@ public interface MemberService {
      * @param weiXinVO
      * @return
      */
-    boolean memberRegister(String account,String pwd,WeiXinVO weiXinVO);
+    AnyoujiaResult memberRegister(String account, String pwd, WeiXinVO weiXinVO);
 
     /**
      * 用户使用密码登录
@@ -50,7 +51,7 @@ public interface MemberService {
      * @param phone
      * @param newPwd
      */
-    void resetPwd(String phone,String newPwd);
+    boolean resetPwd(String phone,String newPwd);
 
     /**
      * 已经登录状态下重置密码
@@ -66,6 +67,55 @@ public interface MemberService {
      * @param id
      * @return
      */
-    boolean setSecurityPwd(String password,int id);
+    boolean setSecurityPwd(String password,int id,String question,String answer);
+
+    /**
+     * 更改安全密码
+     * @param oldPwd
+     * @param newPwd
+     * @param id
+     * @return
+     */
+    boolean updateSecurityPwd(String oldPwd,String newPwd,int id,String answer,String question);
+
+    /**
+     * 根据id查询用户
+     * @param id
+     * @return
+     */
+    SpMember getUserById(int id);
+
+    /**
+     * 检查账户
+     * @param account
+     * @param code
+     * @return
+     */
+    boolean checkAccount(String account,String code);
+
+    /**
+     * 重设安全密码之前检查
+     * @param account
+     * @param code
+     * @param answer
+     * @return
+     */
+    boolean checkAccountAndAnswer(String account,String code,String answer);
+
+    /**
+     *
+     * @param id
+     * @return
+     */
+    String getUserCheckedQuestion(int id);
+
+    /**
+     *
+     * @param avatar
+     * @param bname
+     * @param phone
+     * @return
+     */
+    boolean updateAdditionalUserInfo(String avatar,String bname,String phone);
 
 }

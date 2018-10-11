@@ -1,6 +1,9 @@
 package cn.anyoufang.entity;
 
-public class SpMember {
+import java.io.Serializable;
+
+public class SpMember implements Serializable {
+
     private Integer uid;
 
     private String phone;
@@ -20,6 +23,10 @@ public class SpMember {
     private String say;
 
     private String securitypwd;
+
+    private String securityquestion;
+
+    private String securityanswer;
 
     private String avatar;
 
@@ -101,6 +108,22 @@ public class SpMember {
 
     public void setSecuritypwd(String securitypwd) {
         this.securitypwd = securitypwd == null ? null : securitypwd.trim();
+    }
+
+    public String getSecurityquestion() {
+        return securityquestion;
+    }
+
+    public void setSecurityquestion(String securityquestion) {
+        this.securityquestion = securityquestion == null ? null : securityquestion.trim();
+    }
+
+    public String getSecurityanswer() {
+        return securityanswer;
+    }
+
+    public void setSecurityanswer(String securityanswer) {
+        this.securityanswer = securityanswer == null ? null : securityanswer.trim();
     }
 
     public String getAvatar() {

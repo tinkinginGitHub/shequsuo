@@ -227,4 +227,5 @@ public class WeixinUtil {
     private static String createTimestamp() {
         return Long.toString(System.currentTimeMillis() / 1000);
     }
+
 }

@@ -1,5 +1,6 @@
 package cn.anyoufang.controller;
 
+import cn.anyoufang.entity.AnyoujiaResult;
 import cn.anyoufang.entity.WeiXinVO;
 import cn.anyoufang.service.WxUserService;
 import com.wordnik.swagger.annotations.Api;
@@ -7,13 +8,11 @@ import com.wordnik.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.view.RedirectView;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 import java.io.IOException;
 
 /**
@@ -21,7 +20,7 @@ import java.io.IOException;
  * @date 2018-09-05
  */
 @Api(value = "member",description="获取用户微信基本信息")
-@Controller
+@RestController
 @RequestMapping("/weixinInfo")
 public class GetUserWxInfoController {
 
@@ -37,20 +36,22 @@ public class GetUserWxInfoController {
     @SuppressWarnings({ "resource", "deprecation" })
     @RequestMapping("/getCode")
     @ApiOperation(value = "获取用户微信信息并保存",httpMethod = "POST",response = ModelAndView.class)
-    public ModelAndView getCode(HttpServletRequest request, String code,
-            String myUrl) {
+    public AnyoujiaResult getCode(@RequestParam String code,
+                                  @RequestParam String nickname,
+                                  @RequestParam String headurl,
+                                  @RequestParam String sex) {
 
         WeiXinVO weiXinVO = null;
         try {
-            weiXinVO = wxUserService.getAndSaveUserInfoFromWx(code);
+            weiXinVO = wxUserService.getAndSaveUserInfoFromWx(code,nickname,headurl,sex);
         } catch (IOException e) {
             if(LOGGER.isInfoEnabled()) {
                 LOGGER.info(e.getMessage());
             }
         }
-        HttpSession session =  request.getSession();
-        session.setAttribute("weiXinVO", weiXinVO);
-        ModelAndView myIndex = new ModelAndView(new RedirectView(myUrl));
-        return myIndex;
+        if(weiXinVO != null) {
+            return AnyoujiaResult.ok();
+        }
+        return AnyoujiaResult.build(400,"登录小程序失败");
     }
 }

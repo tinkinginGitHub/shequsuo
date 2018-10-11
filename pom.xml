@@ -517,7 +517,6 @@
 				</plugin>
 			</plugins>
 		</pluginManagement>
-
 		<resources>
 			<resource>
 				<directory>src/main/java</directory>

@@ -16,19 +16,19 @@ public enum WxConstant {
     ACCESS_TOKEN("accessToken1"),
 
     /**
-     * 安优家智慧社区公众号
+     * 安优家智慧社区小程序
      */
-    APP_ID("wxaa510935818c342a"),
+    APP_ID("wxd6c32604de641660"),
 
 
     /**
      * 安优家智慧社区公众号
      */
-    APP_SECRET("6b58ad8650e4f2b0e91bd9f039f0c968");
+    APP_SECRET("6122f996b1e99597cae0c7bb03fc43b2");
 
     private String value;
 
-    private WxConstant(String value) {
+     WxConstant(String value) {
         this.value =value;
     }
 

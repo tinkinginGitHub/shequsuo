@@ -2,10 +2,7 @@ package cn.anyoufang.utils;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class StringUtil {
 
@@ -53,6 +50,18 @@ public class StringUtil {
     		return false;
     	}
     	return true;
+    }
+
+    /**
+     * 验证字符串不为空
+     * @param s
+     * @return
+     */
+    public static boolean isNotEmpty(String s){
+        if(s!=null && !"".equals(s.trim())){
+            return true;
+        }
+        return false;
     }
     
     public static boolean isNullOrEmpty(Object obj) {  
@@ -175,5 +184,18 @@ public class StringUtil {
         }
         return true;
 	}
+
+	public static String[] sortStrings(String[] params) {
+        Arrays.sort(params);
+        return params;
+    }
+
+    public static void main(String[] args) {
+        String[] toSortParams = new String[]{"locksn","seqid","usertype","nickname","endtime","ptype","timestamp"};
+        String[] sorted = sortStrings(toSortParams);
+        for(String s:sorted) {
+            System.out.println(s);
+        }
+    }
 
 }
