@@ -5,4 +5,6 @@ package cn.anyoufang.service;
  */
 public interface LockService {
 
+
+
 }
