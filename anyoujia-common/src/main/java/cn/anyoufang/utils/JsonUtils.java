@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import net.sf.json.JSONObject;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -93,6 +94,21 @@ public class JsonUtils {
         return map;
     }
 
+    public static Map<String, Object> jsonToMap(JSONObject jsonObject) {
+
+        Map<String, Object> map = new HashMap();
+        //定义迭代器
+        Iterator<String> keys = jsonObject.keys();
+        String key = null;
+        Object value = null;
+        while (keys.hasNext()) {
+            key = keys.next();
+            value = jsonObject.get(key);
+            map.put(key, value);
+        }
+        return map;
+    }
+
     /**
      * 把JSON字符串格式转化为查询Param对象
      * @return 
@@ -102,5 +118,24 @@ public class JsonUtils {
         JSONObject jsonObject = JSONObject.fromObject(objectStr);
         T t = (T) JSONObject.toBean(jsonObject, beanType);
         return t;
+    }
+
+    public static boolean isJSONValid(String jsonInString ) {
+        try {
+            final ObjectMapper mapper = new ObjectMapper();
+            mapper.readTree(jsonInString);
+            return true;
+        } catch (IOException e) {
+            return false;
+        }
+    }
+
+    public static Map<String,Object> parseSession(String session) throws Exception{
+        String result= AesCBC.getInstance().decrypt(session);
+        return JsonUtils.jsonToMap(result);
+    }
+
+    public static void main(String[] args) throws Exception {
+        parseSession("3242342");
     }
 }

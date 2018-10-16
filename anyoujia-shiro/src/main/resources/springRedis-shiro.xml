@@ -41,7 +41,7 @@
     <bean id="cacheManager" class="org.springframework.data.redis.cache.RedisCacheManager"
           c:redisOperations-ref="template">
              <!-- 默认缓存10分钟 -->
-            <property name="defaultExpiration" value="600"/>
+            <property name="defaultExpiration" value="6000"/>
              <property name="usePrefix" value="true"/>
             <!-- cacheName 缓存超时配置，半小时，一小时，一天 -->
              <property name="expires">
@@ -50,9 +50,9 @@
                      <entry key="hour" value="3600"/>
                      <entry key="oneDay" value="86400"/>
                      <!-- shiro cache keys 对缓存的配置 -->
-                    <entry key="authorizationCache" value="1800"/>
-                     <entry key="authenticationCache" value="3200"/>
-                     <entry key="activeSessionCache" value="1800"/>
+                    <entry key="authorizationCache" value="18000"/>
+                     <entry key="authenticationCache" value="32000"/>
+                     <entry key="activeSessionCache" value="18000"/>
                  </map>
              </property>
          </bean>
@@ -63,11 +63,10 @@
 	<bean id="userRealm" class="cn.anyoufang.shiro.realm.MemberRealm">
 		<property name="authenticationCachingEnabled" value="true"/>
 		<property name="cachingEnabled" value="true"/>
-		<property name="cacheManager" ref="jedisCacheManager"/>
+		<!--<property name="cacheManager" ref="jedisCacheManager"/>-->
         <property name="credentialsMatcher">
             <bean class="org.apache.shiro.authc.credential.HashedCredentialsMatcher">
                 <property name="hashAlgorithmName" value="MD5"></property> <!-- 加密算法的名称 -->
-                <!--<property name="hashIterations" value="1024"></property> &lt;!&ndash; 配置加密的次数 &ndash;&gt;-->
             </bean>
         </property>
 	</bean>
@@ -104,19 +103,26 @@
         </constructor-arg>
     </bean>
     <bean id="jedisClientCluster" class=""/> -->
-	<bean id="sessionManager" class="org.apache.shiro.web.session.mgt.DefaultWebSessionManager">
+    <!--<bean id="sessionDao" class="cn.anyoufang.shiro.dao.SessionDao"/>-->
+	<bean id="sessionManager" class="cn.anyoufang.shiro.StatelessSessionManager">
 		<!-- 设置session过期时间为1小时(单位：毫秒)，默认为30分钟 -->
-		<property name="globalSessionTimeout" value="3600000"></property>
-		<property name="sessionValidationSchedulerEnabled" value="true"></property>
+		<property name="globalSessionTimeout" value="3600000"/>
+        <!--<property name="sessionDAO" ref="sessionDao"/>-->
+		<property name="sessionValidationSchedulerEnabled" value="true"/>
         <property name="sessionValidationInterval" value="30000" />
-        <property name="sessionIdUrlRewritingEnabled" value="false"></property>
+        <property name="sessionIdUrlRewritingEnabled" value="false"/>
+        <property name="sessionListeners">
+            <list>
+                <bean id="myShiroSessionListener" class="cn.anyoufang.shiro.listener.MyShiroSessionListener"/>
+            </list>
+        </property>
 	</bean>
     <!-- 用户信息记住我功能的相关配置 -->
     <bean id="rememberMeCookie" class="org.apache.shiro.web.servlet.SimpleCookie">
         <constructor-arg value="v_v-re-baidu"/>
         <property name="httpOnly" value="true"/>
          <!--配置存储rememberMe Cookie的domain为 一级域名-->
-        <property name="domain" value=".anyoufang.cn"/>
+        <property name="domain" value=".anyoujia.com"/>
 
         <property name="maxAge" value="${rememberMe}"/><!-- 7天时间，记住我7天 -->
     </bean>

@@ -1,6 +1,6 @@
 package cn.anyoufang.test;
 
-import cn.anyoufang.util.SimulateGetAndPostUtil;
+import cn.anyoufang.utils.SimulateGetAndPostUtil;
 import cn.anyoufang.utils.Md5Utils;
 import org.junit.Test;
 

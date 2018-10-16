@@ -40,15 +40,21 @@ public class MemberRealm extends AuthorizingRealm {
         String password1 = new String((char[]) token.getCredentials());
         String password = Md5Utils.md5(password1, "utf-8");
         //查询用户信息
-        SpMemberExample example = new SpMemberExample();
-        SpMemberExample.Criteria criteria = example.createCriteria();
-        criteria.andPhoneEqualTo(phone).andPasswordEqualTo(password);
-        List<SpMember> list = memberMapper.selectByExample(example);
+       List<SpMember> list =getUserByAccountAndPwd(phone,password);
         if(list.size() > 0) {
             SpMember member = list.get(0);
-            SimpleAuthenticationInfo info = new SimpleAuthenticationInfo(member, password, getName());
+            String realmName = getName();
+            SimpleAuthenticationInfo info = new SimpleAuthenticationInfo(member, password, realmName);
+            System.out.println(realmName);
             return info;
         }
         return null;
+    }
+
+    private List<SpMember> getUserByAccountAndPwd(String account,String password) {
+        SpMemberExample example = new SpMemberExample();
+        SpMemberExample.Criteria criteria = example.createCriteria();
+        criteria.andPhoneEqualTo(account).andPasswordEqualTo(password);
+       return memberMapper.selectByExample(example);
     }
 }

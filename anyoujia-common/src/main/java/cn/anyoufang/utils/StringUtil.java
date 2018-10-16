@@ -96,7 +96,109 @@ public class StringUtil {
             return empty;  
         }  
         return false;  
-    }  
+    }
+
+    public static String combineToken(String phone,String id) {
+        String firstFour = phone.substring(0,4);
+        String last = phone.substring(4,phone.length()-1);
+        String last1 = phone.substring(phone.length()-2);
+        StringBuilder  sb = new StringBuilder(id);
+        String token = sb.append("=").append(firstFour).append("=").append(last).append(switchString(last1)).toString();
+        return token;
+
+    }
+    private static String switchString(String s) {
+        String en;
+        switch (s){
+            case "0":
+                en= "A";
+                break;
+            case "1":
+                en = "B";
+                break;
+            case "2":
+                en= "C";
+                break;
+            case "3":
+                en= "D";
+                break;
+            case "4":
+                en= "E";
+                break;
+            case "5":
+                en= "F";
+                break;
+            case "6":
+                en= "G";
+                break;
+            case "7":
+                en= "H";
+                break;
+            case "8":
+                en= "I";
+                break;
+            default:
+                en= "J";
+                break;
+
+        }
+        return en;
+    }
+
+    public static String decrateTheLast(String s) {
+        String en;
+        switch (s){
+            case "A":
+                en= "0";
+                break;
+            case "B":
+                en = "1";
+                break;
+            case "C":
+                en= "2";
+                break;
+            case "D":
+                en= "3";
+                break;
+            case "E":
+                en= "4";
+                break;
+            case "F":
+                en= "5";
+                break;
+            case "G":
+                en= "6";
+                break;
+            case "H":
+                en= "7";
+                break;
+            case "I":
+                en= "8";
+                break;
+            default:
+                en= "9";
+                break;
+
+        }
+        return en;
+    }
+
+    public static void main(String[] args) {
+        String token = combineToken("18580558719","fsafasdfasdfas");
+        System.out.println(token);
+        System.out.println(decrateToken(token));
+    }
+
+    public static String[] decrateToken(String token) {
+
+        String[] datas = token.split("=");
+        String s = decrateTheLast(datas[datas.length-1]);
+        StringBuilder sb = new StringBuilder();
+        String ss = datas[2];
+        String phone = sb.append(datas[1]).append(ss.substring(0,ss.length()-1)).append(s).toString();
+        String[] data = {datas[0],phone};
+        return data;
+    }
     
     /**
  	 * @author chenyi
@@ -190,12 +292,5 @@ public class StringUtil {
         return params;
     }
 
-    public static void main(String[] args) {
-        String[] toSortParams = new String[]{"locksn","seqid","usertype","nickname","endtime","ptype","timestamp"};
-        String[] sorted = sortStrings(toSortParams);
-        for(String s:sorted) {
-            System.out.println(s);
-        }
-    }
 
 }

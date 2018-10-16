@@ -1,4 +1,4 @@
-package cn.anyoufang.util;
+package cn.anyoufang.utils;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,6 +48,7 @@ public class SimulateGetAndPostUtil {
             // 获取URLConnection对象对应的输出流
             out = new PrintWriter(conn.getOutputStream());
             // 发送请求参数
+            System.out.println("param:"+param);
             out.print(param);
             // flush输出流的缓冲
             out.flush();
