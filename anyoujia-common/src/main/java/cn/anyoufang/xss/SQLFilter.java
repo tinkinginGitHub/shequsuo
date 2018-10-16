@@ -1,6 +1,5 @@
 package cn.anyoufang.xss;
 
-import cn.anyoufang.entity.AnyoufangResult;
 import cn.anyoufang.utils.RRException;
 import org.apache.commons.lang.StringUtils;
 
