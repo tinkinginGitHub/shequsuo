@@ -1,8 +1,8 @@
 package cn.anyoufang.controller.lock;
 
 import cn.anyoufang.entity.SpMember;
-import cn.anyoufang.service.MemberService;
-import cn.anyoufang.util.SimulateGetAndPostUtil;
+import cn.anyoufang.service.LoginService;
+import cn.anyoufang.utils.SimulateGetAndPostUtil;
 import cn.anyoufang.utils.Md5Utils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -26,7 +26,7 @@ public class LockController {
     private String url;
 
     @Autowired
-    private MemberService memberService;
+    private LoginService loginService;
 
     /**
      * 获取锁开锁记录或者报警记录
@@ -114,7 +114,7 @@ public class LockController {
                               @RequestParam int endtime,
                               @RequestParam int usertype) {
         long timestamp = System.currentTimeMillis()/1000;
-        SpMember user = memberService.getUserById(seqid);
+        SpMember user = loginService.getUserById(seqid);
         String nickname;
         if(user !=null){
             nickname = user.getBname();
@@ -148,7 +148,7 @@ public class LockController {
                              @RequestParam(required = false) int endtime,
                              @RequestParam String pwds) {
         long timestamp = System.currentTimeMillis()/1000;
-        SpMember user = memberService.getUserById(seqid);
+        SpMember user = loginService.getUserById(seqid);
         String nickname;
         if(user !=null){
             nickname = user.getBname();

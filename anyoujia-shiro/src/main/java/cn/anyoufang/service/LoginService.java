@@ -5,10 +5,12 @@ import cn.anyoufang.entity.SpMember;
 import cn.anyoufang.entity.WeiXinVO;
 import com.aliyuncs.exceptions.ClientException;
 
+import java.util.Map;
+
 /**
  * @author daiping
  */
-public interface MemberService {
+public interface LoginService {
     /**
      * 用户注册
      * @param account
@@ -16,7 +18,7 @@ public interface MemberService {
      * @param weiXinVO
      * @return
      */
-    AnyoujiaResult memberRegister(String account, String pwd, WeiXinVO weiXinVO);
+    AnyoujiaResult memberRegister(String account, String pwd, WeiXinVO weiXinVO) throws Exception;
 
     /**
      * 用户使用密码登录
@@ -25,19 +27,19 @@ public interface MemberService {
      * @param ip
      * @return
      */
-    SpMember memberLoginByPwd(String account, String pwd,String ip);
+    Map<String,Object> memberLoginByPwd(String account, String pwd, String ip) throws Exception;
 
     /**
      * 用户使用验证码登录
      * @param code
      * @return
      */
-    SpMember memberLoginByVerifyCode(String phone,String code,String ip);
+    Map<String,Object>  memberLoginByVerifyCode(String phone,String code,String ip) throws Exception;
 
     /**
      * 用户登出系统
      */
-    void memberLogout();
+    void memberLogout(String token) throws Exception;
 
     /**
      * 获取验证码
@@ -51,7 +53,7 @@ public interface MemberService {
      * @param phone
      * @param newPwd
      */
-    boolean resetPwd(String phone,String newPwd);
+    boolean resetPwd(String phone,String newPwd) throws Exception;
 
     /**
      * 已经登录状态下重置密码
@@ -59,7 +61,7 @@ public interface MemberService {
      * @param newPassword
      * @return
      */
-    boolean resetPasswordLogined(String oldPassword,String newPassword);
+    boolean resetPasswordLogined(String oldPassword,String newPassword) throws Exception;
 
     /**
      * 设置安全密码
@@ -76,7 +78,7 @@ public interface MemberService {
      * @param id
      * @return
      */
-    boolean updateSecurityPwd(String oldPwd,String newPwd,int id,String answer,String question);
+    boolean updateSecurityPwd(String oldPwd,String newPwd,int id);
 
     /**
      * 根据id查询用户
@@ -117,5 +119,22 @@ public interface MemberService {
      * @return
      */
     boolean updateAdditionalUserInfo(String avatar,String bname,String phone);
+
+     boolean isExist(String phone);
+
+    Map<String,Object> doRegister(String account,String password) throws Exception;
+
+    Map<String,Object> doLogin(String account,String password,String ip) throws Exception;
+
+    Map<String,Object> updateUserPassword(String username,String password) throws Exception;
+
+    Map<String,Object> updateLogin(String username,String session) throws Exception;
+    SpMember getUserByAccount(String account);
+
+    boolean delSecurityPassword(String phone);
+
+    boolean checkAccount(String phone);
+
+    boolean checkByCode(String phone,String code);
 
 }

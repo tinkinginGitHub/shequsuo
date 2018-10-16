@@ -5,6 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.crypto.Cipher;
+import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
 /**
@@ -26,13 +27,13 @@ public class EncryptionUtil {
             if (sKey == null) {
                 return null;
             }
-//            if (sKey.length() != 128) {
-//                return null;
-//            }
+
             byte[] raw = sKey.getBytes("utf-8");
+            byte[] iv = "28v6njy9ONIY9OBU".getBytes("utf-8");
             SecretKeySpec skeySpec = new SecretKeySpec(raw, "AES");
-            Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");//"算法/模式/补码方式"
-            cipher.init(Cipher.ENCRYPT_MODE, skeySpec);
+            //"算法/模式/补码方式"
+            Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
+            cipher.init(Cipher.ENCRYPT_MODE, skeySpec, new IvParameterSpec(iv));
             byte[] encrypted = cipher.doFinal(sSrc.getBytes("utf-8"));
             //此处使用BASE64做转码功能，同时能起到2次加密的作用。
             return new Base64().encodeToString(encrypted);
@@ -62,7 +63,8 @@ public class EncryptionUtil {
             SecretKeySpec skeySpec = new SecretKeySpec(raw, "AES");
             Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
             cipher.init(Cipher.DECRYPT_MODE, skeySpec);
-            byte[] encrypted1 = new Base64().decode(sSrc);//先用base64解密
+            //先用base64解密
+            byte[] encrypted1 = new Base64().decode(sSrc);
             try {
                 byte[] original = cipher.doFinal(encrypted1);
                 String originalString = new String(original,"utf-8");
@@ -81,8 +83,4 @@ public class EncryptionUtil {
         }
     }
 
-    public static void main(String[] args) {
-        System.out.println(System.currentTimeMillis()/1000);
-
-    }
 }

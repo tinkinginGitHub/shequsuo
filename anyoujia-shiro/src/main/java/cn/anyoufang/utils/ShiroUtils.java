@@ -41,6 +41,8 @@ public class ShiroUtils {
 	}
 
 	public static boolean isLogin() {
+		Subject s = SecurityUtils.getSubject();
+		System.out.println("重置密码时的的sessionid: "+ s.getSession().getId().toString());
 		return SecurityUtils.getSubject().getPrincipal() != null;
 	}
 
