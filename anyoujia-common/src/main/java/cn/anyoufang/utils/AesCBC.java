@@ -142,6 +142,7 @@ public class AesCBC {
         String json = JsonUtils.objectToJson(data1.getData());
         System.out.println(json);
         String result =  sb.append("Sso").append("register").append(json).append(salt).toString().replaceAll("\t|\n|\r","");
+        System.out.println(result);
         String sign = Md5Utils.md5(result,"utf-8");
         InitParam p = new InitParam();
         p.setMod("Sso");
@@ -161,9 +162,9 @@ public class AesCBC {
         return null;
     }
     public static void main(String[] args) throws Exception {
-        updateLogin("daping0","KF9taj6UCYzeVVpfV/IXYdvBEcQDNhTRLFmEiMhuS7gx30RB0Ba7q1dvOPMRlpy1");
+        //updateLogin("daping0","KF9taj6UCYzeVVpfV/IXYdvBEcQDNhTRLFmEiMhuS7gx30RB0Ba7q1dvOPMRlpy1");
         //doLogin("daping0","4607e782c4d86fd5364d7e4508bb10d9","125.19.1.32");
-        //doRegister("daping0","4607e782c4d86fd5364d7e4508bb10d9");
+        doRegister("JIANMING","4607e782c4d86fd5364d7e4508bb10d9");
         //String s = Md5Utils.md5("Ssoupdatelogin{\"session\":\"/q5I3d1Z4FyF1Mm0cpN3obPwyyC4F9jeKQ/aRAyKLu/ieTxONNC+T1vQ5PbMXXoh\",\"username\":\"sunpeng\"}575gh5rr556Dfhr67Ohrt8","utf-8");
         //System.out.println(s);
     }

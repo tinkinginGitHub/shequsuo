@@ -29,7 +29,7 @@ public class WxUserServiceImpl implements WxUserService {
 
 
     @Override
-    public WeiXinVO getAndSaveUserInfoFromWx(String code,String nickname,String headurl,String sex)
+    public WeiXinVO getAndSaveUserInfoFromWx(String code)
             throws IOException {
         if (code != null) {
             //获取openid和session_key的连接 https://api.weixin.qq.com/sns/jscode2session?appid=APPID&secret=SECRET&js_code=JSCODE&grant_type=authorization_code
@@ -59,15 +59,10 @@ public class WxUserServiceImpl implements WxUserService {
                 int now = (int) (System.currentTimeMillis() / 1000);
                 wx.setAddtime(now);
                 wx.setOpenid(openId);
-                wx.setNickname(nickname);
-                wx.setImg(headurl);
                 wx.setSubscribe(true);
                 wxid = wxMapper.insertSelective(wx);
                 WeiXinVO weiXinVO = new WeiXinVO();
                 weiXinVO.setOpenid(openId);
-                weiXinVO.setHeadimgurl(headurl);
-                weiXinVO.setNickname(nickname);
-                weiXinVO.setSex(Integer.parseInt(sex));
                return  weiXinVO;
             } else {
                 SpMemberWx user = list.get(0);

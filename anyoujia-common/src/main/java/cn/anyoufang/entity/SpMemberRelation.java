@@ -1,54 +1,88 @@
 package cn.anyoufang.entity;
 
-import java.io.Serializable;
+public class SpMemberRelation {
+    private Integer id;
 
-public class SpMemberRelation implements Serializable {
+    private Integer parentid;
 
-    private static final long serialVersionUID = 1L;
-    private Integer uid;
+    private String locksn;
 
-    private Integer region;
+    private String phone;
 
-    private Integer room;
+    private String username;
 
-    private Byte usertype;
+    private String usertype;
+
+    private String userrelation;
 
     private Integer addtime;
 
-    private Integer stime;
+    private Integer starttime;
 
-    private Integer etime;
+    private Integer endtime;
 
-    public Integer getUid() {
-        return uid;
+    private Boolean setedlockpwd;
+
+    private Boolean setedlockfinger;
+
+    private Boolean lockpwdauth;
+
+    private Boolean fingerpwdauth;
+
+    public Integer getId() {
+        return id;
     }
 
-    public void setUid(Integer uid) {
-        this.uid = uid;
+    public void setId(Integer id) {
+        this.id = id;
     }
 
-    public Integer getRegion() {
-        return region;
+    public Integer getParentid() {
+        return parentid;
     }
 
-    public void setRegion(Integer region) {
-        this.region = region;
+    public void setParentid(Integer parentid) {
+        this.parentid = parentid;
     }
 
-    public Integer getRoom() {
-        return room;
+    public String getLocksn() {
+        return locksn;
     }
 
-    public void setRoom(Integer room) {
-        this.room = room;
+    public void setLocksn(String locksn) {
+        this.locksn = locksn == null ? null : locksn.trim();
     }
 
-    public Byte getUsertype() {
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone == null ? null : phone.trim();
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username == null ? null : username.trim();
+    }
+
+    public String getUsertype() {
         return usertype;
     }
 
-    public void setUsertype(Byte usertype) {
-        this.usertype = usertype;
+    public void setUsertype(String usertype) {
+        this.usertype = usertype == null ? null : usertype.trim();
+    }
+
+    public String getUserrelation() {
+        return userrelation;
+    }
+
+    public void setUserrelation(String userrelation) {
+        this.userrelation = userrelation == null ? null : userrelation.trim();
     }
 
     public Integer getAddtime() {
@@ -59,19 +93,51 @@ public class SpMemberRelation implements Serializable {
         this.addtime = addtime;
     }
 
-    public Integer getStime() {
-        return stime;
+    public Integer getStarttime() {
+        return starttime;
     }
 
-    public void setStime(Integer stime) {
-        this.stime = stime;
+    public void setStarttime(Integer starttime) {
+        this.starttime = starttime;
     }
 
-    public Integer getEtime() {
-        return etime;
+    public Integer getEndtime() {
+        return endtime;
     }
 
-    public void setEtime(Integer etime) {
-        this.etime = etime;
+    public void setEndtime(Integer endtime) {
+        this.endtime = endtime;
+    }
+
+    public Boolean getSetedlockpwd() {
+        return setedlockpwd;
+    }
+
+    public void setSetedlockpwd(Boolean setedlockpwd) {
+        this.setedlockpwd = setedlockpwd;
+    }
+
+    public Boolean getSetedlockfinger() {
+        return setedlockfinger;
+    }
+
+    public void setSetedlockfinger(Boolean setedlockfinger) {
+        this.setedlockfinger = setedlockfinger;
+    }
+
+    public Boolean getLockpwdauth() {
+        return lockpwdauth;
+    }
+
+    public void setLockpwdauth(Boolean lockpwdauth) {
+        this.lockpwdauth = lockpwdauth;
+    }
+
+    public Boolean getFingerpwdauth() {
+        return fingerpwdauth;
+    }
+
+    public void setFingerpwdauth(Boolean fingerpwdauth) {
+        this.fingerpwdauth = fingerpwdauth;
     }
 }

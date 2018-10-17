@@ -1,35 +1,63 @@
 package cn.anyoufang.entity;
 
-public class SpMemberAuth extends SpMemberAuthKey{
+public class SpMemberAuth {
+    private Integer id;
 
-    private static final long serialVersionUID = 1L;
-    private Integer devid;
+    private Integer relationid;
 
-    private String item;
+    private Integer locksn;
 
-    private Boolean val;
+    private String phone;
 
-    public Integer getDevid() {
-        return devid;
+    private Boolean lockpwdauth;
+
+    private Boolean fingerpwdauth;
+
+    public Integer getId() {
+        return id;
     }
 
-    public void setDevid(Integer devid) {
-        this.devid = devid;
+    public void setId(Integer id) {
+        this.id = id;
     }
 
-    public String getItem() {
-        return item;
+    public Integer getRelationid() {
+        return relationid;
     }
 
-    public void setItem(String item) {
-        this.item = item == null ? null : item.trim();
+    public void setRelationid(Integer relationid) {
+        this.relationid = relationid;
     }
 
-    public Boolean getVal() {
-        return val;
+    public Integer getLocksn() {
+        return locksn;
     }
 
-    public void setVal(Boolean val) {
-        this.val = val;
+    public void setLocksn(Integer locksn) {
+        this.locksn = locksn;
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone == null ? null : phone.trim();
+    }
+
+    public Boolean getLockpwdauth() {
+        return lockpwdauth;
+    }
+
+    public void setLockpwdauth(Boolean lockpwdauth) {
+        this.lockpwdauth = lockpwdauth;
+    }
+
+    public Boolean getFingerpwdauth() {
+        return fingerpwdauth;
+    }
+
+    public void setFingerpwdauth(Boolean fingerpwdauth) {
+        this.fingerpwdauth = fingerpwdauth;
     }
 }
