@@ -2,12 +2,12 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="cn.anyoufang.mapper.SpMemberAuthMapper" >
   <resultMap id="BaseResultMap" type="cn.anyoufang.entity.SpMemberAuth" >
-    <id column="region" property="region" jdbcType="INTEGER" />
-    <id column="room" property="room" jdbcType="INTEGER" />
-    <id column="uid" property="uid" jdbcType="INTEGER" />
-    <result column="devid" property="devid" jdbcType="INTEGER" />
-    <result column="item" property="item" jdbcType="VARCHAR" />
-    <result column="val" property="val" jdbcType="BIT" />
+    <result column="id" property="id" jdbcType="INTEGER" />
+    <result column="relationid" property="relationid" jdbcType="INTEGER" />
+    <result column="locksn" property="locksn" jdbcType="INTEGER" />
+    <result column="phone" property="phone" jdbcType="VARCHAR" />
+    <result column="lockpwdauth" property="lockpwdauth" jdbcType="BIT" />
+    <result column="fingerpwdauth" property="fingerpwdauth" jdbcType="BIT" />
   </resultMap>
   <sql id="Example_Where_Clause" >
     <where >
@@ -68,7 +68,7 @@
     </where>
   </sql>
   <sql id="Base_Column_List" >
-    region, room, uid, devid, item, val
+    id, relationid, locksn, phone, lockpwdauth, fingerpwdauth
   </sql>
   <select id="selectByExample" resultMap="BaseResultMap" parameterType="cn.anyoufang.entity.SpMemberAuthExample" >
     select
@@ -84,20 +84,6 @@
       order by ${orderByClause}
     </if>
   </select>
-  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="cn.anyoufang.entity.SpMemberAuthKey" >
-    select 
-    <include refid="Base_Column_List" />
-    from sp_member_auth
-    where region = #{region,jdbcType=INTEGER}
-      and room = #{room,jdbcType=INTEGER}
-      and uid = #{uid,jdbcType=INTEGER}
-  </select>
-  <delete id="deleteByPrimaryKey" parameterType="cn.anyoufang.entity.SpMemberAuthKey" >
-    delete from sp_member_auth
-    where region = #{region,jdbcType=INTEGER}
-      and room = #{room,jdbcType=INTEGER}
-      and uid = #{uid,jdbcType=INTEGER}
-  </delete>
   <delete id="deleteByExample" parameterType="cn.anyoufang.entity.SpMemberAuthExample" >
     delete from sp_member_auth
     <if test="_parameter != null" >
@@ -105,51 +91,53 @@
     </if>
   </delete>
   <insert id="insert" parameterType="cn.anyoufang.entity.SpMemberAuth" >
-    insert into sp_member_auth (region, room, uid, 
-      devid, item, val)
-    values (#{region,jdbcType=INTEGER}, #{room,jdbcType=INTEGER}, #{uid,jdbcType=INTEGER}, 
-      #{devid,jdbcType=INTEGER}, #{item,jdbcType=VARCHAR}, #{val,jdbcType=BIT})
+    insert into sp_member_auth (id, relationid, locksn, 
+      phone, lockpwdauth, fingerpwdauth
+      )
+    values (#{id,jdbcType=INTEGER}, #{relationid,jdbcType=INTEGER}, #{locksn,jdbcType=INTEGER}, 
+      #{phone,jdbcType=VARCHAR}, #{lockpwdauth,jdbcType=BIT}, #{fingerpwdauth,jdbcType=BIT}
+      )
   </insert>
   <insert id="insertSelective" parameterType="cn.anyoufang.entity.SpMemberAuth" >
     insert into sp_member_auth
     <trim prefix="(" suffix=")" suffixOverrides="," >
-      <if test="region != null" >
-        region,
+      <if test="id != null" >
+        id,
       </if>
-      <if test="room != null" >
-        room,
+      <if test="relationid != null" >
+        relationid,
       </if>
-      <if test="uid != null" >
-        uid,
+      <if test="locksn != null" >
+        locksn,
       </if>
-      <if test="devid != null" >
-        devid,
+      <if test="phone != null" >
+        phone,
       </if>
-      <if test="item != null" >
-        item,
+      <if test="lockpwdauth != null" >
+        lockpwdauth,
       </if>
-      <if test="val != null" >
-        val,
+      <if test="fingerpwdauth != null" >
+        fingerpwdauth,
       </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides="," >
-      <if test="region != null" >
-        #{region,jdbcType=INTEGER},
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
       </if>
-      <if test="room != null" >
-        #{room,jdbcType=INTEGER},
+      <if test="relationid != null" >
+        #{relationid,jdbcType=INTEGER},
       </if>
-      <if test="uid != null" >
-        #{uid,jdbcType=INTEGER},
+      <if test="locksn != null" >
+        #{locksn,jdbcType=INTEGER},
       </if>
-      <if test="devid != null" >
-        #{devid,jdbcType=INTEGER},
+      <if test="phone != null" >
+        #{phone,jdbcType=VARCHAR},
       </if>
-      <if test="item != null" >
-        #{item,jdbcType=VARCHAR},
+      <if test="lockpwdauth != null" >
+        #{lockpwdauth,jdbcType=BIT},
       </if>
-      <if test="val != null" >
-        #{val,jdbcType=BIT},
+      <if test="fingerpwdauth != null" >
+        #{fingerpwdauth,jdbcType=BIT},
       </if>
     </trim>
   </insert>
@@ -162,23 +150,23 @@
   <update id="updateByExampleSelective" parameterType="map" >
     update sp_member_auth
     <set >
-      <if test="record.region != null" >
-        region = #{record.region,jdbcType=INTEGER},
+      <if test="record.id != null" >
+        id = #{record.id,jdbcType=INTEGER},
       </if>
-      <if test="record.room != null" >
-        room = #{record.room,jdbcType=INTEGER},
+      <if test="record.relationid != null" >
+        relationid = #{record.relationid,jdbcType=INTEGER},
       </if>
-      <if test="record.uid != null" >
-        uid = #{record.uid,jdbcType=INTEGER},
+      <if test="record.locksn != null" >
+        locksn = #{record.locksn,jdbcType=INTEGER},
       </if>
-      <if test="record.devid != null" >
-        devid = #{record.devid,jdbcType=INTEGER},
+      <if test="record.phone != null" >
+        phone = #{record.phone,jdbcType=VARCHAR},
       </if>
-      <if test="record.item != null" >
-        item = #{record.item,jdbcType=VARCHAR},
+      <if test="record.lockpwdauth != null" >
+        lockpwdauth = #{record.lockpwdauth,jdbcType=BIT},
       </if>
-      <if test="record.val != null" >
-        val = #{record.val,jdbcType=BIT},
+      <if test="record.fingerpwdauth != null" >
+        fingerpwdauth = #{record.fingerpwdauth,jdbcType=BIT},
       </if>
     </set>
     <if test="_parameter != null" >
@@ -187,40 +175,14 @@
   </update>
   <update id="updateByExample" parameterType="map" >
     update sp_member_auth
-    set region = #{record.region,jdbcType=INTEGER},
-      room = #{record.room,jdbcType=INTEGER},
-      uid = #{record.uid,jdbcType=INTEGER},
-      devid = #{record.devid,jdbcType=INTEGER},
-      item = #{record.item,jdbcType=VARCHAR},
-      val = #{record.val,jdbcType=BIT}
+    set id = #{record.id,jdbcType=INTEGER},
+      relationid = #{record.relationid,jdbcType=INTEGER},
+      locksn = #{record.locksn,jdbcType=INTEGER},
+      phone = #{record.phone,jdbcType=VARCHAR},
+      lockpwdauth = #{record.lockpwdauth,jdbcType=BIT},
+      fingerpwdauth = #{record.fingerpwdauth,jdbcType=BIT}
     <if test="_parameter != null" >
       <include refid="Update_By_Example_Where_Clause" />
     </if>
-  </update>
-  <update id="updateByPrimaryKeySelective" parameterType="cn.anyoufang.entity.SpMemberAuth" >
-    update sp_member_auth
-    <set >
-      <if test="devid != null" >
-        devid = #{devid,jdbcType=INTEGER},
-      </if>
-      <if test="item != null" >
-        item = #{item,jdbcType=VARCHAR},
-      </if>
-      <if test="val != null" >
-        val = #{val,jdbcType=BIT},
-      </if>
-    </set>
-    where region = #{region,jdbcType=INTEGER}
-      and room = #{room,jdbcType=INTEGER}
-      and uid = #{uid,jdbcType=INTEGER}
-  </update>
-  <update id="updateByPrimaryKey" parameterType="cn.anyoufang.entity.SpMemberAuth" >
-    update sp_member_auth
-    set devid = #{devid,jdbcType=INTEGER},
-      item = #{item,jdbcType=VARCHAR},
-      val = #{val,jdbcType=BIT}
-    where region = #{region,jdbcType=INTEGER}
-      and room = #{room,jdbcType=INTEGER}
-      and uid = #{uid,jdbcType=INTEGER}
   </update>
 </mapper>

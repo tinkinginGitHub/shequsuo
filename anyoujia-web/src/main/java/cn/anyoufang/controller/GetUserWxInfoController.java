@@ -36,18 +36,16 @@ public class GetUserWxInfoController {
     @SuppressWarnings({ "resource", "deprecation" })
     @RequestMapping("/getCode")
     @ApiOperation(value = "获取用户微信信息并保存",httpMethod = "POST",response = ModelAndView.class)
-    public AnyoujiaResult getCode(@RequestParam String code,
-                                  @RequestParam String nickname,
-                                  @RequestParam String headurl,
-                                  @RequestParam String sex) {
+    public AnyoujiaResult getCode(@RequestParam String code) {
 
         WeiXinVO weiXinVO = null;
         try {
-            weiXinVO = wxUserService.getAndSaveUserInfoFromWx(code,nickname,headurl,sex);
+            weiXinVO = wxUserService.getAndSaveUserInfoFromWx(code);
         } catch (IOException e) {
             if(LOGGER.isInfoEnabled()) {
                 LOGGER.info(e.getMessage());
             }
+            return AnyoujiaResult.build(500,"系统失败");
         }
         if(weiXinVO != null) {
             return AnyoujiaResult.ok();

@@ -22,17 +22,25 @@ import java.util.Map;
 public abstract class AbstractController {
 	protected Logger logger = LoggerFactory.getLogger(getClass());
 	
-	protected SpMember getUser(HttpServletRequest request,LoginService loginService) throws Exception {
+	protected SpMember getUser(HttpServletRequest request,LoginService loginService) {
 		String token = request.getHeader("token");
-		Map<String,Object> result =  parseSession(token);
-		if(result != null) {
+        Map<String,Object> result = null;
+        try {
+            result = parseSession(token);
+        } catch (Exception e) {
+            if (logger.isInfoEnabled()) {
+                logger.info(e.getMessage());
+            }
+            return null;
+        }
+        if(result != null) {
             String username = (String) result.get("username");
             return loginService.getUserByAccount(username);
         }
         return null;
 	}
 
-	protected  boolean isLogin(String token) throws Exception {
+	protected  boolean isLogin(String token) {
        Map<String,Object> data = parseSession(token);
       if(data != null) {
           String username = (String) data.get("username");
@@ -43,10 +51,18 @@ public abstract class AbstractController {
 		return false;
 	}
 
-	protected void updateLogin(HttpServletRequest  request, LoginService loginService) throws Exception {
+	protected void updateLogin(HttpServletRequest  request, LoginService loginService) {
 		String token = request.getHeader("token");
-		Map<String,Object> result =  parseSession(token);
-		if(result == null) {
+        Map<String,Object> result = null;
+        try {
+            result = parseSession(token);
+        } catch (Exception e) {
+            if (logger.isInfoEnabled()) {
+                logger.info(e.getMessage());
+            }
+            return;
+        }
+        if(result == null) {
 		    return;
         }
 		String username = (String) result.get("username");
@@ -55,7 +71,15 @@ public abstract class AbstractController {
         long now1 = System.currentTimeMillis();
         long check = endtime1 - now1;
         if(check <= 0) {
-            Map<String, Object> data = loginService.updateLogin(username, token);
+            Map<String, Object> data = null;
+            try {
+                data = loginService.updateLogin(username, token);
+            } catch (Exception e) {
+                if (logger.isInfoEnabled()) {
+                    logger.info(e.getMessage());
+                }
+                return;
+            }
             Integer status = (Integer) data.get("status");
             String overtime = String.valueOf(data.get("overtime"));
             if (status == 200) {
@@ -67,9 +91,17 @@ public abstract class AbstractController {
             }
         }
 	}
-	protected Map<String,Object> parseSession(String session) throws Exception{
-		String result= AesCBC.getInstance().decrypt(session);
-		try {
+	protected Map<String,Object> parseSession(String session){
+        String result;
+        try {
+            result = AesCBC.getInstance().decrypt(session);
+        } catch (Exception e) {
+            if (logger.isInfoEnabled()) {
+                logger.info(e.getMessage());
+            }
+            return null;
+        }
+        try {
 		    JsonUtils.isJSONValid(result);
         }catch (Exception e) {
 		    return null;

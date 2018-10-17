@@ -11,7 +11,7 @@ public interface SpMemberRelationMapper {
 
     int deleteByExample(SpMemberRelationExample example);
 
-    int deleteByPrimaryKey(Integer uid);
+    int deleteByPrimaryKey(Integer id);
 
     int insert(SpMemberRelation record);
 
@@ -19,7 +19,7 @@ public interface SpMemberRelationMapper {
 
     List<SpMemberRelation> selectByExample(SpMemberRelationExample example);
 
-    SpMemberRelation selectByPrimaryKey(Integer uid);
+    SpMemberRelation selectByPrimaryKey(Integer id);
 
     int updateByExampleSelective(@Param("record") SpMemberRelation record, @Param("example") SpMemberRelationExample example);
 

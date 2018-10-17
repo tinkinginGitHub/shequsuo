@@ -2,13 +2,20 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="cn.anyoufang.mapper.SpMemberRelationMapper" >
   <resultMap id="BaseResultMap" type="cn.anyoufang.entity.SpMemberRelation" >
-    <id column="uid" property="uid" jdbcType="INTEGER" />
-    <result column="region" property="region" jdbcType="INTEGER" />
-    <result column="room" property="room" jdbcType="INTEGER" />
-    <result column="usertype" property="usertype" jdbcType="TINYINT" />
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="parentid" property="parentid" jdbcType="INTEGER" />
+    <result column="locksn" property="locksn" jdbcType="VARCHAR" />
+    <result column="phone" property="phone" jdbcType="VARCHAR" />
+    <result column="username" property="username" jdbcType="VARCHAR" />
+    <result column="usertype" property="usertype" jdbcType="VARCHAR" />
+    <result column="userrelation" property="userrelation" jdbcType="VARCHAR" />
     <result column="addtime" property="addtime" jdbcType="INTEGER" />
-    <result column="stime" property="stime" jdbcType="INTEGER" />
-    <result column="etime" property="etime" jdbcType="INTEGER" />
+    <result column="starttime" property="starttime" jdbcType="INTEGER" />
+    <result column="endtime" property="endtime" jdbcType="INTEGER" />
+    <result column="setedlockpwd" property="setedlockpwd" jdbcType="BIT" />
+    <result column="setedlockfinger" property="setedlockfinger" jdbcType="BIT" />
+    <result column="lockpwdauth" property="lockpwdauth" jdbcType="BIT" />
+    <result column="fingerpwdauth" property="fingerpwdauth" jdbcType="BIT" />
   </resultMap>
   <sql id="Example_Where_Clause" >
     <where >
@@ -69,7 +76,8 @@
     </where>
   </sql>
   <sql id="Base_Column_List" >
-    uid, region, room, usertype, addtime, stime, etime
+    id, parentid, locksn, phone, username, usertype, userrelation, addtime, starttime, 
+    endtime, setedlockpwd, setedlockfinger, lockpwdauth, fingerpwdauth
   </sql>
   <select id="selectByExample" resultMap="BaseResultMap" parameterType="cn.anyoufang.entity.SpMemberRelationExample" >
     select
@@ -89,11 +97,11 @@
     select 
     <include refid="Base_Column_List" />
     from sp_member_relation
-    where uid = #{uid,jdbcType=INTEGER}
+    where id = #{id,jdbcType=INTEGER}
   </select>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
     delete from sp_member_relation
-    where uid = #{uid,jdbcType=INTEGER}
+    where id = #{id,jdbcType=INTEGER}
   </delete>
   <delete id="deleteByExample" parameterType="cn.anyoufang.entity.SpMemberRelationExample" >
     delete from sp_member_relation
@@ -102,59 +110,105 @@
     </if>
   </delete>
   <insert id="insert" parameterType="cn.anyoufang.entity.SpMemberRelation" >
-    insert into sp_member_relation (uid, region, room, 
-      usertype, addtime, stime, 
-      etime)
-    values (#{uid,jdbcType=INTEGER}, #{region,jdbcType=INTEGER}, #{room,jdbcType=INTEGER}, 
-      #{usertype,jdbcType=TINYINT}, #{addtime,jdbcType=INTEGER}, #{stime,jdbcType=INTEGER}, 
-      #{etime,jdbcType=INTEGER})
+    insert into sp_member_relation (id, parentid, locksn, 
+      phone, username, usertype, 
+      userrelation, addtime, starttime, 
+      endtime, setedlockpwd, setedlockfinger, 
+      lockpwdauth, fingerpwdauth)
+    values (#{id,jdbcType=INTEGER}, #{parentid,jdbcType=INTEGER}, #{locksn,jdbcType=VARCHAR}, 
+      #{phone,jdbcType=VARCHAR}, #{username,jdbcType=VARCHAR}, #{usertype,jdbcType=VARCHAR}, 
+      #{userrelation,jdbcType=VARCHAR}, #{addtime,jdbcType=INTEGER}, #{starttime,jdbcType=INTEGER}, 
+      #{endtime,jdbcType=INTEGER}, #{setedlockpwd,jdbcType=BIT}, #{setedlockfinger,jdbcType=BIT}, 
+      #{lockpwdauth,jdbcType=BIT}, #{fingerpwdauth,jdbcType=BIT})
   </insert>
   <insert id="insertSelective" parameterType="cn.anyoufang.entity.SpMemberRelation" >
     insert into sp_member_relation
     <trim prefix="(" suffix=")" suffixOverrides="," >
-      <if test="uid != null" >
-        uid,
+      <if test="id != null" >
+        id,
       </if>
-      <if test="region != null" >
-        region,
+      <if test="parentid != null" >
+        parentid,
       </if>
-      <if test="room != null" >
-        room,
+      <if test="locksn != null" >
+        locksn,
+      </if>
+      <if test="phone != null" >
+        phone,
+      </if>
+      <if test="username != null" >
+        username,
       </if>
       <if test="usertype != null" >
         usertype,
       </if>
+      <if test="userrelation != null" >
+        userrelation,
+      </if>
       <if test="addtime != null" >
         addtime,
       </if>
-      <if test="stime != null" >
-        stime,
+      <if test="starttime != null" >
+        starttime,
       </if>
-      <if test="etime != null" >
-        etime,
+      <if test="endtime != null" >
+        endtime,
+      </if>
+      <if test="setedlockpwd != null" >
+        setedlockpwd,
+      </if>
+      <if test="setedlockfinger != null" >
+        setedlockfinger,
+      </if>
+      <if test="lockpwdauth != null" >
+        lockpwdauth,
+      </if>
+      <if test="fingerpwdauth != null" >
+        fingerpwdauth,
       </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides="," >
-      <if test="uid != null" >
-        #{uid,jdbcType=INTEGER},
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
       </if>
-      <if test="region != null" >
-        #{region,jdbcType=INTEGER},
+      <if test="parentid != null" >
+        #{parentid,jdbcType=INTEGER},
       </if>
-      <if test="room != null" >
-        #{room,jdbcType=INTEGER},
+      <if test="locksn != null" >
+        #{locksn,jdbcType=VARCHAR},
+      </if>
+      <if test="phone != null" >
+        #{phone,jdbcType=VARCHAR},
+      </if>
+      <if test="username != null" >
+        #{username,jdbcType=VARCHAR},
       </if>
       <if test="usertype != null" >
-        #{usertype,jdbcType=TINYINT},
+        #{usertype,jdbcType=VARCHAR},
+      </if>
+      <if test="userrelation != null" >
+        #{userrelation,jdbcType=VARCHAR},
       </if>
       <if test="addtime != null" >
         #{addtime,jdbcType=INTEGER},
       </if>
-      <if test="stime != null" >
-        #{stime,jdbcType=INTEGER},
+      <if test="starttime != null" >
+        #{starttime,jdbcType=INTEGER},
       </if>
-      <if test="etime != null" >
-        #{etime,jdbcType=INTEGER},
+      <if test="endtime != null" >
+        #{endtime,jdbcType=INTEGER},
+      </if>
+      <if test="setedlockpwd != null" >
+        #{setedlockpwd,jdbcType=BIT},
+      </if>
+      <if test="setedlockfinger != null" >
+        #{setedlockfinger,jdbcType=BIT},
+      </if>
+      <if test="lockpwdauth != null" >
+        #{lockpwdauth,jdbcType=BIT},
+      </if>
+      <if test="fingerpwdauth != null" >
+        #{fingerpwdauth,jdbcType=BIT},
       </if>
     </trim>
   </insert>
@@ -167,26 +221,47 @@
   <update id="updateByExampleSelective" parameterType="map" >
     update sp_member_relation
     <set >
-      <if test="record.uid != null" >
-        uid = #{record.uid,jdbcType=INTEGER},
+      <if test="record.id != null" >
+        id = #{record.id,jdbcType=INTEGER},
       </if>
-      <if test="record.region != null" >
-        region = #{record.region,jdbcType=INTEGER},
+      <if test="record.parentid != null" >
+        parentid = #{record.parentid,jdbcType=INTEGER},
       </if>
-      <if test="record.room != null" >
-        room = #{record.room,jdbcType=INTEGER},
+      <if test="record.locksn != null" >
+        locksn = #{record.locksn,jdbcType=VARCHAR},
+      </if>
+      <if test="record.phone != null" >
+        phone = #{record.phone,jdbcType=VARCHAR},
+      </if>
+      <if test="record.username != null" >
+        username = #{record.username,jdbcType=VARCHAR},
       </if>
       <if test="record.usertype != null" >
-        usertype = #{record.usertype,jdbcType=TINYINT},
+        usertype = #{record.usertype,jdbcType=VARCHAR},
+      </if>
+      <if test="record.userrelation != null" >
+        userrelation = #{record.userrelation,jdbcType=VARCHAR},
       </if>
       <if test="record.addtime != null" >
         addtime = #{record.addtime,jdbcType=INTEGER},
       </if>
-      <if test="record.stime != null" >
-        stime = #{record.stime,jdbcType=INTEGER},
+      <if test="record.starttime != null" >
+        starttime = #{record.starttime,jdbcType=INTEGER},
       </if>
-      <if test="record.etime != null" >
-        etime = #{record.etime,jdbcType=INTEGER},
+      <if test="record.endtime != null" >
+        endtime = #{record.endtime,jdbcType=INTEGER},
+      </if>
+      <if test="record.setedlockpwd != null" >
+        setedlockpwd = #{record.setedlockpwd,jdbcType=BIT},
+      </if>
+      <if test="record.setedlockfinger != null" >
+        setedlockfinger = #{record.setedlockfinger,jdbcType=BIT},
+      </if>
+      <if test="record.lockpwdauth != null" >
+        lockpwdauth = #{record.lockpwdauth,jdbcType=BIT},
+      </if>
+      <if test="record.fingerpwdauth != null" >
+        fingerpwdauth = #{record.fingerpwdauth,jdbcType=BIT},
       </if>
     </set>
     <if test="_parameter != null" >
@@ -195,13 +270,20 @@
   </update>
   <update id="updateByExample" parameterType="map" >
     update sp_member_relation
-    set uid = #{record.uid,jdbcType=INTEGER},
-      region = #{record.region,jdbcType=INTEGER},
-      room = #{record.room,jdbcType=INTEGER},
-      usertype = #{record.usertype,jdbcType=TINYINT},
+    set id = #{record.id,jdbcType=INTEGER},
+      parentid = #{record.parentid,jdbcType=INTEGER},
+      locksn = #{record.locksn,jdbcType=VARCHAR},
+      phone = #{record.phone,jdbcType=VARCHAR},
+      username = #{record.username,jdbcType=VARCHAR},
+      usertype = #{record.usertype,jdbcType=VARCHAR},
+      userrelation = #{record.userrelation,jdbcType=VARCHAR},
       addtime = #{record.addtime,jdbcType=INTEGER},
-      stime = #{record.stime,jdbcType=INTEGER},
-      etime = #{record.etime,jdbcType=INTEGER}
+      starttime = #{record.starttime,jdbcType=INTEGER},
+      endtime = #{record.endtime,jdbcType=INTEGER},
+      setedlockpwd = #{record.setedlockpwd,jdbcType=BIT},
+      setedlockfinger = #{record.setedlockfinger,jdbcType=BIT},
+      lockpwdauth = #{record.lockpwdauth,jdbcType=BIT},
+      fingerpwdauth = #{record.fingerpwdauth,jdbcType=BIT}
     <if test="_parameter != null" >
       <include refid="Update_By_Example_Where_Clause" />
     </if>
@@ -209,35 +291,63 @@
   <update id="updateByPrimaryKeySelective" parameterType="cn.anyoufang.entity.SpMemberRelation" >
     update sp_member_relation
     <set >
-      <if test="region != null" >
-        region = #{region,jdbcType=INTEGER},
+      <if test="parentid != null" >
+        parentid = #{parentid,jdbcType=INTEGER},
       </if>
-      <if test="room != null" >
-        room = #{room,jdbcType=INTEGER},
+      <if test="locksn != null" >
+        locksn = #{locksn,jdbcType=VARCHAR},
+      </if>
+      <if test="phone != null" >
+        phone = #{phone,jdbcType=VARCHAR},
+      </if>
+      <if test="username != null" >
+        username = #{username,jdbcType=VARCHAR},
       </if>
       <if test="usertype != null" >
-        usertype = #{usertype,jdbcType=TINYINT},
+        usertype = #{usertype,jdbcType=VARCHAR},
+      </if>
+      <if test="userrelation != null" >
+        userrelation = #{userrelation,jdbcType=VARCHAR},
       </if>
       <if test="addtime != null" >
         addtime = #{addtime,jdbcType=INTEGER},
       </if>
-      <if test="stime != null" >
-        stime = #{stime,jdbcType=INTEGER},
+      <if test="starttime != null" >
+        starttime = #{starttime,jdbcType=INTEGER},
       </if>
-      <if test="etime != null" >
-        etime = #{etime,jdbcType=INTEGER},
+      <if test="endtime != null" >
+        endtime = #{endtime,jdbcType=INTEGER},
+      </if>
+      <if test="setedlockpwd != null" >
+        setedlockpwd = #{setedlockpwd,jdbcType=BIT},
+      </if>
+      <if test="setedlockfinger != null" >
+        setedlockfinger = #{setedlockfinger,jdbcType=BIT},
+      </if>
+      <if test="lockpwdauth != null" >
+        lockpwdauth = #{lockpwdauth,jdbcType=BIT},
+      </if>
+      <if test="fingerpwdauth != null" >
+        fingerpwdauth = #{fingerpwdauth,jdbcType=BIT},
       </if>
     </set>
-    where uid = #{uid,jdbcType=INTEGER}
+    where id = #{id,jdbcType=INTEGER}
   </update>
   <update id="updateByPrimaryKey" parameterType="cn.anyoufang.entity.SpMemberRelation" >
     update sp_member_relation
-    set region = #{region,jdbcType=INTEGER},
-      room = #{room,jdbcType=INTEGER},
-      usertype = #{usertype,jdbcType=TINYINT},
+    set parentid = #{parentid,jdbcType=INTEGER},
+      locksn = #{locksn,jdbcType=VARCHAR},
+      phone = #{phone,jdbcType=VARCHAR},
+      username = #{username,jdbcType=VARCHAR},
+      usertype = #{usertype,jdbcType=VARCHAR},
+      userrelation = #{userrelation,jdbcType=VARCHAR},
       addtime = #{addtime,jdbcType=INTEGER},
-      stime = #{stime,jdbcType=INTEGER},
-      etime = #{etime,jdbcType=INTEGER}
-    where uid = #{uid,jdbcType=INTEGER}
+      starttime = #{starttime,jdbcType=INTEGER},
+      endtime = #{endtime,jdbcType=INTEGER},
+      setedlockpwd = #{setedlockpwd,jdbcType=BIT},
+      setedlockfinger = #{setedlockfinger,jdbcType=BIT},
+      lockpwdauth = #{lockpwdauth,jdbcType=BIT},
+      fingerpwdauth = #{fingerpwdauth,jdbcType=BIT}
+    where id = #{id,jdbcType=INTEGER}
   </update>
 </mapper>

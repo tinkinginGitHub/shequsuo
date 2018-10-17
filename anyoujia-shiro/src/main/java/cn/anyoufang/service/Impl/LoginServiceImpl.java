@@ -184,7 +184,8 @@ public class LoginServiceImpl implements LoginService {
         if(token != null) {
             Map<String,Object> data =  parseSession(token);
             String username = (String) data.get("username");
-            RedisUtils.del(username);
+            String md5Encrypt =  Md5Utils.md5(username,"utf-8");
+            RedisUtils.del(md5Encrypt);
         }
     }
 
@@ -397,7 +398,6 @@ public class LoginServiceImpl implements LoginService {
         map.put("type","1");
         data1.setData(map);
         String json = JsonUtils.objectToJson(data1.getData());
-        System.out.println(json);
         String result =  sb.append("Sso").append("register").append(json).append(salt).toString().replaceAll("\t|\n|\r","");
         String sign = Md5Utils.md5(result,"utf-8");
         InitParam p = new InitParam();
