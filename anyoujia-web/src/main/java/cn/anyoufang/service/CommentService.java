@@ -6,4 +6,6 @@ package cn.anyoufang.service;
 public interface CommentService {
 
     boolean saveComments(String comment,String url,String phone);
+
+    boolean checkSecurityPassword(String dbpassword, String password);
 }

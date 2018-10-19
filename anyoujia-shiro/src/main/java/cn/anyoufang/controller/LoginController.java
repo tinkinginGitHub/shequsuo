@@ -2,12 +2,11 @@ package cn.anyoufang.controller;
 
 
 import cn.anyoufang.annotation.AccessToken;
-import cn.anyoufang.entity.AnyoujiaResult;
+import cn.anyoufang.entity.selfdefined.AnyoujiaResult;
 import cn.anyoufang.entity.Null;
 import cn.anyoufang.entity.SpMember;
-import cn.anyoufang.entity.WeiXinVO;
-import cn.anyoufang.exception.LoginException;
 import cn.anyoufang.service.LoginService;
+import cn.anyoufang.service.WxUserService;
 import cn.anyoufang.utils.IPUtils;
 import cn.anyoufang.utils.Md5Utils;
 import cn.anyoufang.utils.RedisUtils;
@@ -25,7 +24,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
+import java.io.IOException;
 import java.util.Map;
 
 /**
@@ -40,6 +39,9 @@ public class LoginController extends AbstractController {
     @Autowired
     private LoginService loginService;
 
+    @Autowired
+    private WxUserService wxUserService;
+
 
     /**
      * 注册
@@ -48,6 +50,7 @@ public class LoginController extends AbstractController {
     @ApiOperation(value = "注册用户信息", httpMethod = "GET", notes = "member regist", response = AnyoujiaResult.class)
     public AnyoujiaResult register(@ApiParam(required = true, value = "用户手机号", name = "phone") @RequestParam String phone,
                                    @ApiParam(required = true, value = "验证码", name = "code") @RequestParam String code,
+                                   @RequestParam String wxcode,
                                    @ApiParam(required = true, value = "密码", name = "pwd") @RequestParam String pwd,
                                    HttpServletRequest request) {
 
@@ -62,25 +65,28 @@ public class LoginController extends AbstractController {
         if(StringUtil.isEmpty(phone)) {
             return AnyoujiaResult.build(400, "手机号错误");
         }
-        HttpSession session = request.getSession();
-        WeiXinVO weiXinVO = null;
-        if (session != null) {
-            weiXinVO = (WeiXinVO) session.getAttribute("weiXinVO");
-            if (weiXinVO != null) {
-
-            } else {
-                String cacheCode = RedisUtils.get(Md5Utils.md5(phone,"utf-8"));
-                if (cacheCode == null) {
-                    return AnyoujiaResult.build(400, "验证码超时");
-                }
-                code = code.trim();
-                if (!code.equals(cacheCode)) {
-                    return AnyoujiaResult.build(400, "验证码错误");
-                }
-            }
+        String cacheCode = RedisUtils.get(Md5Utils.md5(phone,"utf-8"));
+        if (cacheCode == null) {
+            return AnyoujiaResult.build(400, "验证码超时");
         }
+        code = code.trim();
+        if (!code.equals(cacheCode)) {
+            return AnyoujiaResult.build(400, "验证码错误");
+        }
+
+        String openId;
         try {
-            return loginService.memberRegister(phone, pwd, weiXinVO);
+            openId = wxUserService.getOpenId(wxcode);
+
+        } catch (IOException e) {
+            if (LOGGER.isInfoEnabled()) {
+                LOGGER.info(e.getMessage());
+            }
+            return AnyoujiaResult.build(500, "系统错误");
+        }
+
+        try {
+            return loginService.memberRegister(phone, pwd, openId);
         } catch (Exception e) {
             if (LOGGER.isInfoEnabled()) {
                 LOGGER.info(e.getMessage());
@@ -98,30 +104,20 @@ public class LoginController extends AbstractController {
     public AnyoujiaResult loginByPassword(@ApiParam(required = true, value = "手机号", name = "account") @RequestParam String account,
                                           @ApiParam(required = true, value = "密码", name = "pwd") @RequestParam String pwd,
                                           HttpServletRequest request) {
-        Map<String, Object> user;
+        Map<String, Object> res;
         try {
-           user = loginService.memberLoginByPwd(account, pwd, IPUtils.getIpAddr(request));
-        } catch (LoginException e) {
-            if (LOGGER.isInfoEnabled()) {
-                LOGGER.info(e.getMessage());
-            }
-            return AnyoujiaResult.build(500, "系统异常");
+            res = loginService.memberLoginByPwd(account, pwd, IPUtils.getIpAddr(request));
         } catch (Exception e) {
             if (LOGGER.isInfoEnabled()) {
                 LOGGER.info(e.getMessage());
             }
             return AnyoujiaResult.build(500, "系统异常");
         }
-        if (user != null) {
-            Integer status = (Integer) user.get("status");
-            String msg = (String) user.get("msg");
-            if (status != 200) {
-                return AnyoujiaResult.build(status, msg);
-            }
-            return AnyoujiaResult.ok(user);
+        if (res != null) {
+            return AnyoujiaResult.ok(res);
         }
 
-        if (user instanceof Null) {
+        if (res instanceof Null) {
             return AnyoujiaResult.build(400, "账号不存在");
         }
         return AnyoujiaResult.build(400, "账号或者密码错误");
@@ -136,31 +132,47 @@ public class LoginController extends AbstractController {
                                             @ApiParam(required = true, value = "验证码", name = "code") @RequestParam String code,
                                             HttpServletRequest request) {
 
-        Map<String, Object> user;
+        Map<String, Object> res;
         try {
-            user = loginService.memberLoginByVerifyCode(account, code, IPUtils.getIpAddr(request));
+            res = loginService.memberLoginByVerifyCode(account, code, IPUtils.getIpAddr(request));
         } catch (Exception e) {
             if (LOGGER.isInfoEnabled()) {
                 LOGGER.info(e.getMessage());
             }
             return AnyoujiaResult.build(500, "系统异常");
         }
-        if (user instanceof Null) {
+        if (res instanceof Null) {
             return AnyoujiaResult.build(400, "账号不存在");
         }
-        if (user == null) {
+        if (res == null) {
             return AnyoujiaResult.build(400, "验证码超时或错误");
         }
-        return AnyoujiaResult.ok(user);
+        return AnyoujiaResult.ok(res);
     }
 
     @RequestMapping("/addtioninfo")
     public AnyoujiaResult additionalInfo(@RequestParam String avatar,
                                          @RequestParam String bname,
-                                         @RequestParam String phone) {
-        if (loginService.updateAdditionalUserInfo(avatar, bname, phone)) {
-            return AnyoujiaResult.ok();
+                                         @RequestParam String phone,HttpServletRequest request) {
+        if(StringUtil.isEmpty(avatar)
+                || StringUtil.isEmpty(bname)
+                ||StringUtil.isEmpty(phone)) {
+
+         return AnyoujiaResult.build(400,"参数异常");
         }
+        boolean addOk;
+        try {
+           addOk = loginService.updateAdditionalUserInfo(avatar, bname, phone);
+            if (addOk) {
+                return AnyoujiaResult.ok();
+            }
+        }catch (RuntimeException e){
+            if(logger.isInfoEnabled()) {
+               logger.info(e.getMessage());
+            }
+            return AnyoujiaResult.build(400, "更新失败");
+        }
+
         return AnyoujiaResult.build(400, "更新失败");
     }
 
@@ -205,7 +217,7 @@ public class LoginController extends AbstractController {
         try {
             loginService.memberLogout(session);
         } catch (Exception e) {
-            return AnyoujiaResult.build(400, "参数解析失败");
+            return AnyoujiaResult.build(500, "系统错误");
         }
         //TODO 告诉前台被挤下线
         return AnyoujiaResult.ok();
@@ -219,15 +231,24 @@ public class LoginController extends AbstractController {
     @ApiOperation(value = "获取验证码", httpMethod = "POST", notes = "member get code")
     public AnyoujiaResult verifyCode(@RequestParam String phone) {
 
+        String res = "";
         try {
-            loginService.getVerifCode(phone);
+            res =  loginService.sendVerifCode(phone);
         } catch (ClientException e) {
             if (LOGGER.isInfoEnabled()) {
                 LOGGER.info(e.getMessage());
             }
             return AnyoujiaResult.build(400, "获取验证码失败");
         }
-        return AnyoujiaResult.build(200, "获取验证码成功");
+        if("true".equals(res)) {
+            return AnyoujiaResult.build(200, "获取验证码成功");
+        }else if("false".equals(res)) {
+            return AnyoujiaResult.build(400, "获取验证码失败");
+        }else {
+            return AnyoujiaResult.build(400, "您短信使用次数已达最大次数");
+        }
+
+
     }
 
     /**

@@ -16,6 +16,8 @@ public class CommentServiceImpl implements CommentService {
     @Autowired
     private SpCommentMapper commentMapper;
 
+
+
     @Override
     public boolean saveComments(String comment, String url,String phone) {
         SpComment comment1 = new SpComment();
@@ -26,6 +28,20 @@ public class CommentServiceImpl implements CommentService {
         if(num == 1) {
             return true;
         }
+        return false;
+    }
+
+    /**
+     * 检查安全密码
+     * @param dbpassword
+     * @param answeredpassword
+     * @return
+     */
+    @Override
+    public boolean checkSecurityPassword(String dbpassword , String answeredpassword) {
+     if(dbpassword != null&& dbpassword.equals(answeredpassword)) {
+         return true;
+     }
         return false;
     }
 }

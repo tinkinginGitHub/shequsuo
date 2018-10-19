@@ -83,7 +83,7 @@ public class UUID {
     }
 
     /**
-     * 生成六位手机登录验证码
+     * 生成六位手机登录短信验证码
      * @return
      */
     public static String genarateCode() {

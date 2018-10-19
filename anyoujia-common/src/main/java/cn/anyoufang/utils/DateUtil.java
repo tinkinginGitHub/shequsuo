@@ -262,4 +262,15 @@ public class DateUtil {
 		res = simpleDateFormat.format(date);
 		return res;
 	}
+
+	public static boolean isNotExpired(int end,int deadline) {
+		Date time = new Date(Long.valueOf(end+"000"));
+		long from = time.getTime();
+		long to = System.currentTimeMillis();
+		int days = (int) ((to - from)/(1000 * 60 * 60 * 24));
+		if(days <= deadline) {
+			return true;
+		}
+		return false;
+	}
 }

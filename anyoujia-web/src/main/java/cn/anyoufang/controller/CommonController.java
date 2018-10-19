@@ -1,6 +1,6 @@
 package cn.anyoufang.controller;
 
-import cn.anyoufang.entity.AnyoujiaResult;
+import cn.anyoufang.entity.selfdefined.AnyoujiaResult;
 import cn.anyoufang.entity.SpMember;
 import cn.anyoufang.service.CommentService;
 import cn.anyoufang.service.LoginService;
@@ -49,7 +49,6 @@ public class CommonController  extends AbstractController{
 
 
     @RequestMapping("/pic/upload")
-    @CrossOrigin(value = "*")
     public AnyoujiaResult fileUpload(HttpServletRequest request) {
         try {
 
@@ -154,6 +153,30 @@ public class CommonController  extends AbstractController{
             return AnyoujiaResult.ok(result);
         }
         return AnyoujiaResult.build(500,"删除失败");
+    }
+
+    /**
+     * 检查安全密码
+     * @param request
+     * @param password
+     * @return
+     */
+    @RequestMapping("/common/checkse")
+    public AnyoujiaResult checkSecurityPassword(HttpServletRequest request,
+                                                @RequestParam(value = "pd") String password) {
+
+        if(StringUtil.isEmpty(password)) {
+            return AnyoujiaResult.build(400,"密码不能为空");
+        }
+        SpMember user = getUser(request,loginService);
+        if(user == null) {
+            return AnyoujiaResult.build(401,"登录超时");
+        }
+        boolean ok = commentService.checkSecurityPassword(user.getSecuritypwd(),password);
+        if(ok) {
+            return AnyoujiaResult.ok();
+        }
+        return AnyoujiaResult.build(400,"密码错误");
     }
 
 }

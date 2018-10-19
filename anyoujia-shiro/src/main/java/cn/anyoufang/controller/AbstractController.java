@@ -109,5 +109,15 @@ public abstract class AbstractController {
 		return JsonUtils.jsonToMap(result);
 	}
 
+    /**
+     * springmvc 异常处理
+     */
+//    @ExceptionHandler(Exception.class)
+//    public AnyoujiaResult handleException(Exception e) {
+//        if(logger.isInfoEnabled()) {
+//            logger.info(e.getMessage());
+//        }
+//        return AnyoujiaResult.build(400,"系统异常");
+//    }
 
 }

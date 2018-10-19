@@ -17,21 +17,15 @@ public interface SpMemberMapper {
 
     int insertSelective(SpMember record);
 
-    List<SpMember> selectByExampleWithBLOBs(SpMemberExample example);
-
     List<SpMember> selectByExample(SpMemberExample example);
 
     SpMember selectByPrimaryKey(Integer uid);
 
     int updateByExampleSelective(@Param("record") SpMember record, @Param("example") SpMemberExample example);
 
-    int updateByExampleWithBLOBs(@Param("record") SpMember record, @Param("example") SpMemberExample example);
-
     int updateByExample(@Param("record") SpMember record, @Param("example") SpMemberExample example);
 
     int updateByPrimaryKeySelective(SpMember record);
-
-    int updateByPrimaryKeyWithBLOBs(SpMember record);
 
     int updateByPrimaryKey(SpMember record);
 }

@@ -1,10 +1,12 @@
-package cn.anyoufang.controller;
+package cn.anyoufang.controller.lock;
 
-import cn.anyoufang.entity.AnyoujiaResult;
+import cn.anyoufang.controller.AbstractController;
+import cn.anyoufang.entity.selfdefined.AnyoujiaResult;
 import cn.anyoufang.entity.SpMember;
 import cn.anyoufang.entity.SpMemberRelation;
+import cn.anyoufang.exception.LockException;
 import cn.anyoufang.service.LoginService;
-import cn.anyoufang.service.MemberService;
+import cn.anyoufang.service.LockMemberService;
 import cn.anyoufang.utils.StringUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,26 +16,35 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
+ * 锁成员管理控制器
  * @author daiping
  */
 
 @RestController
 @RequestMapping("/api")
-public class MemberController extends AbstractController {
+public class LockMemberController extends AbstractController {
 
-    private static final Logger log = LoggerFactory.getLogger(MemberController.class);
+    private static final Logger log = LoggerFactory.getLogger(LockMemberController.class);
     @Autowired
-    private MemberService memberService;
+    private LockMemberService memberService;
 
     @Autowired
     private LoginService loginService;
 
-
+    /**
+     * usertype 1家人，2老人儿童，3.租户',
+     * @param request
+     * @param locksn
+     * @return
+     */
     @RequestMapping("/admin/memlist")
-      public AnyoujiaResult getMembersForByAdminId(HttpServletRequest request, @RequestParam String locksn) {
+    public AnyoujiaResult getMembersForByAdminId(HttpServletRequest request, @RequestParam String locksn) {
 
         if(StringUtil.isEmpty(locksn)) {
             return AnyoujiaResult.build(404,"锁SN不存在");
@@ -117,25 +128,28 @@ public class MemberController extends AbstractController {
      * 管理员添加用户
      * @param usertype
      * @param username
-     * @param phone
+     * @param phone 老人和小孩不需要添加手机号
      * @param finger
      * @param pwd
      * @param request
+     * @param endtime 只有租客需要设置过期时间
      * @return
      */
       @RequestMapping("/admin/addmem")
       public AnyoujiaResult addNewMember(@RequestParam String usertype,
                                          @RequestParam String username,
-                                         @RequestParam String phone,
-                                         @RequestParam String relation,
+                                         @RequestParam(required = false,defaultValue = "-1") String phone,
+                                         @RequestParam(required = false,defaultValue = "-1") String relation,
                                          @RequestParam String locksn,
+                                         @RequestParam(required = false,defaultValue = "-1") String endtime,
                                          @RequestParam int finger,
                                          @RequestParam int pwd, HttpServletRequest request) {
 
         if(StringUtil.isEmpty(username)
                 || StringUtil.isEmpty(usertype)
                 || StringUtil.isEmpty(phone)
-                || StringUtil.isEmpty(relation)) {
+                || StringUtil.isEmpty(relation)
+                || StringUtil.isEmpty(locksn)) {
 
             return AnyoujiaResult.build(400,"参数异常");
         }
@@ -147,7 +161,7 @@ public class MemberController extends AbstractController {
         int adminId = admin.getUid();
 
           try {
-              boolean ok = memberService.addUser(usertype,username,phone,relation,locksn,finger,pwd,adminId);
+              boolean ok = memberService.addUser(usertype,username,phone,relation,locksn,finger,pwd,adminId,endtime);
               if(ok) {
                   return AnyoujiaResult.ok();
               }
@@ -161,9 +175,9 @@ public class MemberController extends AbstractController {
       }
 
     /**
-     * 管理员删除成员
+     * 锁管理员删除成员
      * @param locksn
-     * @param userid
+     * @param userid 成员id
      * @return
      */
       @RequestMapping("/admin/delmem")
@@ -182,5 +196,34 @@ public class MemberController extends AbstractController {
               }
               return AnyoujiaResult.build(500,"系统异常");
           }
+      }
+
+    /**
+     *
+     * @param endtime 租客过期时间
+     * @param id 租客id
+     * @return
+     */
+      @RequestMapping("/admin/update/rentexpire")
+      public AnyoujiaResult updateExpireDateForRenter(@RequestParam String endtime,
+                                                      @RequestParam int id,
+                                                      @RequestParam String locksn) {
+          if(StringUtil.isEmpty(endtime)) {
+              return AnyoujiaResult.build(400,"参数异常");
+          }
+
+         boolean updateTimeSeccuss;
+          try{
+              updateTimeSeccuss = memberService.updateExpireDateForRenter(id,locksn,endtime);
+              if(updateTimeSeccuss) {
+                  return AnyoujiaResult.ok();
+              }
+          }catch (LockException e) {
+              if(log.isInfoEnabled()) {
+                  log.info(e.getMessage());
+              }
+              return AnyoujiaResult.build(500,"系统错误");
+          }
+          return AnyoujiaResult.build(500,"系统错误");
       }
 }

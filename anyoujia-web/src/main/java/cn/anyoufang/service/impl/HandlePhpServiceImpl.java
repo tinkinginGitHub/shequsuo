@@ -1,7 +1,7 @@
 package cn.anyoufang.service.impl;
 
-import cn.anyoufang.entity.Data;
-import cn.anyoufang.entity.InitParam;
+import cn.anyoufang.entity.selfdefined.Data;
+import cn.anyoufang.entity.selfdefined.InitParam;
 import cn.anyoufang.service.HandlePhpService;
 import cn.anyoufang.utils.AesCBC;
 import cn.anyoufang.utils.JsonUtils;

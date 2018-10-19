@@ -9,12 +9,14 @@ import javax.servlet.http.HttpServletRequest;
 /**
  * IP地址
  * 
- * @author chenyi
- * @email 228112142@qq.com
- * @date 2017年3月8日 下午12:57:02
+ * @author
+ * @email
+ * @date
  */
 public class IPUtils {
 	private static Logger LOGGER = LoggerFactory.getLogger(IPUtils.class);
+
+
 
 	/**
 	 * 获取IP地址 测试提交
@@ -42,16 +44,10 @@ public class IPUtils {
                 ip = request.getRemoteAddr();
             }
         } catch (Exception e) {
-            LOGGER.error("IPUtils ERROR ", e.getMessage());
+            if(LOGGER.isInfoEnabled()) {
+                LOGGER.info("IPUtils ERROR: ", e.getMessage());
+            }
         }
-        
-//        //使用代理，则获取第一个IP地址
-//        if(StringUtils.isEmpty(ip) && ip.length() > 15) {
-//			if(ip.indexOf(",") > 0) {
-//				ip = ip.substring(0, ip.indexOf(","));
-//			}
-//		}
-        
         return ip;
     }
 	

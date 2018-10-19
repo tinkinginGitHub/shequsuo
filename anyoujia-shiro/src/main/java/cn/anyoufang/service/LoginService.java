@@ -1,8 +1,7 @@
 package cn.anyoufang.service;
 
-import cn.anyoufang.entity.AnyoujiaResult;
+import cn.anyoufang.entity.selfdefined.AnyoujiaResult;
 import cn.anyoufang.entity.SpMember;
-import cn.anyoufang.entity.WeiXinVO;
 import com.aliyuncs.exceptions.ClientException;
 
 import java.util.Map;
@@ -15,10 +14,10 @@ public interface LoginService {
      * 用户注册
      * @param account
      * @param pwd
-     * @param weiXinVO
+     * @param openId
      * @return
      */
-    AnyoujiaResult memberRegister(String account, String pwd, WeiXinVO weiXinVO) throws Exception;
+    AnyoujiaResult memberRegister(String account, String pwd, String openId) throws Exception;
 
     /**
      * 用户使用密码登录
@@ -46,7 +45,7 @@ public interface LoginService {
      * @param phone
      * @throws ClientException
      */
-    void getVerifCode(String phone) throws ClientException;
+    String sendVerifCode(String phone) throws ClientException;
 
     /**
      * 未登录状态下重置密码

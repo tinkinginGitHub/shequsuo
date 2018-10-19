@@ -1,4 +1,4 @@
-package cn.anyoufang.entity;
+package cn.anyoufang.entity.selfdefined;
 
 import java.io.Serializable;
 

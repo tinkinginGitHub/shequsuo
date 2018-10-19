@@ -1,5 +1,6 @@
 package cn.anyoufang.mapper;
 
+import cn.anyoufang.entity.selfdefined.ResultWx;
 import cn.anyoufang.entity.SpMemberWx;
 import cn.anyoufang.entity.SpMemberWxExample;
 import org.apache.ibatis.annotations.Param;
@@ -28,4 +29,6 @@ public interface SpMemberWxMapper {
     int updateByPrimaryKeySelective(SpMemberWx record);
 
     int updateByPrimaryKey(SpMemberWx record);
+
+    List<ResultWx> selectByOpenid(String openid);
 }
