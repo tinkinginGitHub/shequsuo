@@ -228,4 +228,26 @@ public class WeixinUtil {
         return Long.toString(System.currentTimeMillis() / 1000);
     }
 
+//    public static void main(String[] args) throws ParseException {
+//        int now = (int) (System.currentTimeMillis()/1000);
+////        System.out.println(now);
+////        System.out.println();
+////      // Date time =  new Date(now * 1000);
+////        //int days = (to - from)/( 60 * 60 * 24);
+////      Date time =   new Date(Long.valueOf(now+"000"));
+////       if (time.before(new Date())) {
+////           System.out.println(time);
+////       }
+//        SimpleDateFormat simpleFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm");
+////        String fromDate = simpleFormat.format("2016-05-01 12:00");
+////        String toDate = simpleFormat.format("2016-06-01 12:00");
+//        //long from = System.currentTimeMillis();
+//        Date time =   new Date(Long.valueOf(now+"000"));
+//        long from =   time.getTime();
+//        long to = System.currentTimeMillis();
+//        int days = (int) ((to - from)/(1000 * 60 * 60 * 24));
+//
+//        System.out.println(days);
+//    }
+
 }

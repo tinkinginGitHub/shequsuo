@@ -7,8 +7,9 @@ import cn.anyoufang.utils.EnumMessage;
  * 2017/7/20.
  */
 public enum StateEnum implements EnumMessage {
-    ENABLE("1","启用"),
+    ENABLE("400","启用"),
     LIMIT("0","禁用");
+
     private final String code;
     private final String value;
     private StateEnum(String code, String value) {

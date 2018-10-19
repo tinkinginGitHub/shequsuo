@@ -1,9 +1,6 @@
 package cn.anyoufang.entity;
 
-import java.io.Serializable;
-
-public class SpMember implements Serializable {
-
+public class SpMember {
     private Integer uid;
 
     private String phone;
@@ -15,6 +12,8 @@ public class SpMember implements Serializable {
     private String name;
 
     private String email;
+
+    private String avatar;
 
     private Boolean gender;
 
@@ -28,7 +27,7 @@ public class SpMember implements Serializable {
 
     private String securityanswer;
 
-    private String avatar;
+    private Integer registtime;
 
     public Integer getUid() {
         return uid;
@@ -76,6 +75,14 @@ public class SpMember implements Serializable {
 
     public void setEmail(String email) {
         this.email = email == null ? null : email.trim();
+    }
+
+    public String getAvatar() {
+        return avatar;
+    }
+
+    public void setAvatar(String avatar) {
+        this.avatar = avatar == null ? null : avatar.trim();
     }
 
     public Boolean getGender() {
@@ -126,11 +133,11 @@ public class SpMember implements Serializable {
         this.securityanswer = securityanswer == null ? null : securityanswer.trim();
     }
 
-    public String getAvatar() {
-        return avatar;
+    public Integer getRegisttime() {
+        return registtime;
     }
 
-    public void setAvatar(String avatar) {
-        this.avatar = avatar == null ? null : avatar.trim();
+    public void setRegisttime(Integer registtime) {
+        this.registtime = registtime;
     }
 }

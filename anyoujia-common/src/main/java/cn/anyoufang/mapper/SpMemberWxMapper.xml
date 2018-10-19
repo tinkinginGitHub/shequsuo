@@ -10,6 +10,10 @@
     <result column="subscribe" property="subscribe" jdbcType="BIT" />
     <result column="uid" property="uid" jdbcType="INTEGER" />
   </resultMap>
+  <resultMap id="BaseResultMap1" type="cn.anyoufang.entity.selfdefined.ResultWx">
+    <result column="password" property="password" jdbcType="VARCHAR" />
+    <result column="phone" property="phone" jdbcType="VARCHAR" />
+  </resultMap>
   <sql id="Example_Where_Clause" >
     <where >
       <foreach collection="oredCriteria" item="criteria" separator="or" >
@@ -240,4 +244,13 @@
       uid = #{uid,jdbcType=INTEGER}
     where wx = #{wx,jdbcType=INTEGER}
   </update>
+  <select id="selectByOpenid" parameterType="java.lang.String" resultMap="BaseResultMap1">
+    SELECT
+    sm.phone,sm.password
+    FROM
+    sp_member sm
+    JOIN sp_member_wx smw ON sm.uid = smw.uid
+    WHERE
+    smw.openid = #{smw.openid,jdbcType=VARCHAR};
+  </select>
 </mapper>

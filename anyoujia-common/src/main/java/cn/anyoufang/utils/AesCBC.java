@@ -1,8 +1,8 @@
 package cn.anyoufang.utils;
 
 
-import cn.anyoufang.entity.Data;
-import cn.anyoufang.entity.InitParam;
+import cn.anyoufang.entity.selfdefined.Data;
+import cn.anyoufang.entity.selfdefined.InitParam;
 import sun.misc.BASE64Decoder;
 import sun.misc.BASE64Encoder;
 

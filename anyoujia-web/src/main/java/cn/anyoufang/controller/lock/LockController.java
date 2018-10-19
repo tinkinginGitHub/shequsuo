@@ -1,12 +1,13 @@
 package cn.anyoufang.controller.lock;
 
-import cn.anyoufang.entity.AnyoujiaResult;
+import cn.anyoufang.controller.AbstractController;
+import cn.anyoufang.entity.selfdefined.AnyoujiaResult;
 import cn.anyoufang.entity.SpMember;
-import cn.anyoufang.exception.LockException;
+import cn.anyoufang.service.LockService;
 import cn.anyoufang.service.LoginService;
-import cn.anyoufang.utils.JsonUtils;
 import cn.anyoufang.utils.Md5Utils;
 import cn.anyoufang.utils.SimulateGetAndPostUtil;
+import cn.anyoufang.utils.StringUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.Map;
 
 /**
@@ -23,7 +25,7 @@ import java.util.Map;
  */
 @RestController
 @RequestMapping("/lock")
-public class LockController {
+public class LockController extends AbstractController {
 
     private static final Logger log = LoggerFactory.getLogger(LockController.class);
 
@@ -37,6 +39,9 @@ public class LockController {
     @Autowired
     private LoginService loginService;
 
+    @Autowired
+    private LockService lockService;
+
     /**
      * 获取锁开锁记录或者报警记录
      * @param locksn
@@ -44,7 +49,7 @@ public class LockController {
      * @param page
      * @return
      */
-   // @RequestMapping("/records")
+    @RequestMapping("/records")
     public String getOpenLockRecords(@RequestParam String locksn,
                                      @RequestParam int isalarm ,
                                      @RequestParam int page) {
@@ -64,7 +69,7 @@ public class LockController {
      * @param usertype
      * @return
      */
-   // @RequestMapping("/users")
+    @RequestMapping("/users")
     public String getLockUserList(@RequestParam String locksn,
                                   @RequestParam(required = false,defaultValue = "-1") int pwdtype,
                                   @RequestParam int usertype) {
@@ -116,76 +121,72 @@ public class LockController {
      * @param usertype 2:指纹 3：IC卡
      * @return
      */
-   // @RequestMapping("/setuser")
-    public String setLockUser(@RequestParam int seqid,
+    @RequestMapping("/setuser")
+    public AnyoujiaResult setLockUserFingerPassword(@RequestParam int seqid,
                               @RequestParam String locksn,
                               @RequestParam int ptype,
-                              @RequestParam int endtime,
-                              @RequestParam int usertype) {
-        long timestamp = System.currentTimeMillis()/1000;
-        SpMember user = loginService.getUserById(seqid);
+                              @RequestParam(required = false) int endtime,
+                              @RequestParam int usertype,HttpServletRequest request) {
+        if(StringUtil.isEmpty(locksn)) {
+            return AnyoujiaResult.build(400,"参数异常");
+        }
+        SpMember user =  getUser(request,loginService);
         String nickname;
         if(user !=null){
             nickname = user.getBname();
         }else {
             nickname = "ct";
         }
-        StringBuilder sb = new StringBuilder();
-        String param = sb.append(endtime)
-                        .append(locksn)
-                        .append(nickname)
-                        .append(ptype)
-                        .append(ptype)
-                        .append(seqid)
-                        .append(timestamp)
-                        .append(usertype)
-                        .append(lockSalt).toString();
-        String sign = Md5Utils.md5(param,"UTF-8");
-        String combineParam = "method=set.lock.user&ptype=1&temptime="+timestamp+"&sign="+sign+"&seqid="+seqid +
-                "&locksn="+locksn+"&endtime="+endtime + "&ptype="+ptype + "&nickname="+nickname+"&usertype="+usertype;
-        return  SimulateGetAndPostUtil.sendPost(url,combineParam);
+        return lockService.setLockUserFingerPassword(seqid,locksn,ptype,endtime,usertype,nickname,user.getPhone());
     }
+
 
     /**
      * 添加锁密码用户
+     * @param ptype 密码类型 1：永久 2：一次 3：临时
+     * @param seqid 密码用户ID，APP自主生成非重复的ID, 最大值：4294967295
+     * @param locksn
+     * @param endtime
+     * @param request
+     * @param pwds
+     * @return
      */
     @RequestMapping("/setpwd")
-    public String setLockPwd(@RequestParam int ptype,
+    public AnyoujiaResult setLockPwd(@RequestParam int ptype,
                              @RequestParam int seqid,
                              @RequestParam String locksn,
                              @RequestParam(required = false) int endtime,
+                             HttpServletRequest request,
                              @RequestParam String pwds) {
-        long timestamp = System.currentTimeMillis()/1000;
-        SpMember user = loginService.getUserById(seqid);
+        if(StringUtil.isEmpty(locksn) ||StringUtil.isEmpty(pwds)) {
+            return AnyoujiaResult.build(400,"参数异常");
+        }
+        SpMember user = getUser(request,loginService);
         String nickname;
         if(user !=null){
             nickname = user.getBname();
         }else {
             nickname = "ct";
         }
-        StringBuilder sb = new StringBuilder();
-        String param = sb.append(endtime)
-                         .append(locksn)
-                         .append(nickname).append(ptype).append(pwds).append(timestamp).append(lockSalt).toString();
-        String sign = Md5Utils.md5(param,"UTF-8");
-        String combineParam = "method=set.lock.pwd&ptype=1&temptime="+timestamp+"&sign="+sign+"&seqid="+seqid +
-                "&locksn="+locksn+"&endtime="+endtime + "&pwds="+pwds + "&nickname="+nickname;
-      return  SimulateGetAndPostUtil.sendPost(url,combineParam);
+       Map<String,String> res =  lockService.setLockPwd(ptype,seqid,locksn,endtime,pwds,nickname,user.getPhone());
+        if(res == null) {
+            return AnyoujiaResult.build(500,"系统异常");
+        }
+        return AnyoujiaResult.build(Integer.valueOf(res.get("code")),res.get("msg"));
     }
 
     /**
      * 获取APP用户注册锁列表
-     * @param userid
+     *
      * @return
      */
-   // @RequestMapping("/list")
-    public String getLockList(@PathVariable int userid) {
-        long timestamp = System.currentTimeMillis()/1000;
-        StringBuilder sb = new StringBuilder();
-        String param = sb.append(timestamp).append(userid).append(lockSalt).toString();
-        String sign = Md5Utils.md5(param,"UTF-8");
-        String combineParam = "method=get.lock.list&userid=1&temptime="+timestamp+"&sign="+sign;
-        return SimulateGetAndPostUtil.sendPost(url,combineParam);
+    @RequestMapping("/list")
+    public AnyoujiaResult getLockList(HttpServletRequest request) {
+       SpMember user =  getUser(request,loginService);
+       if(user == null) {
+          return AnyoujiaResult.build(401,"登录超时");
+       }
+        return lockService.getAllLockList(user);
     }
 
     /**
@@ -193,7 +194,7 @@ public class LockController {
      * @param locksn
      * @return
      */
-   // @RequestMapping("/info")
+    @RequestMapping("/info")
     public String getLockInfo(@PathVariable String locksn) {
         long timestamp = System.currentTimeMillis()/1000;
         StringBuilder sb = new StringBuilder();
@@ -206,33 +207,17 @@ public class LockController {
     /**
      * 注册锁信息(添加锁管理员)
      * @param locksn
-     * @param userid 注册会员的id
      * @return
      */
     @RequestMapping("/register")
-    public AnyoujiaResult registerLockInfo(@RequestParam String locksn,
-                                           @RequestParam int userid) {
-        long timestamp = System.currentTimeMillis()/1000;
-        StringBuilder sb = new StringBuilder();
-        String param = sb.append(locksn).append(timestamp).append(userid).append(lockSalt).toString();
-        String sign = Md5Utils.md5(param,"UTF-8");
-        String combineParam = "method=register.lock.info&userid="+userid+"&locksn="+locksn+"&temptime="+timestamp+"&sign="+sign;
-        String res = SimulateGetAndPostUtil.sendPost(url,combineParam);
-        Map<String,Object> data;
-        try {
-             data  =  JsonUtils.jsonToMap(res);
-        }catch (LockException e) {
-            if(log.isInfoEnabled()) {
-                log.info(e.getMessage());
-            }
-            return AnyoujiaResult.build(500,"系统异常");
+    public AnyoujiaResult registerLockInfo(@RequestParam String locksn,HttpServletRequest request) {
+        if (StringUtil.isEmpty(locksn)) {
+            return AnyoujiaResult.build(400, "参数异常");
         }
-        Integer status = (Integer) data.get("code");
-        if(status == 200) {
-            return AnyoujiaResult.ok();
+        SpMember user = getUser(request, loginService);
+        if (user == null) {
+            return AnyoujiaResult.build(401, "登录超时");
         }
-        return AnyoujiaResult.build(status,String.valueOf(data.get("msg")));
+        return lockService.registerLockInfo(locksn, user.getUid());
     }
-
-
 }

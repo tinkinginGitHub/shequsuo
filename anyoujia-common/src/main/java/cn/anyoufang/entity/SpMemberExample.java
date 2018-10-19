@@ -514,6 +514,76 @@ public class SpMemberExample {
             return (Criteria) this;
         }
 
+        public Criteria andAvatarIsNull() {
+            addCriterion("avatar is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andAvatarIsNotNull() {
+            addCriterion("avatar is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andAvatarEqualTo(String value) {
+            addCriterion("avatar =", value, "avatar");
+            return (Criteria) this;
+        }
+
+        public Criteria andAvatarNotEqualTo(String value) {
+            addCriterion("avatar <>", value, "avatar");
+            return (Criteria) this;
+        }
+
+        public Criteria andAvatarGreaterThan(String value) {
+            addCriterion("avatar >", value, "avatar");
+            return (Criteria) this;
+        }
+
+        public Criteria andAvatarGreaterThanOrEqualTo(String value) {
+            addCriterion("avatar >=", value, "avatar");
+            return (Criteria) this;
+        }
+
+        public Criteria andAvatarLessThan(String value) {
+            addCriterion("avatar <", value, "avatar");
+            return (Criteria) this;
+        }
+
+        public Criteria andAvatarLessThanOrEqualTo(String value) {
+            addCriterion("avatar <=", value, "avatar");
+            return (Criteria) this;
+        }
+
+        public Criteria andAvatarLike(String value) {
+            addCriterion("avatar like", value, "avatar");
+            return (Criteria) this;
+        }
+
+        public Criteria andAvatarNotLike(String value) {
+            addCriterion("avatar not like", value, "avatar");
+            return (Criteria) this;
+        }
+
+        public Criteria andAvatarIn(List<String> values) {
+            addCriterion("avatar in", values, "avatar");
+            return (Criteria) this;
+        }
+
+        public Criteria andAvatarNotIn(List<String> values) {
+            addCriterion("avatar not in", values, "avatar");
+            return (Criteria) this;
+        }
+
+        public Criteria andAvatarBetween(String value1, String value2) {
+            addCriterion("avatar between", value1, value2, "avatar");
+            return (Criteria) this;
+        }
+
+        public Criteria andAvatarNotBetween(String value1, String value2) {
+            addCriterion("avatar not between", value1, value2, "avatar");
+            return (Criteria) this;
+        }
+
         public Criteria andGenderIsNull() {
             addCriterion("gender is null");
             return (Criteria) this;
@@ -911,6 +981,66 @@ public class SpMemberExample {
 
         public Criteria andSecurityanswerNotBetween(String value1, String value2) {
             addCriterion("securityanswer not between", value1, value2, "securityanswer");
+            return (Criteria) this;
+        }
+
+        public Criteria andRegisttimeIsNull() {
+            addCriterion("registtime is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andRegisttimeIsNotNull() {
+            addCriterion("registtime is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andRegisttimeEqualTo(Integer value) {
+            addCriterion("registtime =", value, "registtime");
+            return (Criteria) this;
+        }
+
+        public Criteria andRegisttimeNotEqualTo(Integer value) {
+            addCriterion("registtime <>", value, "registtime");
+            return (Criteria) this;
+        }
+
+        public Criteria andRegisttimeGreaterThan(Integer value) {
+            addCriterion("registtime >", value, "registtime");
+            return (Criteria) this;
+        }
+
+        public Criteria andRegisttimeGreaterThanOrEqualTo(Integer value) {
+            addCriterion("registtime >=", value, "registtime");
+            return (Criteria) this;
+        }
+
+        public Criteria andRegisttimeLessThan(Integer value) {
+            addCriterion("registtime <", value, "registtime");
+            return (Criteria) this;
+        }
+
+        public Criteria andRegisttimeLessThanOrEqualTo(Integer value) {
+            addCriterion("registtime <=", value, "registtime");
+            return (Criteria) this;
+        }
+
+        public Criteria andRegisttimeIn(List<Integer> values) {
+            addCriterion("registtime in", values, "registtime");
+            return (Criteria) this;
+        }
+
+        public Criteria andRegisttimeNotIn(List<Integer> values) {
+            addCriterion("registtime not in", values, "registtime");
+            return (Criteria) this;
+        }
+
+        public Criteria andRegisttimeBetween(Integer value1, Integer value2) {
+            addCriterion("registtime between", value1, value2, "registtime");
+            return (Criteria) this;
+        }
+
+        public Criteria andRegisttimeNotBetween(Integer value1, Integer value2) {
+            addCriterion("registtime not between", value1, value2, "registtime");
             return (Criteria) this;
         }
     }

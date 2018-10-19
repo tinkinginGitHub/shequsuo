@@ -1,6 +1,10 @@
 package cn.anyoufang.service.Impl;
 
 import cn.anyoufang.entity.*;
+import cn.anyoufang.entity.selfdefined.AnyoujiaResult;
+import cn.anyoufang.entity.selfdefined.Data;
+import cn.anyoufang.entity.selfdefined.InitParam;
+import cn.anyoufang.entity.selfdefined.LoginResult;
 import cn.anyoufang.mapper.SpMemberLoginMapper;
 import cn.anyoufang.mapper.SpMemberMapper;
 import cn.anyoufang.mapper.SpMemberWxMapper;
@@ -21,6 +25,8 @@ import java.util.List;
 import java.util.Map;
 
 /**
+ *
+ * 处理用户登录注册相关
  * @author daiping
  */
 @Service
@@ -40,52 +46,47 @@ public class LoginServiceImpl implements LoginService {
     private String tempCode;
     @Value("${code_overtime}")
     private String overtime;
+    @Value("${php.url}")
+    private String phpurl;
+    //PHp接口加密参数
     private static final String salt = "575gh5rr556Dfhr67Ohrt8";
+    private static final String SSO = "Sso";
 
 
     @Override
     @Transactional
-    public AnyoujiaResult memberRegister(String account, String pwd, WeiXinVO weiXinVO) throws Exception {
+    public AnyoujiaResult memberRegister(String account, String pwd, String openid) throws Exception {
         SpMemberExample example = new SpMemberExample();
         SpMemberExample.Criteria criteria = example.createCriteria();
         criteria.andPhoneEqualTo(account);
         List<SpMember> list = memberMapper.selectByExample(example);
         if (list.size() > 0) {
-            return AnyoujiaResult.build(400,"该用户已注册，请登录");
+            return AnyoujiaResult.build(400, "该用户已注册，请登录");
         }
-        SpMember member = new SpMember();
-        if(weiXinVO !=null) {
-            int wxid = weiXinVO.getWxid();
-            member.setPhone(account);
-            member.setPassword(Md5Utils.md5(pwd, "utf-8"));
-            member.setWx(wxid);
-            member.setBname(weiXinVO.getNickname());
-            int uid = memberMapper.insertSelective(member);
-            SpMemberWx wxmember = new SpMemberWx();
-            wxmember.setUid(uid);
-            wxmember.setWx(wxid);
-            //根据id更新数据库
-            int active = wxMapper.updateByPrimaryKeySelective(wxmember);
-            if (uid != 0 && active == 1) {
-                return AnyoujiaResult.build(200,"注册成功");
-            }
-            return AnyoujiaResult.build(400,"注册失败");
-        }else {
-            Map<String,Object> map = doRegister(account, Md5Utils.md5(pwd,"utf-8"));
+        if (openid != null) {
+            Map<String, Object> map = doRegister(account, Md5Utils.md5(pwd, "utf-8"));
             Integer status = (Integer) map.get("status");
-            if(status == 200) {
+            if (status == 200) {
+                SpMember member = new SpMember();
+                int createdTime = (int) (System.currentTimeMillis()/1000);
+                member.setRegisttime(createdTime);
                 member.setPhone(account);
                 member.setPassword(Md5Utils.md5(pwd, "utf-8"));
-                int uid = memberMapper.insertSelective(member);
-                if (uid != 0) {
+                //返回生成的自增主键
+                memberMapper.insertSelective(member);
+                SpMemberWx wxmember = new SpMemberWx();
+               int genaratedid =  member.getUid();
+                wxmember.setUid(genaratedid);
+                wxmember.setOpenid(openid);
+                int active = wxMapper.insertSelective(wxmember);
+                if (active ==1) {
                     return AnyoujiaResult.build(200, "注册成功");
                 }
-            }else {
-                AnyoujiaResult.build(status,(String)map.get("msg"));
+            } else {
+                AnyoujiaResult.build(status, (String) map.get("msg"));
             }
         }
         return AnyoujiaResult.build(400,"注册失败");
-
     }
 
 
@@ -97,17 +98,21 @@ public class LoginServiceImpl implements LoginService {
         }
         Map<String,Object> data = new HashMap<>();
         SpMember user = list.get(0);
+        String dbPwd = user.getPassword();
         String tempPwd = pwd;
-        String md5Pwd = Md5Utils.md5(tempPwd,"UTF-8");
-        if(!md5Pwd.equals(user.getPassword())) {
-            return null;
+        String md5Pwd;
+        if(tempPwd.equals(dbPwd)){
+            md5Pwd = tempPwd;
+        }else {
+             md5Pwd = Md5Utils.md5(tempPwd,"UTF-8");
+            if(!md5Pwd.equals(dbPwd)) {
+                return null;
+            }
         }
            Map<String,Object> res =  doLogin(account,md5Pwd,ip);
            Integer status = (Integer) res.get("status");
             if(status == 200) {
                 String encrySession = (String) res.get("session");
-                Map<String,Object> map =  parseSession(encrySession);
-                LOG.info("登陆成功时的sessionid: "+encrySession );
                 SpMember member = list.get(0);
                 SpMemberLogin loginRecord = new SpMemberLogin();
                 int current = (int) (System.currentTimeMillis() / 1000);
@@ -117,9 +122,8 @@ public class LoginServiceImpl implements LoginService {
                 loginRecord.setIp(ip);
                 loginRecord.setUid(member.getUid());
                 loginMapper.insertSelective(loginRecord);
-                data.put("member",member);
-                data.put("token",encrySession);
-                data.put("status",status);
+                data.put("data",combineLoginResponseResult(member,encrySession));
+                Map<String,Object> map =  parseSession(encrySession);
                 Object over =  map.get("overtime");
                 if(over == null) {
                     return null;
@@ -138,6 +142,20 @@ public class LoginServiceImpl implements LoginService {
 
     }
 
+    /**
+     * 抽取组合返回结果
+     * @param user
+     * @param token
+     * @return
+     */
+    private LoginResult combineLoginResponseResult(SpMember user,String token) {
+        LoginResult loginRes = new LoginResult();
+        loginRes.setAvatar(user.getAvatar());
+        loginRes.setBname(user.getBname());
+        loginRes.setPhone(user.getPhone());
+        loginRes.setToken(token);
+        return loginRes;
+    }
 
     @Override
     public Map<String,Object>  memberLoginByVerifyCode(String phone, String code, String ip) throws Exception {
@@ -152,12 +170,11 @@ public class LoginServiceImpl implements LoginService {
         if (!"".equals(password)) {
             Map<String,Object> res = doLogin(phone,password,ip);
             Integer status = (Integer) res.get("status");
-            Map<String,Object> data = new HashMap<>();
             String encrySession = (String) res.get("session");
-            Map<String,Object> map =  parseSession(encrySession);;
+            Map<String,Object> map =  parseSession(encrySession);
+            Map<String,Object> data = new HashMap<>();
             if(status == 200) {
-                data.put("token",encrySession);
-                data.put("data",list.get(0));
+                data.put("data",combineLoginResponseResult(list.get(0),encrySession));
                Object over =  map.get("overtime");
                if(over == null) {
                    return null;
@@ -174,7 +191,6 @@ public class LoginServiceImpl implements LoginService {
                 return data;
             }
         }
-
         return null;
     }
 
@@ -190,14 +206,26 @@ public class LoginServiceImpl implements LoginService {
     }
 
     @Override
-    public void getVerifCode(String phone) throws ClientException {
+    public String sendVerifCode(String phone) {
         String data = UUID.genarateCode();
-        SendSmsResponse response = SendSmsUtil.sendSms(phone, tempCode, null, "{\"code\":\"" + data + "\"}");
-        if(LOG.isInfoEnabled()) {
-            LOG.info("code: "+response.getCode() + ", message: " + response.getMessage());
+        SendSmsResponse response = null;
+        try {
+            response = SendSmsUtil.sendSms(phone, tempCode, null, "{\"code\":\"" + data + "\"}");
+            if (response.getCode() != null && response.getCode().equals("OK")) {
+                int codeOvertime = Integer.valueOf(overtime);
+                RedisUtils.setex(Md5Utils.md5(phone,"utf-8"), data, codeOvertime);
+                return "true";
+            } else {
+                return response.getMessage();
+            }
+        }catch (ClientException e) {
+            if(LOG.isInfoEnabled()) {
+                if(response != null) {
+                    LOG.info("code: "+response.getCode() + ", message: " + response.getMessage());
+                }
+            }
         }
-        int codeOvertime = Integer.valueOf(overtime);
-        RedisUtils.setex(Md5Utils.md5(phone,"utf-8"), data, codeOvertime);
+        return "false";
     }
 
     @Override
@@ -214,7 +242,6 @@ public class LoginServiceImpl implements LoginService {
                 return true;
             }
         }
-
        return false;
     }
 
@@ -325,7 +352,7 @@ public class LoginServiceImpl implements LoginService {
     }
 
     /**
-     * 密码找回
+     * 用于密码找回
      * @param account
      * @param code
      * @return
@@ -365,7 +392,11 @@ public class LoginServiceImpl implements LoginService {
     }
 
 
-
+    /**
+     * 获取用户已选择的安全问题
+     * @param id
+     * @return
+     */
     @Override
     public String getUserCheckedQuestion(int id) {
 
@@ -376,6 +407,13 @@ public class LoginServiceImpl implements LoginService {
         return "";
     }
 
+    /**
+     * 更新用户附加信息
+     * @param avatar
+     * @param bname
+     * @param phone
+     * @return
+     */
     @Override
     public boolean updateAdditionalUserInfo(String avatar, String bname, String phone) {
         SpMember member = new SpMember();
@@ -387,10 +425,17 @@ public class LoginServiceImpl implements LoginService {
         }
         return false;
     }
+    //=>开始调用PHP鉴权中心进行登录注册相关
 
+    /**
+     * 注册
+     * @param account
+     * @param password
+     * @return
+     * @throws Exception
+     */
     @Override
     public Map<String,Object> doRegister(String account, String password) throws Exception {
-        StringBuilder sb = new StringBuilder();
         Data data1 = new Data();
         Map<String,String> map = new HashMap<>();
         map.put("username",account);
@@ -398,118 +443,144 @@ public class LoginServiceImpl implements LoginService {
         map.put("type","1");
         data1.setData(map);
         String json = JsonUtils.objectToJson(data1.getData());
-        String result =  sb.append("Sso").append("register").append(json).append(salt).toString().replaceAll("\t|\n|\r","");
-        String sign = Md5Utils.md5(result,"utf-8");
         InitParam p = new InitParam();
         p.setMod("Sso");
         p.setFun("register");
-        p.setSign(sign);
+        p.setSign(genarateSign(SSO,"register",json));
         Map<String,String> data = new HashMap<>();
         data.put("username",account);
         data.put("password",password);
         data.put("type","1");
         p.setData(data);
-        String ss =  JsonUtils.objectToJson(p);
-        // 加密
-        String enString = AesCBC.getInstance().encrypt(ss).replaceAll("\r|\n", "").trim().replaceAll("\\+","%2B");
-        String param = "sp=" + enString;
-        String response =  SimulateGetAndPostUtil.sendPost("http://144.anyoujia.com/Sso/Api/index/",param);
-        return parseResponse(response);
+        return parseResponse(doPhpRequest(p));
     }
 
+    /**
+     * type 1 表示小程序请求PHP鉴权中心
+     * 登录
+     * @param account
+     * @param password
+     * @param ip
+     * @return Map
+     * @throws Exception
+     */
     @Override
     public Map<String,Object> doLogin(String account, String password, String ip) throws Exception {
-        StringBuilder sb = new StringBuilder();
         Data data1 = new Data();
         Map<String,String> map = new HashMap<>();
         map.put("username",account);
         map.put("password",password);
-        //type 为1表示wx小程序用户
         map.put("type","1");
         map.put("ip",ip);
         data1.setData(map);
         String json = JsonUtils.objectToJson(data1.getData());
-        System.out.println(json);
-        String result =  sb.append("Sso").append("login").append(json).append(salt).toString().replaceAll("\t|\n|\r","");
-        String sign = Md5Utils.md5(result,"utf-8");
         InitParam p = new InitParam();
-        p.setMod("Sso");
+        p.setMod(SSO);
         p.setFun("login");
-        p.setSign(sign);
+        p.setSign(genarateSign(SSO,"login",json));
         Map<String,String> data = new HashMap<>();
         data.put("username",account);
         data.put("password",password);
         data.put("ip",ip);
         data.put("type","1");
         p.setData(data);
-        String ss =  JsonUtils.objectToJson(p);
-        // 加密
-        String enString = AesCBC.getInstance().encrypt(ss).replaceAll("\r|\n", "").trim().replaceAll("\\+","%2B");
-        String param = "sp=" + enString;
-        String response =  SimulateGetAndPostUtil.sendPost("http://144.anyoujia.com/Sso/Api/index/",param);
-        System.out.println(response);
-        return parseResponse(response);
+        return parseResponse(doPhpRequest(p));
     }
 
+    /**
+     * 更新用户密码
+     * @param username
+     * @param password
+     * @return
+     * @throws Exception
+     */
     @Override
     public Map<String,Object> updateUserPassword(String username, String password) throws Exception {
-        StringBuilder sb = new StringBuilder();
         Data data1 = new Data();
         Map<String,String> map = new HashMap<>();
         map.put("username",username);
         map.put("password",password);
         data1.setData(map);
         String json = JsonUtils.objectToJson(data1.getData());
-        System.out.println(json);
-        String result =  sb.append("Sso").append("updateuser").append(json).append(salt).toString().replaceAll("\t|\n|\r","");
-        String sign = Md5Utils.md5(result,"utf-8");
         InitParam p = new InitParam();
-        p.setMod("Sso");
+        p.setMod(SSO);
         p.setFun("updateuser");
-        p.setSign(sign);
+        p.setSign(genarateSign(SSO,"updateuser",json));
         Map<String,String> data = new HashMap<>();
         data.put("username",username);
         data.put("password",password);
         p.setData(data);
-        String ss =  JsonUtils.objectToJson(p);
-        // 加密
-        String enString = AesCBC.getInstance().encrypt(ss).replaceAll("\r|\n", "").trim().replaceAll("\\+","%2B");
-        String param = "sp=" + enString;
-        String response =  SimulateGetAndPostUtil.sendPost("http://144.anyoujia.com/Sso/Api/index/",param);
-        return parseResponse(response);
+        return parseResponse(doPhpRequest(p));
     }
 
+    /**
+     * 维护登录状态
+     * @param username
+     * @param session
+     * @return
+     * @throws Exception
+     */
     @Override
     public Map<String,Object> updateLogin(String username, String session) throws Exception {
-        StringBuilder sb = new StringBuilder();
         Data data1 = new Data();
         Map<String,String> map = new HashMap<>();
         map.put("username",username);
         map.put("session",session);
         data1.setData(map);
         String json = JsonUtils.objectToJson(data1.getData());
-        System.out.println(json);
-        String result =  sb.append("Sso").append("updatelogin").append(json).append(salt).toString().replaceAll("\t|\n|\r","");
-        String sign = Md5Utils.md5(result,"utf-8");
-        System.out.println(sign);
         InitParam p = new InitParam();
-        p.setMod("Sso");
+        p.setMod(SSO);
         p.setFun("updatelogin");
-        p.setSign(sign);
+        p.setSign(genarateSign(SSO,"updatelogin",json));
         Map<String,String> data = new HashMap<>();
         data.put("username",username);
         data.put("session",session);
         p.setData(data);
-        String ss =  JsonUtils.objectToJson(p);
-        // 加密
-        String enString = AesCBC.getInstance().encrypt(ss).replaceAll("\r|\n", "").trim().replaceAll("\\+","%2B");
-        String param = "sp=" + enString;
-        String response =  SimulateGetAndPostUtil.sendPost("http://144.anyoujia.com/Sso/Api/index/",param);
-        System.out.println(response);
-        Map<String,Object> result1 = parseResponse(response);
-        return result1;
+        return parseResponse(doPhpRequest(p));
+    }
+    //=>结束调用PHP鉴权中心进行登录注册相关
+
+    /**
+     * 工具方法负责发送请求
+     * @param initParam
+     * @return
+     * @throws Exception
+     */
+    private String doPhpRequest(InitParam initParam)throws Exception {
+        String ss =  JsonUtils.objectToJson(initParam);
+       return SimulateGetAndPostUtil.sendPost(phpurl,genarateParamForPhpRequest(ss));
     }
 
+    /**
+     * 工具方法负责生成签名
+     * @param mod
+     * @param fun
+     * @param jsonData
+     * @return
+     */
+    private String genarateSign(String mod,String fun,String jsonData) {
+        StringBuilder sb = new StringBuilder();
+        String result =  sb.append(mod).append(fun).append(jsonData).append(salt)
+                           .toString().replaceAll("\t|\n|\r","");
+        return Md5Utils.md5(result,"utf-8");
+    }
+
+    /**
+     * 工具方法负责生成请求参数
+     * @param s
+     * @return
+     * @throws Exception
+     */
+    private String genarateParamForPhpRequest(String s) throws Exception {
+       return "sp=" + AesCBC.getInstance().encrypt(s).
+               replaceAll("\r|\n", "").trim().replaceAll("\\+","%2B");
+    }
+
+    /**
+     * 根据手机号获取用户
+     * @param account
+     * @return
+     */
     @Override
     public SpMember getUserByAccount(String account) {
        List<SpMember> list =  memberMapper.selectByExample(createExample(account));
@@ -519,6 +590,11 @@ public class LoginServiceImpl implements LoginService {
         return null;
     }
 
+    /**
+     * 删除用户安全密码
+     * @param phone
+     * @return
+     */
     @Override
     public boolean delSecurityPassword(String phone) {
         SpMember user = new SpMember();
@@ -530,6 +606,11 @@ public class LoginServiceImpl implements LoginService {
         return false;
     }
 
+    /**
+     * 检查账号是否存在
+     * @param phone
+     * @return
+     */
     @Override
     public boolean checkAccount(String phone) {
         List<SpMember> list =  memberMapper.selectByExample(createExample(phone));
@@ -539,7 +620,11 @@ public class LoginServiceImpl implements LoginService {
         return false;
     }
 
-
+    /**
+     * 解析PHP鉴权中心响应结果
+     * @param response
+     * @return
+     */
     public Map<String,Object> parseResponse(String response) {
         Map<String,Object> map = JsonUtils.jsonToMap(response);
         Integer status = (Integer) map.get("status");
@@ -559,6 +644,13 @@ public class LoginServiceImpl implements LoginService {
         data.put("status",status);
         return data;
     }
+
+    /**
+     * 解析加密session
+     * @param session
+     * @return
+     * @throws Exception
+     */
 
     public Map<String,Object> parseSession(String session) throws Exception{
         String result= AesCBC.getInstance().decrypt(session);
