@@ -237,14 +237,6 @@ public class LockServiceImpl implements LockService{
         return AnyoujiaResult.ok(res);
     }
 
-//    @Override
-//    public AnyoujiaResult getProctedDays(SpMember user, String sn) {
-//        SpMemberRelationExample example = new SpMemberRelationExample();
-//        SpMemberRelationExample.Criteria criteria = example.createCriteria();
-//        criteria.andPhoneEqualTo(user.getPhone()).andLocksnEqualTo(sn);
-//       List<SpMemberRelation> list = relationMapper.selectByExample(example);
-//        return null;
-//    }
 
     private SpMemberRelationExample combineExampleByPhone(String phone) {
         SpMemberRelationExample example = new SpMemberRelationExample();

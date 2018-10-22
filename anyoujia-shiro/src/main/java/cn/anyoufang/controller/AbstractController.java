@@ -13,7 +13,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.Map;
 
 /**
- * Controller公共组件
+ * user相关Controller公共组件
  * 
  * @author
  * @email
@@ -35,7 +35,13 @@ public abstract class AbstractController {
         }
         if(result != null) {
             String username = (String) result.get("username");
-            return loginService.getUserByAccount(username);
+            SpMember user = loginService.getUserByAccount(username);
+            if(user != null) {
+                //已经登录，并更新登陆时间
+                updateLogin(request,loginService);
+                return user;
+            }
+            return null;
         }
         return null;
 	}

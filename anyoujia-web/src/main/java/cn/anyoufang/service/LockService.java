@@ -66,13 +66,5 @@ public interface LockService {
 
     AnyoujiaResult getAllLockList(SpMember user);
 
-    /**
-     * 获取锁保护天数
-     * @param user
-     * @param sn
-     * @return
-     */
-    //AnyoujiaResult getProctedDays(SpMember user,String sn);
-
 
 }
