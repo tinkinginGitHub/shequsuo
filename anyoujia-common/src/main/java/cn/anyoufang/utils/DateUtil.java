@@ -273,4 +273,10 @@ public class DateUtil {
 		}
 		return false;
 	}
+
+	public static int generateTenTime() {
+		long now = System.currentTimeMillis();
+		int ten = (int) (now/1000);
+		return ten;
+	}
 }

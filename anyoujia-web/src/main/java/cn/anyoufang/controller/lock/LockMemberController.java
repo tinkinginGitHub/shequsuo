@@ -1,6 +1,7 @@
 package cn.anyoufang.controller.lock;
 
 import cn.anyoufang.controller.AbstractController;
+import cn.anyoufang.entity.SpLockFinger;
 import cn.anyoufang.entity.selfdefined.AnyoujiaResult;
 import cn.anyoufang.entity.SpMember;
 import cn.anyoufang.entity.SpMemberRelation;
@@ -208,7 +209,7 @@ public class LockMemberController extends AbstractController {
       public AnyoujiaResult updateExpireDateForRenter(@RequestParam String endtime,
                                                       @RequestParam int id,
                                                       @RequestParam String locksn) {
-          if(StringUtil.isEmpty(endtime)) {
+          if(StringUtil.isEmpty(endtime) || StringUtil.isEmpty(locksn)) {
               return AnyoujiaResult.build(400,"参数异常");
           }
 
@@ -223,6 +224,61 @@ public class LockMemberController extends AbstractController {
                   log.info(e.getMessage());
               }
               return AnyoujiaResult.build(500,"系统错误");
+          }
+          return AnyoujiaResult.build(500,"系统错误");
+      }
+
+    /**
+     * 获取用户指纹id列表
+     * @param locksn
+     * @param request
+     * @return
+     */
+      @RequestMapping("/admin/fingerlist")
+      public  AnyoujiaResult getFingerList(@RequestParam String locksn,HttpServletRequest request) {
+          if(StringUtil.isEmpty(locksn)) {
+              return AnyoujiaResult.build(400,"参数异常");
+          }
+          SpMember user = getUser(request,loginService);
+          if(user == null) {
+              return AnyoujiaResult.build(401,"登陆超时");
+          }
+          List<SpLockFinger> res = memberService.getFingerList(user.getUid(),locksn);
+          return AnyoujiaResult.ok(res);
+      }
+
+
+     /**
+     * 移除指纹
+     * @param seqid
+     * @param locksn
+     * @return
+     */
+       @RequestMapping("/admin/removefinger")
+      public AnyoujiaResult removeFingerBySeqId(@RequestParam int seqid,
+                                                @RequestParam String locksn) {
+          if(StringUtil.isEmpty(locksn)) {
+              return AnyoujiaResult.build(400,"参数异常");
+          }
+
+          if(memberService.deleteFingerAccordent(seqid,locksn)) {
+              return AnyoujiaResult.ok();
+          }
+          return AnyoujiaResult.build(400,"删除超时,请重试");
+      }
+
+      @RequestMapping("/admin/checksetedpwd")
+      public AnyoujiaResult isSetLockPwdForever(@RequestParam String locksn,HttpServletRequest request) {
+          if(StringUtil.isEmpty(locksn)) {
+              return AnyoujiaResult.build(400,"参数异常");
+          }
+          SpMember user = getUser(request,loginService);
+          if(user == null) {
+              return AnyoujiaResult.build(401,"登陆超时");
+          }
+         boolean ok =  memberService.isSetLockPwdForever(locksn,user.getPhone(),user.getUid());
+          if(ok) {
+              return AnyoujiaResult.ok();
           }
           return AnyoujiaResult.build(500,"系统错误");
       }

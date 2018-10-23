@@ -370,6 +370,10 @@ public class LoginController extends AbstractController {
     @RequestMapping("/findpwd")
     @ApiOperation(value = "找回密码之前检查账户", httpMethod = "POST", notes = "member check account")
     public AnyoujiaResult checkAndfindPwd(@RequestParam String phone, @RequestParam String code, HttpServletRequest request) {
+
+        if (!loginService.checkByCode(phone, code)) {
+            return AnyoujiaResult.build(400, "验证码错误");
+        }
         try {
             updateLogin(request, loginService);
         } catch (Exception e) {
@@ -378,11 +382,11 @@ public class LoginController extends AbstractController {
             }
             return AnyoujiaResult.build(401, "找回密码失败");
         }
-        boolean existAccount = loginService.checkAccount(phone, code);
+        boolean existAccount = loginService.checkAccount(phone);
         if (existAccount) {
             return AnyoujiaResult.build(200, "找回 成功");
         }
-        return AnyoujiaResult.build(400, "账户不存在");
+        return AnyoujiaResult.build(401, "账户不存在");
     }
 
     /**
@@ -393,14 +397,14 @@ public class LoginController extends AbstractController {
     public AnyoujiaResult checkAndfindSecurityPwd(@RequestParam String phone,
                                                   @RequestParam String code,
                                                   @RequestParam String answer, HttpServletRequest request) {
-
-        updateLogin(request, loginService);
-        if (!loginService.checkAccount(phone)) {
-            return AnyoujiaResult.build(400, "账号不存在");
-        }
         if (!loginService.checkByCode(phone, code)) {
             return AnyoujiaResult.build(400, "验证码错误");
         }
+        updateLogin(request, loginService);
+        if (!loginService.checkAccount(phone)) {
+            return AnyoujiaResult.build(401, "账号不存在");
+        }
+
         boolean existAccount = loginService.checkAccountAndAnswer(phone, code, answer);
         if (existAccount) {
             return AnyoujiaResult.build(200, "找回成功");

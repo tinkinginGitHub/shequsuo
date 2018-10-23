@@ -24,7 +24,19 @@ public abstract class AbstractController {
 	
 	protected SpMember getUser(HttpServletRequest request,LoginService loginService) {
 		String token = request.getHeader("token");
-        Map<String,Object> result = null;
+		//token失效
+		if(token == null) {
+		    return null;
+        }
+        //判断是否登录并更新登录状态
+        if(isLogin(token)) {
+            //已经登录，并更新登陆时间
+            updateLogin(request,loginService);
+        }else {
+            return null;
+        }
+        Map<String,Object> result;
+        //解析token，解析失败直接返回
         try {
             result = parseSession(token);
         } catch (Exception e) {
@@ -37,8 +49,6 @@ public abstract class AbstractController {
             String username = (String) result.get("username");
             SpMember user = loginService.getUserByAccount(username);
             if(user != null) {
-                //已经登录，并更新登陆时间
-                updateLogin(request,loginService);
                 return user;
             }
             return null;

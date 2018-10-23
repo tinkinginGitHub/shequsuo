@@ -1,9 +1,11 @@
 package cn.anyoufang.service;
 
-import cn.anyoufang.entity.selfdefined.AnyoujiaResult;
+import cn.anyoufang.entity.SpAdminLock;
 import cn.anyoufang.entity.SpMember;
+import cn.anyoufang.entity.selfdefined.AnyoujiaResult;
 import com.aliyuncs.exceptions.ClientException;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -86,13 +88,6 @@ public interface LoginService {
      */
     SpMember getUserById(int id);
 
-    /**
-     * 检查账户
-     * @param account
-     * @param code
-     * @return
-     */
-    boolean checkAccount(String account,String code);
 
     /**
      * 重设安全密码之前检查
@@ -130,10 +125,44 @@ public interface LoginService {
     Map<String,Object> updateLogin(String username,String session) throws Exception;
     SpMember getUserByAccount(String account);
 
+    /**
+     * 删除安全密码
+     * @param phone
+     * @return
+     */
     boolean delSecurityPassword(String phone);
 
+    /**
+     * 检查账户
+     * @param phone
+     * @return
+     */
     boolean checkAccount(String phone);
 
+    /**
+     * 根据验证码验证账户
+     * @param phone
+     * @param code
+     * @return
+     */
     boolean checkByCode(String phone,String code);
+
+
+    /**
+     * 获取用户关系
+     * @param locksn
+     * @param phone
+     * @return
+     */
+    String getMemberRelation(String locksn,String phone);
+
+    /**
+     * 锁和锁管理员是一对一关系，只需要锁管理员id就可以获取锁和管理员之间的对应相应关系
+     * @param memberid
+     * @return
+     */
+    List<SpAdminLock>  getLockAdmin(int memberid);
+
+    public boolean checkAccount1(String phone);
 
 }
