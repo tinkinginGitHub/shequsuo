@@ -9,6 +9,8 @@ public class SpComment {
 
     private String phone;
 
+    private Integer createtime;
+
     public Integer getId() {
         return id;
     }
@@ -39,5 +41,13 @@ public class SpComment {
 
     public void setPhone(String phone) {
         this.phone = phone == null ? null : phone.trim();
+    }
+
+    public Integer getCreatetime() {
+        return createtime;
+    }
+
+    public void setCreatetime(Integer createtime) {
+        this.createtime = createtime;
     }
 }

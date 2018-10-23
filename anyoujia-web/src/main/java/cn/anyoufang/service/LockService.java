@@ -28,25 +28,27 @@ public interface LockService {
                                   int endtime,
                                   String pwds,
                                   String nickname,
-                                  String phone);
+                                  String phone,boolean isAdmin);
 
     /**
-     *设置用户指纹密码
+     * 设置用户指纹密码
      * @param seqid
      * @param locksn
-     * @param ptype
      * @param endtime
      * @param usertype
+     * @param nickname
+     * @param phone
+     * @param fingerdesc
+     * @param fingerid
      * @return
      */
 
     AnyoujiaResult setLockUserFingerPassword( int seqid,
                                               String locksn,
-                                              int ptype,
                                               int endtime,
                                               int usertype,
                                               String nickname,
-                                              String phone);
+                                              String phone,String fingerdesc,String fingerid,boolean isAdmin);
 
 
     /**
@@ -65,6 +67,22 @@ public interface LockService {
      */
 
     AnyoujiaResult getAllLockList(SpMember user);
+
+    /**
+     * 获取门锁的所有记录
+     * @param locksn
+     * @param isalarm
+     * @param page
+     * @return
+     */
+    AnyoujiaResult getLockRecords(String locksn, int isalarm , int page);
+
+    /**
+     * 获取单个门锁详情
+     * @param locksn
+     * @return
+     */
+    AnyoujiaResult getLockInfo(String locksn);
 
 
 }

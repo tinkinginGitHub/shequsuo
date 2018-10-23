@@ -22,7 +22,7 @@ public enum WxConstant {
 
 
     /**
-     * 安优家智慧社区公众号
+     * 安优家智慧社区小程序
      */
     APP_SECRET("6122f996b1e99597cae0c7bb03fc43b2");
 

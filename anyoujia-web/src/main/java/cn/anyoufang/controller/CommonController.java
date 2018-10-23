@@ -94,17 +94,16 @@ public class CommonController  extends AbstractController{
 
     @RequestMapping("/sendcomment")
     public AnyoujiaResult comment(@RequestParam String comment,
-                                  @RequestParam String url,
+                                  @RequestParam(required = false) String url,
                                   HttpServletRequest request) {
-        System.out.println(comment+"," + url);
-        if(StringUtil.isEmpty(comment)&&StringUtil.isEmpty(url)) {
-            return AnyoujiaResult.build(400,"请输入有效评论或者上传正确的图片");
+        if(StringUtil.isEmpty(comment)) {
+            return AnyoujiaResult.build(400,"请输入有效评论");
         }
         try{
           SpMember user =  getUser(request,loginService);
             if(user != null) {
                  String phone = user.getPhone();
-               boolean commentOk =  commentService.saveComments(comment,url,phone);
+                 boolean commentOk =  commentService.saveComments(comment,url,phone);
                if(commentOk) {
                    return AnyoujiaResult.ok();
                }

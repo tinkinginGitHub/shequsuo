@@ -5,9 +5,7 @@ import cn.anyoufang.entity.selfdefined.AnyoujiaResult;
 import cn.anyoufang.entity.selfdefined.Data;
 import cn.anyoufang.entity.selfdefined.InitParam;
 import cn.anyoufang.entity.selfdefined.LoginResult;
-import cn.anyoufang.mapper.SpMemberLoginMapper;
-import cn.anyoufang.mapper.SpMemberMapper;
-import cn.anyoufang.mapper.SpMemberWxMapper;
+import cn.anyoufang.mapper.*;
 import cn.anyoufang.service.LoginService;
 import cn.anyoufang.utils.*;
 import com.aliyuncs.dysmsapi.model.v20170525.SendSmsResponse;
@@ -41,6 +39,12 @@ public class LoginServiceImpl implements LoginService {
 
     @Autowired
     private SpMemberLoginMapper loginMapper;
+
+    @Autowired
+    private SpMemberRelationMapper relationMapper;
+
+    @Autowired
+    private SpAdminLockMapper adminLockMapper;
 
     @Value("${ANYOUJIACODE}")
     private String tempCode;
@@ -323,7 +327,8 @@ public class LoginServiceImpl implements LoginService {
      * @return 密码
      */
     private String getPassword(String phone, String code) {
-        String cacheCode = RedisUtils.get(phone);
+        String md5Phone = phone;
+        String cacheCode = RedisUtils.get(Md5Utils.md5(md5Phone,"utf-8"));
         if (cacheCode == null) {
             return "";
         }
@@ -352,22 +357,47 @@ public class LoginServiceImpl implements LoginService {
     }
 
     /**
-     * 用于密码找回
-     * @param account
-     * @param code
+     * 关系为用户类型1家人，2老人儿童，3.租户
+     * @param locksn
+     * @param phone
      * @return
      */
     @Override
-    public boolean checkAccount(String account,String code) {
-        List<SpMember> list = memberMapper.selectByExample(createExample(account));
-        if(list.size() == 0) {
-            return false;
+    public String getMemberRelation(String locksn, String phone) {
+
+        SpMemberRelationExample example = new SpMemberRelationExample();
+        SpMemberRelationExample.Criteria criteria =  example.createCriteria();
+        criteria.andLocksnEqualTo(locksn).andPhoneEqualTo(phone);
+        List<SpMemberRelation> list =  relationMapper.selectByExample(example);
+        if(list.size() >0) {
+           SpMemberRelation relation =  list.get(0);
+           if("1".equals(relation.getUsertype())) {
+               return relation.getUserrelation();
+           }
+           return relation.getUsername();
         }
-        if(StringUtil.isEmpty(getPassword(account,code))) {
-            return false;
-        }
-        return true;
+        return null;
     }
+
+    @Override
+    public List<SpAdminLock> getLockAdmin(int memberid) {
+
+        SpAdminLockExample example = new SpAdminLockExample();
+        SpAdminLockExample.Criteria criteria = example.createCriteria();
+        criteria.andAdminidEqualTo(memberid);
+        return  adminLockMapper.selectByExample(example);
+    }
+
+    @Override
+    public boolean checkAccount1(String phone) {
+        List<SpMember> list =  memberMapper.selectByExample(createExample(phone));
+        if(list.size() >0) {
+            return true;
+        }
+
+        return false;
+    }
+
 
     /**
      * 安全密码找回
@@ -614,11 +644,14 @@ public class LoginServiceImpl implements LoginService {
     @Override
     public boolean checkAccount(String phone) {
         List<SpMember> list =  memberMapper.selectByExample(createExample(phone));
-        if(list.size() >0) {
+        if(list.size() >0&&!StringUtil.isEmpty(list.get(0).getPassword())) {
             return true;
         }
+
         return false;
     }
+
+
 
     /**
      * 解析PHP鉴权中心响应结果

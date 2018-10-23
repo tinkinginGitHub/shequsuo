@@ -3,8 +3,8 @@ package cn.anyoufang.service.mqtt;
 /**
  * @author daiping
  */
-public interface MqttService {
+public interface MqttWxService {
 
-    String subscribeMessage();
+    String subMessage(String userid);
     String pubMessage();
 }

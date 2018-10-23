@@ -3,6 +3,7 @@ package cn.anyoufang.service.impl;
 import cn.anyoufang.entity.SpComment;
 import cn.anyoufang.mapper.SpCommentMapper;
 import cn.anyoufang.service.CommentService;
+import cn.anyoufang.utils.DateUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -24,6 +25,7 @@ public class CommentServiceImpl implements CommentService {
         comment1.setComment(comment);
         comment1.setPicurl(url);
         comment1.setPhone(phone);
+        comment1.setCreatetime(DateUtil.generateTenTime());
         int num = commentMapper.insertSelective(comment1);
         if(num == 1) {
             return true;

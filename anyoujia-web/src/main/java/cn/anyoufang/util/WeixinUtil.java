@@ -1,5 +1,6 @@
 package cn.anyoufang.util;
 
+import cn.anyoufang.entity.WxMssVo;
 import cn.anyoufang.enums.WxConstant;
 import cn.anyoufang.utils.RedisUtils;
 import net.sf.json.JSONException;
@@ -13,6 +14,7 @@ import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
 import java.io.*;
 import java.net.ConnectException;
+import java.net.HttpURLConnection;
 import java.net.URL;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -98,6 +100,81 @@ public class WeixinUtil {
             }
         }
         return jsonObject;
+    }
+
+    //小程序后台发送模板消息
+    public static String sendTemplateMessage(WxMssVo wxMssVo) {
+        String info = "";
+        BufferedReader reader = null;
+        HttpURLConnection connection=null;
+        try {
+            //创建连接
+            URL url = new URL(wxMssVo.getRequest_url());
+            connection = (HttpURLConnection) url.openConnection();
+            connection.setDoOutput(true);
+            connection.setDoInput(true);
+            connection.setRequestMethod("POST");
+            connection.setUseCaches(false);
+            connection.setInstanceFollowRedirects(true);
+            connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+            connection.setRequestProperty("Content-Type", "utf-8");
+            connection.connect();
+            //POST请求
+            DataOutputStream out = new DataOutputStream(connection.getOutputStream());
+            JSONObject obj = new JSONObject();
+
+            obj.put("access_token", wxMssVo.getAccess_token());
+            obj.put("touser", wxMssVo.getTouser());
+            obj.put("template_id", wxMssVo.getTemplate_id());
+            obj.put("form_id", wxMssVo.getForm_id());
+            obj.put("page", wxMssVo.getPage());
+
+            JSONObject jsonObject = new JSONObject();
+
+            for (int i = 0; i < wxMssVo.getParams().size(); i++) {
+                JSONObject dataInfo = new JSONObject();
+                dataInfo.put("value", wxMssVo.getParams().get(i).getValue());
+                dataInfo.put("color", wxMssVo.getParams().get(i).getColor());
+                jsonObject.put("keyword" + (i + 1), dataInfo);
+            }
+
+            obj.put("data", jsonObject);
+            out.write(obj.toString().getBytes());
+            out.flush();
+            out.close();
+
+            //读取响应
+            reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+            String lines;
+            StringBuffer sb = new StringBuffer("");
+            while ((lines = reader.readLine()) != null) {
+                lines = new String(lines.getBytes(), "utf-8");
+                sb.append(lines);
+            }
+            info = sb.toString();
+            System.out.println(sb);
+
+        } catch (Exception e) {
+            if (LOGGER.isInfoEnabled()) {
+                LOGGER.info(e.getMessage());
+            }
+        }finally {
+            if(reader != null) {
+                try {
+                    reader.close();
+                } catch (IOException e) {
+                    if (LOGGER.isInfoEnabled()) {
+                        LOGGER.info(e.getMessage());
+                    }
+                }
+            }
+
+           if(connection !=null) {
+               // 断开连接
+               connection.disconnect();
+           }
+        }
+        return info;
     }
 
     /**
@@ -228,26 +305,8 @@ public class WeixinUtil {
         return Long.toString(System.currentTimeMillis() / 1000);
     }
 
-//    public static void main(String[] args) throws ParseException {
-//        int now = (int) (System.currentTimeMillis()/1000);
-////        System.out.println(now);
-////        System.out.println();
-////      // Date time =  new Date(now * 1000);
-////        //int days = (to - from)/( 60 * 60 * 24);
-////      Date time =   new Date(Long.valueOf(now+"000"));
-////       if (time.before(new Date())) {
-////           System.out.println(time);
-////       }
-//        SimpleDateFormat simpleFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm");
-////        String fromDate = simpleFormat.format("2016-05-01 12:00");
-////        String toDate = simpleFormat.format("2016-06-01 12:00");
-//        //long from = System.currentTimeMillis();
-//        Date time =   new Date(Long.valueOf(now+"000"));
-//        long from =   time.getTime();
-//        long to = System.currentTimeMillis();
-//        int days = (int) ((to - from)/(1000 * 60 * 60 * 24));
-//
-//        System.out.println(days);
-//    }
+    public static void main(String[] args) {
+        System.out.println(getAccessToken());
+    }
 
 }

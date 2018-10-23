@@ -9,6 +9,12 @@ public class SpAdminLock {
 
     private Integer createtime;
 
+    private Boolean setedlockpwd;
+
+    private Boolean setedlockfinger;
+
+    private Integer updatetime;
+
     public Integer getId() {
         return id;
     }
@@ -39,5 +45,29 @@ public class SpAdminLock {
 
     public void setCreatetime(Integer createtime) {
         this.createtime = createtime;
+    }
+
+    public Boolean getSetedlockpwd() {
+        return setedlockpwd;
+    }
+
+    public void setSetedlockpwd(Boolean setedlockpwd) {
+        this.setedlockpwd = setedlockpwd;
+    }
+
+    public Boolean getSetedlockfinger() {
+        return setedlockfinger;
+    }
+
+    public void setSetedlockfinger(Boolean setedlockfinger) {
+        this.setedlockfinger = setedlockfinger;
+    }
+
+    public Integer getUpdatetime() {
+        return updatetime;
+    }
+
+    public void setUpdatetime(Integer updatetime) {
+        this.updatetime = updatetime;
     }
 }

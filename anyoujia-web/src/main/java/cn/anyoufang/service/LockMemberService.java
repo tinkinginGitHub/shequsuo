@@ -1,5 +1,6 @@
 package cn.anyoufang.service;
 
+import cn.anyoufang.entity.SpLockFinger;
 import cn.anyoufang.entity.SpMemberRelation;
 
 import java.util.List;
@@ -72,4 +73,28 @@ public interface LockMemberService {
      * @return
      */
     boolean updateExpireDateForRenter(int userid,String locksn,String endtime);
+
+    /**
+     * 用户删除指纹
+     * @param seqid
+     * @param locksn
+     * @return
+     */
+    boolean deleteFingerAccordent(int seqid,String locksn);
+
+    /**
+     * 获取用户指纹列表
+     * @param memberid
+     * @param locksn
+     * @return
+     */
+    List<SpLockFinger> getFingerList(int memberid,String locksn);
+
+    /**
+     * 判断是否已经设置永久密码
+     * @param locksn
+     * @param phone
+     * @return boolean
+     */
+    boolean isSetLockPwdForever(String locksn,String phone,int memberid);
 }
