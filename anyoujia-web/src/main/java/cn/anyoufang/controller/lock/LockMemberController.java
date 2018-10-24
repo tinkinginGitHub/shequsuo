@@ -48,11 +48,11 @@ public class LockMemberController extends AbstractController {
     public AnyoujiaResult getMembersForByAdminId(HttpServletRequest request, @RequestParam String locksn) {
 
         if(StringUtil.isEmpty(locksn)) {
-            return AnyoujiaResult.build(404,"锁SN不存在");
+            return AnyoujiaResult.build(FOUR_H_4,"锁SN不存在");
         }
         SpMember admin = getUser(request,loginService);
         if(admin == null) {
-            return AnyoujiaResult.build(401,"登陆超时");
+            return AnyoujiaResult.build(FOUR_H_1,"登陆超时");
         }
         int id = admin.getUid();
         List<SpMemberRelation> list =  memberService.getMembersForByAdminId(id,locksn);
@@ -104,10 +104,10 @@ public class LockMemberController extends AbstractController {
                                                 @RequestParam int status,HttpServletRequest request ) {
         String token = request.getHeader("token");
         if(StringUtil.isEmpty(locksn)) {
-            return AnyoujiaResult.build(400,"参数异常");
+            return AnyoujiaResult.build(FOUR_H,"参数异常");
         }
           if(!isLogin(token)) {
-              return AnyoujiaResult.build(401,"登陆超时");
+              return AnyoujiaResult.build(FOUR_H_1,"登陆超时");
           }
 
           boolean ok;
@@ -117,12 +117,12 @@ public class LockMemberController extends AbstractController {
               if(log.isInfoEnabled()) {
                   log.info(e.getMessage());
               }
-              return AnyoujiaResult.build(500,"系统异常");
+              return AnyoujiaResult.build(FIVE_H,"系统异常");
           }
           if(ok) {
               return AnyoujiaResult.ok();
           }
-          return AnyoujiaResult.build(500,"sorry...");
+          return AnyoujiaResult.build(FIVE_H,"sorry...");
       }
 
     /**
@@ -152,12 +152,12 @@ public class LockMemberController extends AbstractController {
                 || StringUtil.isEmpty(relation)
                 || StringUtil.isEmpty(locksn)) {
 
-            return AnyoujiaResult.build(400,"参数异常");
+            return AnyoujiaResult.build(FOUR_H,"参数异常");
         }
 
           SpMember admin = getUser(request,loginService);
           if(admin == null) {
-              return AnyoujiaResult.build(401,"登陆超时");
+              return AnyoujiaResult.build(FOUR_H_1,"登陆超时");
           }
         int adminId = admin.getUid();
 
@@ -170,9 +170,9 @@ public class LockMemberController extends AbstractController {
               if(log.isInfoEnabled()) {
                   log.info(e.getMessage());
               }
-              return AnyoujiaResult.build(500,"系统异常");
+              return AnyoujiaResult.build(FIVE_H,"系统异常");
           }
-          return AnyoujiaResult.build(500,"系统异常");
+          return AnyoujiaResult.build(FIVE_H,"系统异常");
       }
 
     /**
@@ -189,13 +189,13 @@ public class LockMemberController extends AbstractController {
               if(ok) {
                   return AnyoujiaResult.ok();
               }else {
-                  return AnyoujiaResult.build(500,"系统异常");
+                  return AnyoujiaResult.build(FIVE_H,"系统异常");
               }
           }catch (Exception e) {
               if(log.isInfoEnabled()) {
                   log.info(e.getMessage());
               }
-              return AnyoujiaResult.build(500,"系统异常");
+              return AnyoujiaResult.build(FIVE_H,"系统异常");
           }
       }
 
@@ -210,7 +210,7 @@ public class LockMemberController extends AbstractController {
                                                       @RequestParam int id,
                                                       @RequestParam String locksn) {
           if(StringUtil.isEmpty(endtime) || StringUtil.isEmpty(locksn)) {
-              return AnyoujiaResult.build(400,"参数异常");
+              return AnyoujiaResult.build(FOUR_H,"参数异常");
           }
 
          boolean updateTimeSeccuss;
@@ -223,9 +223,9 @@ public class LockMemberController extends AbstractController {
               if(log.isInfoEnabled()) {
                   log.info(e.getMessage());
               }
-              return AnyoujiaResult.build(500,"系统错误");
+              return AnyoujiaResult.build(FIVE_H,"系统错误");
           }
-          return AnyoujiaResult.build(500,"系统错误");
+          return AnyoujiaResult.build(FIVE_H,"系统错误");
       }
 
     /**
@@ -237,11 +237,11 @@ public class LockMemberController extends AbstractController {
       @RequestMapping("/admin/fingerlist")
       public  AnyoujiaResult getFingerList(@RequestParam String locksn,HttpServletRequest request) {
           if(StringUtil.isEmpty(locksn)) {
-              return AnyoujiaResult.build(400,"参数异常");
+              return AnyoujiaResult.build(FOUR_H,"参数异常");
           }
           SpMember user = getUser(request,loginService);
           if(user == null) {
-              return AnyoujiaResult.build(401,"登陆超时");
+              return AnyoujiaResult.build(FOUR_H_1,"登陆超时");
           }
           List<SpLockFinger> res = memberService.getFingerList(user.getUid(),locksn);
           return AnyoujiaResult.ok(res);
@@ -258,28 +258,28 @@ public class LockMemberController extends AbstractController {
       public AnyoujiaResult removeFingerBySeqId(@RequestParam int seqid,
                                                 @RequestParam String locksn) {
           if(StringUtil.isEmpty(locksn)) {
-              return AnyoujiaResult.build(400,"参数异常");
+              return AnyoujiaResult.build(FOUR_H,"参数异常");
           }
 
           if(memberService.deleteFingerAccordent(seqid,locksn)) {
               return AnyoujiaResult.ok();
           }
-          return AnyoujiaResult.build(400,"删除超时,请重试");
+          return AnyoujiaResult.build(FOUR_H,"删除超时,请重试");
       }
 
       @RequestMapping("/admin/checksetedpwd")
       public AnyoujiaResult isSetLockPwdForever(@RequestParam String locksn,HttpServletRequest request) {
           if(StringUtil.isEmpty(locksn)) {
-              return AnyoujiaResult.build(400,"参数异常");
+              return AnyoujiaResult.build(FOUR_H,"参数异常");
           }
           SpMember user = getUser(request,loginService);
           if(user == null) {
-              return AnyoujiaResult.build(401,"登陆超时");
+              return AnyoujiaResult.build(FOUR_H_1,"登陆超时");
           }
          boolean ok =  memberService.isSetLockPwdForever(locksn,user.getPhone(),user.getUid());
           if(ok) {
               return AnyoujiaResult.ok();
           }
-          return AnyoujiaResult.build(500,"系统错误");
+          return AnyoujiaResult.build(FIVE_H,"系统错误");
       }
 }

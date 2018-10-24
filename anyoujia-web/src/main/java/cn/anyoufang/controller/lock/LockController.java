@@ -28,7 +28,7 @@ import java.util.Map;
 @RequestMapping("/lock")
 public class LockController extends AbstractController {
 
-    private static final Logger log = LoggerFactory.getLogger(LockController.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(LockController.class);
 
     @Value("${lock.salt}")
     private String lockSalt;
@@ -55,7 +55,7 @@ public class LockController extends AbstractController {
                                          @RequestParam int isalarm ,
                                          @RequestParam int page) {
         if(StringUtil.isEmpty(locksn)) {
-            return AnyoujiaResult.build(400,"参数异常");
+            return AnyoujiaResult.build(FOUR_H,"参数异常");
         }
         return lockService.getLockRecords(locksn,isalarm,page);
     }
@@ -109,11 +109,11 @@ public class LockController extends AbstractController {
                                                     @RequestParam(required = false) String fingerdesc,
                                                     HttpServletRequest request) {
         if(StringUtil.isEmpty(locksn) || StringUtil.isEmpty(fingerid)) {
-            return AnyoujiaResult.build(400,"参数异常");
+            return AnyoujiaResult.build(FOUR_H,"参数异常");
         }
         SpMember user =  getUser(request,loginService);
         if(user == null) {
-            AnyoujiaResult.build(401,"登录超时");
+            AnyoujiaResult.build(FOUR_H_1,"登录超时");
         }
         String nickname;
         int memberid = user.getUid();
@@ -131,7 +131,6 @@ public class LockController extends AbstractController {
             nickname = "我";
             isAdmin = true;
         }
-
 
         return lockService.setLockUserFingerPassword(memberid,locksn,endtime,usertype,nickname,phone,fingerdesc,fingerid,isAdmin);
     }
@@ -155,11 +154,11 @@ public class LockController extends AbstractController {
                              @RequestParam String pwds) {
 
         if(StringUtil.isEmpty(locksn) ||StringUtil.isEmpty(pwds)) {
-            return AnyoujiaResult.build(400,"参数异常");
+            return AnyoujiaResult.build(FOUR_H,"参数异常");
         }
         SpMember user = getUser(request,loginService);
         if(user == null) {
-            AnyoujiaResult.build(401,"登录超时");
+            AnyoujiaResult.build(FOUR_H_1,"登录超时");
         }
         String nickname;
         int memberid = user.getUid();
@@ -180,7 +179,7 @@ public class LockController extends AbstractController {
 
         Map<String,String> res =  lockService.setLockPwd(ptype,memberid,locksn,endtime,pwds,nickname,user.getPhone(),isAdmin);
         if(res == null) {
-            return AnyoujiaResult.build(500,"系统异常");
+            return AnyoujiaResult.build(FIVE_H,"系统异常");
         }
         return AnyoujiaResult.build(Integer.valueOf(res.get("code")),res.get("msg"));
     }
@@ -194,7 +193,7 @@ public class LockController extends AbstractController {
     public AnyoujiaResult getLockList(HttpServletRequest request) {
        SpMember user =  getUser(request,loginService);
        if(user == null) {
-          return AnyoujiaResult.build(401,"登录超时");
+          return AnyoujiaResult.build(FOUR_H_1,"登录超时");
        }
         return lockService.getAllLockList(user);
     }
@@ -208,7 +207,7 @@ public class LockController extends AbstractController {
     public AnyoujiaResult getLockInfo(@RequestParam String locksn) {
 
         if (StringUtil.isEmpty(locksn)) {
-            return AnyoujiaResult.build(400, "参数异常");
+            return AnyoujiaResult.build(FOUR_H, "参数异常");
         }
        return lockService.getLockInfo(locksn);
     }
@@ -221,11 +220,11 @@ public class LockController extends AbstractController {
     @RequestMapping("/register")
     public AnyoujiaResult registerLockInfo(@RequestParam String locksn,HttpServletRequest request) {
         if (StringUtil.isEmpty(locksn)) {
-            return AnyoujiaResult.build(400, "参数异常");
+            return AnyoujiaResult.build(FOUR_H, "参数异常");
         }
         SpMember user = getUser(request, loginService);
         if (user == null) {
-            return AnyoujiaResult.build(401, "登录超时");
+            return AnyoujiaResult.build(FOUR_H, "登录超时");
         }
         return lockService.registerLockInfo(locksn, user.getUid());
     }

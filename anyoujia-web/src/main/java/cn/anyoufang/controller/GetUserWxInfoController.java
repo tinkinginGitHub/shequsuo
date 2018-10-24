@@ -32,7 +32,7 @@ import java.util.Map;
 @Api(value = "member",description="获取用户微信基本信息")
 @RestController
 @RequestMapping("/weixinInfo")
-public class GetUserWxInfoController {
+public class GetUserWxInfoController extends AbstractController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GetUserWxInfoController.class);
 
@@ -59,10 +59,10 @@ public class GetUserWxInfoController {
             if(LOGGER.isInfoEnabled()) {
                 LOGGER.info(e.getMessage());
             }
-            return AnyoujiaResult.build(500,"系统错误");
+            return AnyoujiaResult.build(FIVE_H,"系统错误");
         }
         if(res == null) {
-            return AnyoujiaResult.build(401,"尚未绑定微信账号");
+            return AnyoujiaResult.build(FOUR_H,"尚未绑定微信账号");
         }
         String account = res.getPhone();
         String pwd = res.getPassword();
@@ -74,16 +74,16 @@ public class GetUserWxInfoController {
             if (LOGGER.isInfoEnabled()) {
                 LOGGER.info(e.getMessage());
             }
-            return AnyoujiaResult.build(500, "系统异常");
+            return AnyoujiaResult.build(FIVE_H, "系统异常");
         }
 
         if (loginResult instanceof Null) {
-            return AnyoujiaResult.build(400, "账号不存在");
+            return AnyoujiaResult.build(FOUR_H, "账号不存在");
         }
         if (loginResult != null) {
             return AnyoujiaResult.ok(loginResult);
         }
-        return AnyoujiaResult.build(400,"登录小程序失败");
+        return AnyoujiaResult.build(FIVE_H,"系统错误");
     }
 
     @RequestMapping("/publishtemplatemsg")

@@ -184,10 +184,29 @@ public class StringUtil {
     }
 
     public static void main(String[] args) {
-        String token = combineToken("18580558719","fsafasdfasdfas");
-        System.out.println(token);
-        System.out.println(decrateToken(token));
+//        String token = combineToken("18580558719","fsafasdfasdfas");
+//        System.out.println(token);
+//        System.out.println(decrateToken(token));
+       // System.out.println(stringParamisEmpty(null,"1","1","12"));
+
     }
+
+    /**
+     * 定义一个参数个数不确定的方法
+     *  固定参数，输入的参数只能是一个字符串
+     * @param things  输入参数类型为 字符串，但是个数不确定，可以是一个或多个
+     * @return
+     */
+    public static boolean stringParamisEmpty(String ...things){
+        //对输入的不确定个数参数进行非空判断
+        for (String t : things) {
+             if(StringUtil.isEmpty(t)){
+                 return true;
+             }
+        }
+        return false;
+    }
+
 
     public static String[] decrateToken(String token) {
 

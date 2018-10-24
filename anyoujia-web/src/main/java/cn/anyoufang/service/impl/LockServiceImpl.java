@@ -3,6 +3,8 @@ package cn.anyoufang.service.impl;
 import cn.anyoufang.entity.*;
 import cn.anyoufang.entity.selfdefined.AnyoujiaResult;
 import cn.anyoufang.entity.selfdefined.Lock;
+import cn.anyoufang.enumresource.HttpCodeEnum;
+import cn.anyoufang.enumresource.ParamEnum;
 import cn.anyoufang.exception.LockException;
 import cn.anyoufang.mapper.SpAdminLockMapper;
 import cn.anyoufang.mapper.SpLockFingerMapper;
@@ -30,6 +32,9 @@ import java.util.*;
 public class LockServiceImpl implements LockService{
 
     private static final Logger log = LoggerFactory.getLogger(LockServiceImpl.class);
+    private static final int T_H = HttpCodeEnum.TWO_HUNDRED.getCode();
+    private static final int FOUR_H_1 = HttpCodeEnum.FOUR_HUNDRED1.getCode();
+    private static final int FIVE_H = HttpCodeEnum.FIVE_HUNDRED.getCode();
     @Value("${lock.salt}")
     private String lockSalt;
     @Value("${pageSize}")
@@ -37,6 +42,8 @@ public class LockServiceImpl implements LockService{
     @Value("${lock.url}")
     private String url;
 
+    @Value("${deadline}")
+    private int deadline;
     @Resource
     private SpMemberRelationMapper relationMapper;
 
@@ -94,12 +101,12 @@ public class LockServiceImpl implements LockService{
             String code =  String.valueOf(data.get("code"));
             parsedMap.put("code",code);
             parsedMap.put("msg",String.valueOf(data.get("message")));
-            if(Integer.valueOf(code) ==200) {
+            if(Integer.valueOf(code) ==T_H) {
                 int updated;
                 if(isAdmin) {
                     SpAdminLock lock = new SpAdminLock();
                     //只有永久密码被设置后这个标示才能设置为true
-                    if("1".equals(ptype)) {
+                    if(ParamEnum.ONE.getCode().equals(ptype)) {
                         lock.setSetedlockpwd(true);
                     }
                     SpAdminLockExample example = new SpAdminLockExample();
@@ -110,7 +117,7 @@ public class LockServiceImpl implements LockService{
                 }else {
                     SpMemberRelation user = new SpMemberRelation();
                     //只有永久密码被设置后这个标示才能设置为true
-                    if("1".equals(ptype)) {
+                    if(ParamEnum.ONE.getCode().equals(ptype)) {
                         user.setSetedlockpwd(true);
                     }
                     updated = relationMapper.updateByExampleSelective(user,getExample(phone,locksn));
@@ -124,7 +131,7 @@ public class LockServiceImpl implements LockService{
              return null;
          }catch (Exception e) {
              if(log.isInfoEnabled()) {
-                 log.info(e.getMessage());
+                 log.info("设置锁密码失败:" + e.getMessage());
              }
              return null;
          }
@@ -178,7 +185,7 @@ public class LockServiceImpl implements LockService{
         String code =  String.valueOf(data.get("code"));
        int state =  Integer.valueOf(code);
        int updated;
-        if(state ==200) {
+        if(state == T_H) {
             if(isAdmin) {
                 SpAdminLock lock = new SpAdminLock();
                 lock.setSetedlockfinger(true);
@@ -190,14 +197,14 @@ public class LockServiceImpl implements LockService{
             }else {
                 SpMemberRelation user = new SpMemberRelation();
                 //只有永久密码被设置后这个标示才能设置为true
-                if("1".equals(ptype)) {
+                if(ParamEnum.ONE.getCode().equals(ptype)) {
                     user.setSetedlockfinger(true);
                 }
                 updated = relationMapper.updateByExampleSelective(user,getExample(phone,locksn));
             }
 
             if(updated == 1) {
-                return AnyoujiaResult.build(200,String.valueOf(data.get("message")));
+                return AnyoujiaResult.build(T_H,String.valueOf(data.get("message")));
             }
         }
         //不成功则删除无用记录
@@ -229,7 +236,7 @@ public class LockServiceImpl implements LockService{
     public AnyoujiaResult registerLockInfo(String locksn, int userid) {
 
         if(checkLockRegisted(locksn)) {
-            return AnyoujiaResult.build(400,"门锁已经注册");
+            return AnyoujiaResult.build(FOUR_H_1,"门锁已经注册");
         }
         long timestamp = System.currentTimeMillis()/1000;
         long time = timestamp;
@@ -258,7 +265,7 @@ public class LockServiceImpl implements LockService{
             if(log.isInfoEnabled()) {
                 log.info(e.getMessage());
             }
-            return AnyoujiaResult.build(500,"系统异常");
+            return AnyoujiaResult.build(FIVE_H,"系统异常");
         }
         String state = String.valueOf(data.get("code"));
         Integer status = Integer.valueOf(state);
@@ -308,7 +315,7 @@ public class LockServiceImpl implements LockService{
         Iterator<SpMemberRelation> it = list.iterator();
         while(it.hasNext()) {
             SpMemberRelation mr = it.next();
-            if(DateUtil.isNotExpired(mr.getEndtime(),30)) {
+            if(DateUtil.isNotExpired(mr.getEndtime(),deadline)) {
                 valid.add(mr);
             }else {
                 invalid.add(mr);

@@ -13,12 +13,14 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
+ * 测试同php端的签名及加解密接口
  * @author daiping
  */
 @Service
+@Deprecated
 public class HandlePhpServiceImpl implements HandlePhpService {
 
-    private static final String url = "http://144.anyoujia.com/Product/Api/index/";
+    private String url = "http://144.anyoujia.com/Product/Api/index/";
     private static final String salt = "575gh5rr556Dfhr67Ohrt8";
     private static final String postParam = "sp=";
 
@@ -36,11 +38,8 @@ public class HandlePhpServiceImpl implements HandlePhpService {
         p.setMod(mod);
         p.setFun(fun);
         p.setSign(sign);
-//        Map<String,String> data = new HashMap<>();
-//        data.put("parentid","0");
         p.setData(data);
         String ss =  JsonUtils.objectToJson(p);
-        // 加密
         String enString = AesCBC.getInstance().encrypt(ss).replaceAll("\r|\n", "").trim().replaceAll("\\+","%2B");
         String param = postParam + enString;
         String response =  SimulateGetAndPostUtil.sendPost("http://144.anyoujia.com/Product/Api/index/",param);

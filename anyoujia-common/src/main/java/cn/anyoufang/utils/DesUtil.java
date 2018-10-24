@@ -1,18 +1,15 @@
 package cn.anyoufang.utils;
 
-import java.io.IOException;
-import java.security.SecureRandom;
-import java.util.UUID;
+import org.springframework.util.Base64Utils;
+import sun.misc.BASE64Decoder;
 
 import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.DESKeySpec;
 import javax.crypto.spec.IvParameterSpec;
-
-import org.springframework.util.Base64Utils;
-
-import sun.misc.BASE64Decoder;
+import java.io.IOException;
+import java.security.SecureRandom;
 
 public class DesUtil {
 
@@ -131,11 +128,4 @@ public class DesUtil {
 		return digest;
 	}
 
-	public static void main(String[] args) throws Exception {
-		System.out.println(UUID.randomUUID().toString().replace("-", ""));
-		String d = cDercypt(
-				"45476BA16430A87992387C7EE5B17B1F63F3C144508A2590EC0083708F3EDB01AE07EF9A4048065F6D98DD4A71FC075E248F5303AC954103",
-				"3d70c1d9");
-		System.out.println(d);
-	}
 }
