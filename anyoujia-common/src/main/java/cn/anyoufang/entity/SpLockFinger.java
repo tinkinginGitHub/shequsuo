@@ -15,6 +15,10 @@ public class SpLockFinger {
 
     private Integer addtime;
 
+    private Boolean expired;
+
+    private Integer deltime;
+
     public Integer getId() {
         return id;
     }
@@ -69,5 +73,21 @@ public class SpLockFinger {
 
     public void setAddtime(Integer addtime) {
         this.addtime = addtime;
+    }
+
+    public Boolean getExpired() {
+        return expired;
+    }
+
+    public void setExpired(Boolean expired) {
+        this.expired = expired;
+    }
+
+    public Integer getDeltime() {
+        return deltime;
+    }
+
+    public void setDeltime(Integer deltime) {
+        this.deltime = deltime;
     }
 }

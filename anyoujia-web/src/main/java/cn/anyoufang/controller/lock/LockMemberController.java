@@ -69,7 +69,6 @@ public class LockMemberController extends AbstractController {
             data.put("usertype",type);
             data.put("relation",user.getUserrelation());
             data.put("username",user.getUsername());
-            data.put("setedlockfinger",user.getSetedlockfinger());
             data.put("setedlockpwd",user.getSetedlockpwd());
             data.put("endtime",user.getEndtime());
             data.put("relationid",user.getId());
@@ -89,7 +88,7 @@ public class LockMemberController extends AbstractController {
 
 
     /**
-     *
+     *管理员更新锁密码权限
      * @param id
      * @param locksn
      * @param type 0 指纹，1 密码
@@ -102,10 +101,11 @@ public class LockMemberController extends AbstractController {
                                                 @RequestParam String locksn,
                                                 @RequestParam String type,
                                                 @RequestParam int status,HttpServletRequest request ) {
-        String token = request.getHeader("token");
-        if(StringUtil.isEmpty(locksn)) {
+
+        if(StringUtil.stringParamisEmpty(locksn,type)) {
             return AnyoujiaResult.build(FOUR_H,"参数异常");
         }
+          String token = request.getHeader("token");
           if(!isLogin(token)) {
               return AnyoujiaResult.build(FOUR_H_1,"登陆超时");
           }
@@ -146,12 +146,7 @@ public class LockMemberController extends AbstractController {
                                          @RequestParam int finger,
                                          @RequestParam int pwd, HttpServletRequest request) {
 
-        if(StringUtil.isEmpty(username)
-                || StringUtil.isEmpty(usertype)
-                || StringUtil.isEmpty(phone)
-                || StringUtil.isEmpty(relation)
-                || StringUtil.isEmpty(locksn)) {
-
+        if(StringUtil.stringParamisEmpty(username,usertype,locksn)) {
             return AnyoujiaResult.build(FOUR_H,"参数异常");
         }
 
@@ -257,16 +252,23 @@ public class LockMemberController extends AbstractController {
        @RequestMapping("/admin/removefinger")
       public AnyoujiaResult removeFingerBySeqId(@RequestParam int seqid,
                                                 @RequestParam String locksn) {
-          if(StringUtil.isEmpty(locksn)) {
-              return AnyoujiaResult.build(FOUR_H,"参数异常");
-          }
 
-          if(memberService.deleteFingerAccordent(seqid,locksn)) {
-              return AnyoujiaResult.ok();
-          }
-          return AnyoujiaResult.build(FOUR_H,"删除超时,请重试");
+           if(StringUtil.isEmpty(locksn)) {
+               return AnyoujiaResult.build(FOUR_H,"参数异常");
+           }
+
+           if(memberService.deleteFingerAccordent(seqid,locksn)) {
+               return AnyoujiaResult.ok();
+           }
+           return AnyoujiaResult.build(FOUR_H,"删除超时,请重试");
       }
 
+    /**
+     * 用于前台判断是否已经设置锁永久密码
+     * @param locksn
+     * @param request
+     * @return
+     */
       @RequestMapping("/admin/checksetedpwd")
       public AnyoujiaResult isSetLockPwdForever(@RequestParam String locksn,HttpServletRequest request) {
           if(StringUtil.isEmpty(locksn)) {
@@ -280,6 +282,6 @@ public class LockMemberController extends AbstractController {
           if(ok) {
               return AnyoujiaResult.ok();
           }
-          return AnyoujiaResult.build(FIVE_H,"系统错误");
+          return AnyoujiaResult.build(FOUR_H,"暂未设置密码");
       }
 }

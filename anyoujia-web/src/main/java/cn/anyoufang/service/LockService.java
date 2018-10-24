@@ -28,7 +28,7 @@ public interface LockService {
                                   int endtime,
                                   String pwds,
                                   String nickname,
-                                  String phone,boolean isAdmin);
+                                  String phone,boolean isAdmin,String motive);
 
     /**
      * 设置用户指纹密码

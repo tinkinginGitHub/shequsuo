@@ -3,6 +3,7 @@ package cn.anyoufang.service.impl;
 import cn.anyoufang.entity.*;
 import cn.anyoufang.enumresource.ParamEnum;
 import cn.anyoufang.enumresource.PtypeAuthEnum;
+import cn.anyoufang.enumresource.PwdTypeEnum;
 import cn.anyoufang.enumresource.UsertypeEnum;
 import cn.anyoufang.exception.LockException;
 import cn.anyoufang.mapper.SpAdminLockMapper;
@@ -15,6 +16,8 @@ import cn.anyoufang.utils.DateUtil;
 import cn.anyoufang.utils.Md5Utils;
 import cn.anyoufang.utils.SimulateGetAndPostUtil;
 import cn.anyoufang.utils.selfdefine.CommonUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -32,6 +35,7 @@ import java.util.List;
 
 @Service
 public class LockMemberServiceImpl implements LockMemberService {
+    private static final Logger LOGGER = LoggerFactory.getLogger(LockMemberServiceImpl.class);
 
     @Autowired
     private SpMemberRelationMapper relationMapper;
@@ -84,6 +88,11 @@ public class LockMemberServiceImpl implements LockMemberService {
                                     String locksn,
                                     int finger,
                                     int pwd,int adminId,String endtime) {
+
+        //不能重复添加同一个手机号在同一把锁上
+        if(!memberadded(locksn,phone)){
+            return false;
+        }
         SpMemberRelation user = new SpMemberRelation();
         user.setUsertype(usertype);
         user.setUsername(username);
@@ -116,13 +125,26 @@ public class LockMemberServiceImpl implements LockMemberService {
 
         user.setParentid(adminId);
         user.setLocksn(locksn);
-        int addTime = (int) (System.currentTimeMillis() /1000);
-        user.setAddtime(addTime);
+        user.setAddtime(DateUtil.generateTenTime());
        int index =  relationMapper.insertSelective(user);
         if(index == 1) {
             return true;
         }
         return false;
+    }
+
+    /**
+     * 成员是否已经被添加
+     * @param locksn
+     * @param phone
+     * @return
+     */
+    private boolean memberadded(String locksn,String phone) {
+        SpMemberRelationExample example = new SpMemberRelationExample();
+        SpMemberRelationExample.Criteria criteria = example.createCriteria();
+        criteria.andPhoneEqualTo(phone).andLocksnEqualTo(locksn);
+        List<SpMemberRelation> list = relationMapper.selectByExample(example);
+        return list.isEmpty();
     }
 
     /**
@@ -147,33 +169,38 @@ public class LockMemberServiceImpl implements LockMemberService {
                            SpLockPasswordExample.Criteria criteria =  example.createCriteria();
                            criteria.andLocksnEqualTo(locksn).andMemberidEqualTo(memberId);
                            List<SpLockPassword> lockPasswords =  passwordMapper.selectByExample(example);
-                          if(lockPasswords.size() >0) {
+                          if(!lockPasswords.isEmpty()) {
                              SpLockPassword lockPassword =  lockPasswords.get(0);
                              int seqPwdid = lockPassword.getPwdid();
                               String res = delLockPwd(locksn,seqPwdid);
-                              if(!CommonUtil.successResponse(res)) {
-                                  isDelete =false;
+                              if(CommonUtil.successResponse(res)) {
+                                  SpLockPassword lPwd = new SpLockPassword();
+                                  lPwd.setExpired(true);
+                                  lPwd.setPwdid(seqPwdid);
+                                  passwordMapper.updateByPrimaryKeySelective(lPwd);
                               }else {
-                                  passwordMapper.deleteByPrimaryKey(seqPwdid);
+                                  isDelete =false;
                               }
                           }
 
                        }
                    }
                    if(relationUser.getFingerpwdauth()) {
-                       if(relationUser.getSetedlockfinger()) {
                            List<SpLockFinger> fingers =  getFingerListInternal(locksn,memberId);
-                           if(fingers.size() >0) {
+                           if(!fingers.isEmpty()) {
                                SpLockFinger finger = fingers.get(0);
                                int seqFingerid = finger.getId();
                                String res = delLockPwd(locksn,seqFingerid);
-                               if(!CommonUtil.successResponse(res)) {
-                                   isDelete = false;
+                               if(CommonUtil.successResponse(res)) {
+                                   SpLockFinger finger1 = new SpLockFinger();
+                                   finger1.setExpired(true);
+                                   finger1.setId(seqFingerid);
+                                   fingerMapper.updateByPrimaryKeySelective(finger1);
                                }else {
-                                   fingerMapper.deleteByPrimaryKey(seqFingerid);
+                                   isDelete = false;
                                }
                            }
-                       }
+
                    }
                }
 
@@ -182,6 +209,9 @@ public class LockMemberServiceImpl implements LockMemberService {
                     return true;
                 }
         }catch (Exception e) {
+            if(LOGGER.isInfoEnabled()) {
+                LOGGER.info("删除锁成员发生异常: " + e.getMessage());
+            }
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             return false;
         }
@@ -197,7 +227,7 @@ public class LockMemberServiceImpl implements LockMemberService {
     private List<SpLockFinger> getFingerListInternal(String locksn,int memberId) {
         SpLockFingerExample example = new SpLockFingerExample();
         SpLockFingerExample.Criteria criteria = example.createCriteria();
-        criteria.andMemberidEqualTo(memberId).andLocksnEqualTo(locksn);
+        criteria.andMemberidEqualTo(memberId).andLocksnEqualTo(locksn).andExpiredEqualTo(false);
         return fingerMapper.selectByExample(example);
     }
 
@@ -238,15 +268,99 @@ public class LockMemberServiceImpl implements LockMemberService {
     }
 
     /**
+     *
+     * TODO 分布式事务
      * 分别删除单个手指指纹
      * @param seqid
      * @param locksn
      * @return
      */
     @Override
+    @Transactional(rollbackFor = RuntimeException.class)
     public boolean deleteFingerAccordent(int seqid, String locksn) {
-        String res = delLockPwd(locksn,seqid);
-        return CommonUtil.successResponse(res);
+        String delResult = delLockPwd(locksn,seqid);
+        boolean res = CommonUtil.successResponse(delResult);
+        if(res) {
+             SpLockFinger finger = new SpLockFinger();
+             finger.setId(seqid);
+             finger.setDeltime(DateUtil.generateTenTime());
+             finger.setExpired(true);
+             fingerMapper.updateByPrimaryKeySelective(finger);
+             return true;
+             }
+        return false;
+    }
+
+    /**
+     * 移除永久密码
+     * TODO 分布式事务
+     * @param memberid
+     * @param locksn
+     * @return
+     */
+    @Override
+    public boolean deletePermentPwd(int memberid,String locksn,String phone){
+        SpLockPasswordExample example = new SpLockPasswordExample();
+        SpLockPasswordExample.Criteria criteria =  example.createCriteria();
+        criteria.andLocksnEqualTo(locksn).andMemberidEqualTo(memberid).andPtypeEqualTo(PwdTypeEnum.ONE.getCode());
+        List<SpLockPassword> lockPasswords =  passwordMapper.selectByExample(example);
+        if(lockPasswords.isEmpty()) {
+            return false;
+        }
+        SpLockPassword lockPassword = lockPasswords.get(0);
+        int seqid = lockPassword.getPwdid();
+        String delResult = delLockPwd(locksn,seqid);
+        boolean res = CommonUtil.successResponse(delResult);
+        if(res) {
+            //管理员删除密码或者用户删除密码
+           SpAdminLock adminLock =  isNotAdminLock(memberid,locksn);
+           if(adminLock == null) {
+               SpMemberRelation memberRelation =  isMemberRelation(phone,locksn);
+               if(memberRelation != null) {
+                   SpMemberRelationExample example1 = new SpMemberRelationExample();
+                   SpMemberRelationExample.Criteria criteria1 = example1.createCriteria();
+                   criteria1.andPhoneEqualTo(phone).andLocksnEqualTo(locksn);
+                   SpMemberRelation user = new SpMemberRelation();
+                   user.setSetedlockpwd(false);
+                   user.setUpdatetime(DateUtil.generateTenTime());
+                   relationMapper.updateByExampleSelective(user,example1);
+               }
+           }else {
+               SpAdminLock lock = new SpAdminLock();
+               lock.setSetedlockpwd(false);
+               lock.setId(adminLock.getId());
+               lock.setUpdatetime(DateUtil.generateTenTime());
+               adminLockMapper.updateByPrimaryKeySelective(lock);
+           }
+            SpLockPassword password = new SpLockPassword();
+            password.setDeltime(DateUtil.generateTenTime());
+            password.setExpired(true);
+            passwordMapper.updateByPrimaryKeySelective(password);
+            return true;
+        }
+        return false;
+    }
+
+    private SpMemberRelation isMemberRelation(String phone,String locksn) {
+        SpMemberRelationExample example1 = new SpMemberRelationExample();
+        SpMemberRelationExample.Criteria criteria1 =  example1.createCriteria();
+        criteria1.andPhoneEqualTo(phone).andLocksnEqualTo(locksn);
+        List<SpMemberRelation> list1 = relationMapper.selectByExample(example1);
+        if(list1.isEmpty()) {
+            return null;
+        }
+        return list1.get(0);
+    }
+
+    private SpAdminLock isNotAdminLock(int memberid,String locksn) {
+        SpAdminLockExample example = new SpAdminLockExample();
+        SpAdminLockExample.Criteria criteria = example.createCriteria();
+        criteria.andAdminidEqualTo(memberid).andLocksnEqualTo(locksn);
+        List<SpAdminLock> list = adminLockMapper.selectByExample(example);
+        if(list.isEmpty()) {
+             return null;
+        }
+        return list.get(0) ;
     }
 
     /**
@@ -269,29 +383,24 @@ public class LockMemberServiceImpl implements LockMemberService {
      */
     @Override
     public boolean isSetLockPwdForever(String locksn, String phone,int memberid) {
-        SpAdminLockExample example = new SpAdminLockExample();
-        SpAdminLockExample.Criteria criteria = example.createCriteria();
-        criteria.andAdminidEqualTo(memberid);
-        List<SpAdminLock> list = adminLockMapper.selectByExample(example);
-        if(list.size() == 0) {
-            SpMemberRelationExample example1 = new SpMemberRelationExample();
-           SpMemberRelationExample.Criteria criteria1 =  example1.createCriteria();
-           criteria1.andPhoneEqualTo(phone).andLocksnEqualTo(locksn);
-            List<SpMemberRelation> list1 = relationMapper.selectByExample(example1);
-            if(list1.size() >0) {
-                SpMemberRelation relation = list1.get(0);
-                boolean isSeted = relation.getSetedlockpwd();
+        SpAdminLock adminLock = isNotAdminLock(memberid,locksn);
+        if(adminLock == null) {
+           SpMemberRelation memberRelation =  isMemberRelation(phone,locksn);
+            if( memberRelation == null) {
+               return false;
+            }else {
+                Boolean isSeted = memberRelation.getSetedlockpwd();
                 if(isSeted) {
                     return true;
+                }else {
+                    return false;
                 }
-                return false;
             }
         }
-        SpAdminLock adminLock = list.get(0);
         boolean isseted =  adminLock.getSetedlockpwd();
         if(isseted) {
-           return true;
-       }
+            return true;
+        }
         return false;
     }
 
@@ -338,7 +447,7 @@ public class LockMemberServiceImpl implements LockMemberService {
             }
 
         }
-        if(invalidMembers.size()>0) {
+        if(!invalidMembers.isEmpty()) {
             SpMemberRelationExample example = new SpMemberRelationExample();
             SpMemberRelationExample.Criteria criteria =  example.createCriteria();
             criteria.andParentidEqualTo(invalidMembers.get(0).getParentid());

@@ -413,6 +413,196 @@ public class SpLockPasswordExample {
             addCriterion("addtime not between", value1, value2, "addtime");
             return (Criteria) this;
         }
+
+        public Criteria andMotiveIsNull() {
+            addCriterion("motive is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andMotiveIsNotNull() {
+            addCriterion("motive is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andMotiveEqualTo(String value) {
+            addCriterion("motive =", value, "motive");
+            return (Criteria) this;
+        }
+
+        public Criteria andMotiveNotEqualTo(String value) {
+            addCriterion("motive <>", value, "motive");
+            return (Criteria) this;
+        }
+
+        public Criteria andMotiveGreaterThan(String value) {
+            addCriterion("motive >", value, "motive");
+            return (Criteria) this;
+        }
+
+        public Criteria andMotiveGreaterThanOrEqualTo(String value) {
+            addCriterion("motive >=", value, "motive");
+            return (Criteria) this;
+        }
+
+        public Criteria andMotiveLessThan(String value) {
+            addCriterion("motive <", value, "motive");
+            return (Criteria) this;
+        }
+
+        public Criteria andMotiveLessThanOrEqualTo(String value) {
+            addCriterion("motive <=", value, "motive");
+            return (Criteria) this;
+        }
+
+        public Criteria andMotiveLike(String value) {
+            addCriterion("motive like", value, "motive");
+            return (Criteria) this;
+        }
+
+        public Criteria andMotiveNotLike(String value) {
+            addCriterion("motive not like", value, "motive");
+            return (Criteria) this;
+        }
+
+        public Criteria andMotiveIn(List<String> values) {
+            addCriterion("motive in", values, "motive");
+            return (Criteria) this;
+        }
+
+        public Criteria andMotiveNotIn(List<String> values) {
+            addCriterion("motive not in", values, "motive");
+            return (Criteria) this;
+        }
+
+        public Criteria andMotiveBetween(String value1, String value2) {
+            addCriterion("motive between", value1, value2, "motive");
+            return (Criteria) this;
+        }
+
+        public Criteria andMotiveNotBetween(String value1, String value2) {
+            addCriterion("motive not between", value1, value2, "motive");
+            return (Criteria) this;
+        }
+
+        public Criteria andExpiredIsNull() {
+            addCriterion("expired is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andExpiredIsNotNull() {
+            addCriterion("expired is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andExpiredEqualTo(Boolean value) {
+            addCriterion("expired =", value, "expired");
+            return (Criteria) this;
+        }
+
+        public Criteria andExpiredNotEqualTo(Boolean value) {
+            addCriterion("expired <>", value, "expired");
+            return (Criteria) this;
+        }
+
+        public Criteria andExpiredGreaterThan(Boolean value) {
+            addCriterion("expired >", value, "expired");
+            return (Criteria) this;
+        }
+
+        public Criteria andExpiredGreaterThanOrEqualTo(Boolean value) {
+            addCriterion("expired >=", value, "expired");
+            return (Criteria) this;
+        }
+
+        public Criteria andExpiredLessThan(Boolean value) {
+            addCriterion("expired <", value, "expired");
+            return (Criteria) this;
+        }
+
+        public Criteria andExpiredLessThanOrEqualTo(Boolean value) {
+            addCriterion("expired <=", value, "expired");
+            return (Criteria) this;
+        }
+
+        public Criteria andExpiredIn(List<Boolean> values) {
+            addCriterion("expired in", values, "expired");
+            return (Criteria) this;
+        }
+
+        public Criteria andExpiredNotIn(List<Boolean> values) {
+            addCriterion("expired not in", values, "expired");
+            return (Criteria) this;
+        }
+
+        public Criteria andExpiredBetween(Boolean value1, Boolean value2) {
+            addCriterion("expired between", value1, value2, "expired");
+            return (Criteria) this;
+        }
+
+        public Criteria andExpiredNotBetween(Boolean value1, Boolean value2) {
+            addCriterion("expired not between", value1, value2, "expired");
+            return (Criteria) this;
+        }
+
+        public Criteria andDeltimeIsNull() {
+            addCriterion("deltime is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andDeltimeIsNotNull() {
+            addCriterion("deltime is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andDeltimeEqualTo(Integer value) {
+            addCriterion("deltime =", value, "deltime");
+            return (Criteria) this;
+        }
+
+        public Criteria andDeltimeNotEqualTo(Integer value) {
+            addCriterion("deltime <>", value, "deltime");
+            return (Criteria) this;
+        }
+
+        public Criteria andDeltimeGreaterThan(Integer value) {
+            addCriterion("deltime >", value, "deltime");
+            return (Criteria) this;
+        }
+
+        public Criteria andDeltimeGreaterThanOrEqualTo(Integer value) {
+            addCriterion("deltime >=", value, "deltime");
+            return (Criteria) this;
+        }
+
+        public Criteria andDeltimeLessThan(Integer value) {
+            addCriterion("deltime <", value, "deltime");
+            return (Criteria) this;
+        }
+
+        public Criteria andDeltimeLessThanOrEqualTo(Integer value) {
+            addCriterion("deltime <=", value, "deltime");
+            return (Criteria) this;
+        }
+
+        public Criteria andDeltimeIn(List<Integer> values) {
+            addCriterion("deltime in", values, "deltime");
+            return (Criteria) this;
+        }
+
+        public Criteria andDeltimeNotIn(List<Integer> values) {
+            addCriterion("deltime not in", values, "deltime");
+            return (Criteria) this;
+        }
+
+        public Criteria andDeltimeBetween(Integer value1, Integer value2) {
+            addCriterion("deltime between", value1, value2, "deltime");
+            return (Criteria) this;
+        }
+
+        public Criteria andDeltimeNotBetween(Integer value1, Integer value2) {
+            addCriterion("deltime not between", value1, value2, "deltime");
+            return (Criteria) this;
+        }
     }
 
     public static class Criteria extends GeneratedCriteria {

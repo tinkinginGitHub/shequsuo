@@ -13,9 +13,9 @@
     <result column="starttime" property="starttime" jdbcType="INTEGER" />
     <result column="endtime" property="endtime" jdbcType="INTEGER" />
     <result column="setedlockpwd" property="setedlockpwd" jdbcType="BIT" />
-    <result column="setedlockfinger" property="setedlockfinger" jdbcType="BIT" />
     <result column="lockpwdauth" property="lockpwdauth" jdbcType="BIT" />
     <result column="fingerpwdauth" property="fingerpwdauth" jdbcType="BIT" />
+    <result column="updatetime" property="updatetime" jdbcType="INTEGER" />
   </resultMap>
   <sql id="Example_Where_Clause" >
     <where >
@@ -77,7 +77,7 @@
   </sql>
   <sql id="Base_Column_List" >
     id, parentid, locksn, phone, username, usertype, userrelation, addtime, starttime, 
-    endtime, setedlockpwd, setedlockfinger, lockpwdauth, fingerpwdauth
+    endtime, setedlockpwd, lockpwdauth, fingerpwdauth, updatetime
   </sql>
   <select id="selectByExample" resultMap="BaseResultMap" parameterType="cn.anyoufang.entity.SpMemberRelationExample" >
     select
@@ -113,13 +113,13 @@
     insert into sp_member_relation (id, parentid, locksn, 
       phone, username, usertype, 
       userrelation, addtime, starttime, 
-      endtime, setedlockpwd, setedlockfinger, 
-      lockpwdauth, fingerpwdauth)
+      endtime, setedlockpwd, lockpwdauth, 
+      fingerpwdauth, updatetime)
     values (#{id,jdbcType=INTEGER}, #{parentid,jdbcType=INTEGER}, #{locksn,jdbcType=VARCHAR}, 
       #{phone,jdbcType=VARCHAR}, #{username,jdbcType=VARCHAR}, #{usertype,jdbcType=VARCHAR}, 
       #{userrelation,jdbcType=VARCHAR}, #{addtime,jdbcType=INTEGER}, #{starttime,jdbcType=INTEGER}, 
-      #{endtime,jdbcType=INTEGER}, #{setedlockpwd,jdbcType=BIT}, #{setedlockfinger,jdbcType=BIT}, 
-      #{lockpwdauth,jdbcType=BIT}, #{fingerpwdauth,jdbcType=BIT})
+      #{endtime,jdbcType=INTEGER}, #{setedlockpwd,jdbcType=BIT}, #{lockpwdauth,jdbcType=BIT}, 
+      #{fingerpwdauth,jdbcType=BIT}, #{updatetime,jdbcType=INTEGER})
   </insert>
   <insert id="insertSelective" parameterType="cn.anyoufang.entity.SpMemberRelation" >
     insert into sp_member_relation
@@ -157,14 +157,14 @@
       <if test="setedlockpwd != null" >
         setedlockpwd,
       </if>
-      <if test="setedlockfinger != null" >
-        setedlockfinger,
-      </if>
       <if test="lockpwdauth != null" >
         lockpwdauth,
       </if>
       <if test="fingerpwdauth != null" >
         fingerpwdauth,
+      </if>
+      <if test="updatetime != null" >
+        updatetime,
       </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides="," >
@@ -201,14 +201,14 @@
       <if test="setedlockpwd != null" >
         #{setedlockpwd,jdbcType=BIT},
       </if>
-      <if test="setedlockfinger != null" >
-        #{setedlockfinger,jdbcType=BIT},
-      </if>
       <if test="lockpwdauth != null" >
         #{lockpwdauth,jdbcType=BIT},
       </if>
       <if test="fingerpwdauth != null" >
         #{fingerpwdauth,jdbcType=BIT},
+      </if>
+      <if test="updatetime != null" >
+        #{updatetime,jdbcType=INTEGER},
       </if>
     </trim>
   </insert>
@@ -254,14 +254,14 @@
       <if test="record.setedlockpwd != null" >
         setedlockpwd = #{record.setedlockpwd,jdbcType=BIT},
       </if>
-      <if test="record.setedlockfinger != null" >
-        setedlockfinger = #{record.setedlockfinger,jdbcType=BIT},
-      </if>
       <if test="record.lockpwdauth != null" >
         lockpwdauth = #{record.lockpwdauth,jdbcType=BIT},
       </if>
       <if test="record.fingerpwdauth != null" >
         fingerpwdauth = #{record.fingerpwdauth,jdbcType=BIT},
+      </if>
+      <if test="record.updatetime != null" >
+        updatetime = #{record.updatetime,jdbcType=INTEGER},
       </if>
     </set>
     <if test="_parameter != null" >
@@ -281,9 +281,9 @@
       starttime = #{record.starttime,jdbcType=INTEGER},
       endtime = #{record.endtime,jdbcType=INTEGER},
       setedlockpwd = #{record.setedlockpwd,jdbcType=BIT},
-      setedlockfinger = #{record.setedlockfinger,jdbcType=BIT},
       lockpwdauth = #{record.lockpwdauth,jdbcType=BIT},
-      fingerpwdauth = #{record.fingerpwdauth,jdbcType=BIT}
+      fingerpwdauth = #{record.fingerpwdauth,jdbcType=BIT},
+      updatetime = #{record.updatetime,jdbcType=INTEGER}
     <if test="_parameter != null" >
       <include refid="Update_By_Example_Where_Clause" />
     </if>
@@ -321,14 +321,14 @@
       <if test="setedlockpwd != null" >
         setedlockpwd = #{setedlockpwd,jdbcType=BIT},
       </if>
-      <if test="setedlockfinger != null" >
-        setedlockfinger = #{setedlockfinger,jdbcType=BIT},
-      </if>
       <if test="lockpwdauth != null" >
         lockpwdauth = #{lockpwdauth,jdbcType=BIT},
       </if>
       <if test="fingerpwdauth != null" >
         fingerpwdauth = #{fingerpwdauth,jdbcType=BIT},
+      </if>
+      <if test="updatetime != null" >
+        updatetime = #{updatetime,jdbcType=INTEGER},
       </if>
     </set>
     where id = #{id,jdbcType=INTEGER}
@@ -345,9 +345,9 @@
       starttime = #{starttime,jdbcType=INTEGER},
       endtime = #{endtime,jdbcType=INTEGER},
       setedlockpwd = #{setedlockpwd,jdbcType=BIT},
-      setedlockfinger = #{setedlockfinger,jdbcType=BIT},
       lockpwdauth = #{lockpwdauth,jdbcType=BIT},
-      fingerpwdauth = #{fingerpwdauth,jdbcType=BIT}
+      fingerpwdauth = #{fingerpwdauth,jdbcType=BIT},
+      updatetime = #{updatetime,jdbcType=INTEGER}
     where id = #{id,jdbcType=INTEGER}
   </update>
 </mapper>

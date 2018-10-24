@@ -5,6 +5,8 @@ import cn.anyoufang.entity.selfdefined.AnyoujiaResult;
 import cn.anyoufang.entity.selfdefined.Data;
 import cn.anyoufang.entity.selfdefined.InitParam;
 import cn.anyoufang.entity.selfdefined.LoginResult;
+import cn.anyoufang.enumresource.HttpCodeEnum;
+import cn.anyoufang.enumresource.UsertypeEnum;
 import cn.anyoufang.mapper.*;
 import cn.anyoufang.service.LoginService;
 import cn.anyoufang.utils.*;
@@ -31,6 +33,14 @@ import java.util.Map;
 public class LoginServiceImpl implements LoginService {
 
     private static final Logger LOG = LoggerFactory.getLogger(LoginServiceImpl.class);
+    /**
+     * http状态码
+     */
+    private static final int T_H = HttpCodeEnum.TWO_HUNDRED.getCode();
+    private static final int FOUR_H_1 = HttpCodeEnum.FOUR_HUNDRED1.getCode();
+    private static final int FOUR_H = HttpCodeEnum.FOUR_HUNDRED.getCode();
+    private static final int FIVE_H = HttpCodeEnum.FIVE_HUNDRED.getCode();
+
     @Autowired
     private SpMemberMapper memberMapper;
 
@@ -46,17 +56,35 @@ public class LoginServiceImpl implements LoginService {
     @Autowired
     private SpAdminLockMapper adminLockMapper;
 
+    /**
+     * 阿里云短信模板id
+     */
     @Value("${ANYOUJIACODE}")
     private String tempCode;
+    /**
+     * 登录验证码超时时间
+     */
     @Value("${code_overtime}")
     private String overtime;
+    /**
+     * PHp接口加密参数
+     */
     @Value("${php.url}")
     private String phpurl;
-    //PHp接口加密参数
-    private static final String salt = "575gh5rr556Dfhr67Ohrt8";
-    private static final String SSO = "Sso";
+    @Value("${php.salt}")
+    private String salt;
+    @Value("${php.sso}")
+    private String SSO;
 
 
+    /**
+     * 会员注册
+     * @param account
+     * @param pwd
+     * @param openid
+     * @return
+     * @throws Exception
+     */
     @Override
     @Transactional
     public AnyoujiaResult memberRegister(String account, String pwd, String openid) throws Exception {
@@ -64,15 +92,15 @@ public class LoginServiceImpl implements LoginService {
         SpMemberExample.Criteria criteria = example.createCriteria();
         criteria.andPhoneEqualTo(account);
         List<SpMember> list = memberMapper.selectByExample(example);
-        if (list.size() > 0) {
-            return AnyoujiaResult.build(400, "该用户已注册，请登录");
+        if (!list.isEmpty()) {
+            return AnyoujiaResult.build(FOUR_H, "该用户已注册，请登录");
         }
         if (openid != null) {
             Map<String, Object> map = doRegister(account, Md5Utils.md5(pwd, "utf-8"));
             Integer status = (Integer) map.get("status");
-            if (status == 200) {
+            if (status == T_H) {
                 SpMember member = new SpMember();
-                int createdTime = (int) (System.currentTimeMillis() / 1000);
+                int createdTime = DateUtil.generateTenTime();
                 member.setRegisttime(createdTime);
                 member.setPhone(account);
                 member.setPassword(Md5Utils.md5(pwd, "utf-8"));
@@ -84,20 +112,20 @@ public class LoginServiceImpl implements LoginService {
                 wxmember.setOpenid(openid);
                 int active = wxMapper.insertSelective(wxmember);
                 if (active == 1) {
-                    return AnyoujiaResult.build(200, "注册成功");
+                    return AnyoujiaResult.build(T_H, "注册成功");
                 }
             } else {
                 AnyoujiaResult.build(status, (String) map.get("msg"));
             }
         }
-        return AnyoujiaResult.build(400, "注册失败");
+        return AnyoujiaResult.build(FOUR_H, "未获取到用户openid");
     }
 
 
     @Override
     public Map<String, Object> memberLoginByPwd(String account, String pwd, String ip) throws Exception {
         List<SpMember> list = memberMapper.selectByExample(createExample(account));
-        if (list.size() == 0) {
+        if (list.isEmpty()) {
             return new Null();
         }
         Map<String, Object> data = new HashMap<>();
@@ -115,7 +143,7 @@ public class LoginServiceImpl implements LoginService {
         }
         Map<String, Object> res = doLogin(account, md5Pwd, ip);
         Integer status = (Integer) res.get("status");
-        if (status == 200) {
+        if (status == T_H) {
             String encrySession = (String) res.get("session");
             SpMember member = list.get(0);
             SpMemberLogin loginRecord = new SpMemberLogin();
@@ -132,11 +160,9 @@ public class LoginServiceImpl implements LoginService {
             if (over == null) {
                 return null;
             }
-            String overtime = String.valueOf(over);
-            long endtime = new Long(overtime) * 1000;
-            long now = System.currentTimeMillis();
-            int expire = (int) ((endtime - now) / 1000);
-            RedisUtils.setex(Md5Utils.md5((String) map.get("username"), "utf-8"), "1", expire);
+            String md5Phone = Md5Utils.md5((String) map.get("username"),"utf-8");
+            int expire = DateUtil.getExpiretimeInten(over);
+            RedisUtils.setex(md5Phone, "1", expire);
             return data;
         } else {
             data.put("msg", res.get("msg"));
@@ -147,6 +173,7 @@ public class LoginServiceImpl implements LoginService {
     }
 
     /**
+     * 封装登录成功后返回给小程序端的结果
      * 抽取组合返回结果
      */
     private LoginResult combineLoginResponseResult(SpMember user, String token) {
@@ -158,10 +185,18 @@ public class LoginServiceImpl implements LoginService {
         return loginRes;
     }
 
+    /**
+     * 验证码登录
+     * @param phone
+     * @param code
+     * @param ip
+     * @return
+     * @throws Exception
+     */
     @Override
     public Map<String, Object> memberLoginByVerifyCode(String phone, String code, String ip) throws Exception {
         List<SpMember> list = memberMapper.selectByExample(createExample(phone));
-        if (list.size() == 0) {
+        if (list.isEmpty()) {
             return new Null();
         }
         SpMember user = list.get(0);
@@ -171,17 +206,15 @@ public class LoginServiceImpl implements LoginService {
         String encrySession = (String) res.get("session");
         Map<String, Object> map = parseSession(encrySession);
         Map<String, Object> data = new HashMap<>();
-        if (status == 200) {
+        if (status == T_H) {
             data.put("data", combineLoginResponseResult(user, encrySession));
             Object over = map.get("overtime");
             if (over == null) {
                 return null;
             }
-            String overtime = String.valueOf(over);
-            long endtime = new Long(overtime) * 1000;
-            long now = System.currentTimeMillis();
-            int expire = (int) ((endtime - now) / 1000);
-            RedisUtils.setex(Md5Utils.md5((String) map.get("username"), "utf-8"), "1", expire);
+            String md5Phone = Md5Utils.md5((String) map.get("username"),"utf-8");
+            int expire = DateUtil.getExpiretimeInten(over);
+            RedisUtils.setex(md5Phone, "1", expire);
             return data;
         } else {
             data.put("status", status);
@@ -192,6 +225,11 @@ public class LoginServiceImpl implements LoginService {
     }
 
 
+    /**
+     * 登出
+     * @param token
+     * @throws Exception
+     */
     @Override
     public void memberLogout(String token) throws Exception {
         if (token != null) {
@@ -202,6 +240,11 @@ public class LoginServiceImpl implements LoginService {
         }
     }
 
+    /**
+     * 发送验证码
+     * @param phone
+     * @return
+     */
     @Override
     public String sendVerifCode(String phone) {
         String data = UUID.genarateCode();
@@ -231,7 +274,7 @@ public class LoginServiceImpl implements LoginService {
         String temp = Md5Utils.md5(newPwd, "utf-8");
         Map<String, Object> res = updateUserPassword(phone, temp);
         Integer status = (Integer) res.get("status");
-        if (status == 200) {
+        if (status == T_H) {
             SpMember member = new SpMember();
             member.setPassword(temp);
             int ok = memberMapper.updateByExampleSelective(member, createExample(phone));
@@ -281,7 +324,7 @@ public class LoginServiceImpl implements LoginService {
         SpMember user = memberMapper.selectByPrimaryKey(id);
         if (user != null) {
             String oldPassword = user.getSecuritypwd();
-            if (StringUtil.isNotEmpty(oldPassword) && oldPassword.equals(oldPwd)) {
+            if (oldPwd.equals(oldPassword)) {
                 return setSecurityPwdInternal(newPwd, id);
             }
         }
@@ -304,14 +347,15 @@ public class LoginServiceImpl implements LoginService {
         return example;
     }
 
-    @Override
-    public boolean isExist(String phone) {
-        List<SpMember> user = memberMapper.selectByExample(createExample(phone));
-        if (user.size() > 0) {
-            return true;
-        }
-        return false;
-    }
+
+//    @Override
+//    public boolean isExist(String phone) {
+//        List<SpMember> user = memberMapper.selectByExample(createExample(phone));
+//        if (!user.isEmpty()) {
+//            return true;
+//        }
+//        return false;
+//    }
 
     @Override
     public boolean checkByCode(String phone, String code) {
@@ -336,9 +380,9 @@ public class LoginServiceImpl implements LoginService {
         SpMemberRelationExample.Criteria criteria = example.createCriteria();
         criteria.andLocksnEqualTo(locksn).andPhoneEqualTo(phone);
         List<SpMemberRelation> list = relationMapper.selectByExample(example);
-        if (list.size() > 0) {
+        if (!list.isEmpty()) {
             SpMemberRelation relation = list.get(0);
-            if ("1".equals(relation.getUsertype())) {
+            if (UsertypeEnum.ONE.getCode().equals(relation.getUsertype())) {
                 return relation.getUserrelation();
             }
             return relation.getUsername();
@@ -358,7 +402,7 @@ public class LoginServiceImpl implements LoginService {
     @Override
     public boolean checkAccount1(String phone) {
         List<SpMember> list = memberMapper.selectByExample(createExample(phone));
-        if (list.size() > 0) {
+        if (!list.isEmpty()) {
             return true;
         }
 
@@ -371,14 +415,11 @@ public class LoginServiceImpl implements LoginService {
      */
     @Override
     public boolean checkAccountAndAnswer(String account, String code, String answer) {
-        if (StringUtil.isEmpty(answer)) {
-            return false;
-        }
         SpMemberExample example = new SpMemberExample();
         SpMemberExample.Criteria criteria = example.createCriteria();
         criteria.andPhoneEqualTo(account).andSecurityanswerEqualTo(answer);
         List<SpMember> list = memberMapper.selectByExample(example);
-        if (list.size() > 0) {
+        if (!list.isEmpty()) {
             return true;
         }
         return false;
@@ -402,6 +443,7 @@ public class LoginServiceImpl implements LoginService {
      * 更新用户附加信息
      */
     @Override
+    @Transactional(rollbackFor = RuntimeException.class)
     public boolean updateAdditionalUserInfo(String avatar, String bname, String phone) {
         SpMember member = new SpMember();
         member.setAvatar(avatar);
@@ -602,7 +644,7 @@ public class LoginServiceImpl implements LoginService {
     }
 
     /**
-     * 解析加密session
+     * 解析PHP返回的加密session
      */
 
     public Map<String, Object> parseSession(String session) throws Exception {
@@ -610,6 +652,9 @@ public class LoginServiceImpl implements LoginService {
         try {
             JsonUtils.isJSONValid(result);
         } catch (Exception e) {
+            if(LOG.isInfoEnabled()) {
+                LOG.info("解析加密session发生异常: " + e.getMessage());
+            }
             return new HashMap<>();
         }
         return JsonUtils.jsonToMap(result);
