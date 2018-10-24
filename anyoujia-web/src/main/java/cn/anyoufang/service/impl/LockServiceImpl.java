@@ -4,7 +4,7 @@ import cn.anyoufang.entity.*;
 import cn.anyoufang.entity.selfdefined.AnyoujiaResult;
 import cn.anyoufang.entity.selfdefined.Lock;
 import cn.anyoufang.enumresource.HttpCodeEnum;
-import cn.anyoufang.enumresource.ParamEnum;
+import cn.anyoufang.enumresource.PwdTypeEnum;
 import cn.anyoufang.exception.LockException;
 import cn.anyoufang.mapper.SpAdminLockMapper;
 import cn.anyoufang.mapper.SpLockFingerMapper;
@@ -66,6 +66,7 @@ public class LockServiceImpl implements LockService{
      * @param endtime
      * @param pwds
      * @param nickname
+     * @param motive 临时密码 动机
      * @return
      */
     @Override
@@ -76,24 +77,33 @@ public class LockServiceImpl implements LockService{
                                          String pwds,
                                          String nickname,
                                          String phone,
-                                         boolean isAdmin) {
+                                         boolean isAdmin,String motive) {
 
         //保存记录并生成seqid
         SpLockPassword lockPassword = new SpLockPassword();
         lockPassword.setLocksn(locksn);
         lockPassword.setMemberid(memberid);
         lockPassword.setPtype(ptype);
+        lockPassword.setMotive(motive);
+        //临时密码的过期时间，永久密码的删除时间,这里不做判断，因为在删除永久密码的时候会更新删除时间
+        lockPassword.setDeltime(endtime);
         lockPassword.setAddtime(DateUtil.generateTenTime());
         passwordMapper.insertSelective(lockPassword);
         int seqid = lockPassword.getPwdid();
         long timestamp = System.currentTimeMillis()/1000;
         StringBuilder sb = new StringBuilder();
-        String param = sb.append(endtime)
-                .append(locksn)
-                .append(nickname).append(ptype).append(pwds).append(timestamp).append(lockSalt).toString();
+        //永久密码不传时间
+        if(endtime != 0) {
+            sb = sb.append(endtime);
+        }
+        String param = sb.append(locksn).append(nickname).append(ptype).append(pwds).append(timestamp).append(lockSalt).toString();
         String sign = Md5Utils.md5(param,"UTF-8");
         String combineParam = "method=set.lock.pwd&ptype=1&temptime="+timestamp+"&sign="+sign+"&seqid="+seqid +
-                "&locksn="+locksn+"&endtime="+endtime + "&pwds="+pwds + "&nickname="+nickname;
+                "&locksn="+locksn + "&pwds="+pwds + "&nickname="+nickname;
+        //永久密码不传时间参数
+        if(endtime !=0){
+            combineParam = combineParam+"&endtime="+endtime;
+        }
         String res = SimulateGetAndPostUtil.sendPost(url,combineParam);
          try {
             Map<String,Object> data =  JsonUtils.jsonToMap(res);
@@ -102,29 +112,29 @@ public class LockServiceImpl implements LockService{
             parsedMap.put("code",code);
             parsedMap.put("msg",String.valueOf(data.get("message")));
             if(Integer.valueOf(code) ==T_H) {
-                int updated;
                 if(isAdmin) {
-                    SpAdminLock lock = new SpAdminLock();
                     //只有永久密码被设置后这个标示才能设置为true
-                    if(ParamEnum.ONE.getCode().equals(ptype)) {
+                    if(PwdTypeEnum.ONE.getCode()==ptype) {
+                        SpAdminLock lock = new SpAdminLock();
                         lock.setSetedlockpwd(true);
+                        lock.setUpdatetime(DateUtil.generateTenTime());
+                        SpAdminLockExample example = new SpAdminLockExample();
+                        SpAdminLockExample.Criteria criteria = example.createCriteria();
+                        criteria.andAdminidEqualTo(memberid).andLocksnEqualTo(locksn);
+                        int i = lockMapper.updateByExampleSelective(lock,example);
+                        System.out.println(i);
                     }
-                    SpAdminLockExample example = new SpAdminLockExample();
-                    SpAdminLockExample.Criteria criteria = example.createCriteria();
-                    criteria.andAdminidEqualTo(memberid);
-                    updated = lockMapper.updateByExampleSelective(lock,example);
 
                 }else {
-                    SpMemberRelation user = new SpMemberRelation();
+
                     //只有永久密码被设置后这个标示才能设置为true
-                    if(ParamEnum.ONE.getCode().equals(ptype)) {
+                    if(PwdTypeEnum.ONE.getCode()==ptype) {
+                        SpMemberRelation user = new SpMemberRelation();
                         user.setSetedlockpwd(true);
+                        relationMapper.updateByExampleSelective(user,getExample(phone,locksn));
                     }
-                    updated = relationMapper.updateByExampleSelective(user,getExample(phone,locksn));
                 }
-                if(updated == 1) {
-                    return parsedMap;
-                }
+                return parsedMap;
             }
              //不成功，删除无用记录
              passwordMapper.deleteByPrimaryKey(seqid);
@@ -162,6 +172,8 @@ public class LockServiceImpl implements LockService{
         lockFinger.setFingerdesc(fingerdesc);
         lockFinger.setFingerid(fingerid);
         lockFinger.setLocksn(locksn);
+        //临时指纹的过期时间，永久指纹的删除时间,这里不做判断，因为在删除永久指纹的时候会更新删除时间
+        lockFinger.setDeltime(endtime);
         lockFinger.setMemberid(memberid);
         lockFinger.setPtype(ptype);
         lockFinger.setAddtime(DateUtil.generateTenTime());
@@ -184,28 +196,9 @@ public class LockServiceImpl implements LockService{
         Map<String,Object> data =  JsonUtils.jsonToMap(res);
         String code =  String.valueOf(data.get("code"));
        int state =  Integer.valueOf(code);
-       int updated;
+
         if(state == T_H) {
-            if(isAdmin) {
-                SpAdminLock lock = new SpAdminLock();
-                lock.setSetedlockfinger(true);
-                SpAdminLockExample example = new SpAdminLockExample();
-                SpAdminLockExample.Criteria criteria = example.createCriteria();
-                criteria.andAdminidEqualTo(memberid);
-                updated = lockMapper.updateByExampleSelective(lock,example);
-
-            }else {
-                SpMemberRelation user = new SpMemberRelation();
-                //只有永久密码被设置后这个标示才能设置为true
-                if(ParamEnum.ONE.getCode().equals(ptype)) {
-                    user.setSetedlockfinger(true);
-                }
-                updated = relationMapper.updateByExampleSelective(user,getExample(phone,locksn));
-            }
-
-            if(updated == 1) {
-                return AnyoujiaResult.build(T_H,String.valueOf(data.get("message")));
-            }
+            return AnyoujiaResult.build(T_H,String.valueOf(data.get("message")));
         }
         //不成功则删除无用记录
         fingerMapper.deleteByPrimaryKey(seqid);
@@ -251,6 +244,7 @@ public class LockServiceImpl implements LockService{
             if(log.isInfoEnabled()) {
                 log.info(e.getMessage());
             }
+            return AnyoujiaResult.build(FIVE_H,"系统异常添加锁失败");
         }
         StringBuilder sb = new StringBuilder();
         int id = lock.getId();
@@ -265,22 +259,27 @@ public class LockServiceImpl implements LockService{
             if(log.isInfoEnabled()) {
                 log.info(e.getMessage());
             }
-            return AnyoujiaResult.build(FIVE_H,"系统异常");
+            return AnyoujiaResult.build(FIVE_H,"系统错误");
         }
         String state = String.valueOf(data.get("code"));
         Integer status = Integer.valueOf(state);
         return AnyoujiaResult.build(status,String.valueOf(data.get("message")));
     }
 
+    /**
+     * 检查锁已经被注册
+     * @param locksn
+     * @return
+     */
     private boolean checkLockRegisted(String locksn) {
         SpAdminLockExample example = new SpAdminLockExample();
         SpAdminLockExample.Criteria criteria = example.createCriteria();
         criteria.andLocksnEqualTo(locksn);
         List<SpAdminLock> list = lockMapper.selectByExample(example);
-        if(list.size() >0) {
-            return true;
+        if(list.isEmpty()) {
+            return false;
         }
-        return false;
+        return true;
     }
 
     /**
@@ -321,13 +320,13 @@ public class LockServiceImpl implements LockService{
                 invalid.add(mr);
             }
         }
-        if(invalid.size() >0) {
+        if(!invalid.isEmpty()) {
             relationMapper.deleteByExample(combineExampleByPhone(phone));
         }
         List<Integer> adminIds = new ArrayList<>();
         Map<String,Boolean> pwdauths = new HashMap<>();
         Map<String,Boolean> fingerauths = new HashMap<>();
-        if(valid.size() >0){
+        if(!valid.isEmpty()){
             for(SpMemberRelation u:valid) {
                 Integer parentid = u.getParentid();
                 String locksn = u.getLocksn();

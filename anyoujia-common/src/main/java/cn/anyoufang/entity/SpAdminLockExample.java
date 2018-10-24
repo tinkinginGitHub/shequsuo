@@ -414,66 +414,6 @@ public class SpAdminLockExample {
             return (Criteria) this;
         }
 
-        public Criteria andSetedlockfingerIsNull() {
-            addCriterion("setedlockfinger is null");
-            return (Criteria) this;
-        }
-
-        public Criteria andSetedlockfingerIsNotNull() {
-            addCriterion("setedlockfinger is not null");
-            return (Criteria) this;
-        }
-
-        public Criteria andSetedlockfingerEqualTo(Boolean value) {
-            addCriterion("setedlockfinger =", value, "setedlockfinger");
-            return (Criteria) this;
-        }
-
-        public Criteria andSetedlockfingerNotEqualTo(Boolean value) {
-            addCriterion("setedlockfinger <>", value, "setedlockfinger");
-            return (Criteria) this;
-        }
-
-        public Criteria andSetedlockfingerGreaterThan(Boolean value) {
-            addCriterion("setedlockfinger >", value, "setedlockfinger");
-            return (Criteria) this;
-        }
-
-        public Criteria andSetedlockfingerGreaterThanOrEqualTo(Boolean value) {
-            addCriterion("setedlockfinger >=", value, "setedlockfinger");
-            return (Criteria) this;
-        }
-
-        public Criteria andSetedlockfingerLessThan(Boolean value) {
-            addCriterion("setedlockfinger <", value, "setedlockfinger");
-            return (Criteria) this;
-        }
-
-        public Criteria andSetedlockfingerLessThanOrEqualTo(Boolean value) {
-            addCriterion("setedlockfinger <=", value, "setedlockfinger");
-            return (Criteria) this;
-        }
-
-        public Criteria andSetedlockfingerIn(List<Boolean> values) {
-            addCriterion("setedlockfinger in", values, "setedlockfinger");
-            return (Criteria) this;
-        }
-
-        public Criteria andSetedlockfingerNotIn(List<Boolean> values) {
-            addCriterion("setedlockfinger not in", values, "setedlockfinger");
-            return (Criteria) this;
-        }
-
-        public Criteria andSetedlockfingerBetween(Boolean value1, Boolean value2) {
-            addCriterion("setedlockfinger between", value1, value2, "setedlockfinger");
-            return (Criteria) this;
-        }
-
-        public Criteria andSetedlockfingerNotBetween(Boolean value1, Boolean value2) {
-            addCriterion("setedlockfinger not between", value1, value2, "setedlockfinger");
-            return (Criteria) this;
-        }
-
         public Criteria andUpdatetimeIsNull() {
             addCriterion("updatetime is null");
             return (Criteria) this;

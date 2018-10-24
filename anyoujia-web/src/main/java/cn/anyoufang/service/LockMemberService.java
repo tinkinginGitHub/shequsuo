@@ -32,7 +32,7 @@ public interface LockMemberService {
                              int pwd,int adminId,String endtime);
 
     /**
-     * 删除锁密码/指纹/IC卡用户信息
+     * 管理员删除锁成员的所有权限（指纹以及密码）
      * @param locksn
      * @param userid
      * @return
@@ -97,4 +97,12 @@ public interface LockMemberService {
      * @return boolean
      */
     boolean isSetLockPwdForever(String locksn,String phone,int memberid);
+
+    /**
+     * 删除锁密码用户相关信息
+     * @param memberid
+     * @param locksn
+     * @return
+     */
+    boolean deletePermentPwd(int memberid,String locksn,String phone);
 }

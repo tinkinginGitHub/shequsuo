@@ -11,6 +11,12 @@ public class SpLockPassword {
 
     private Integer addtime;
 
+    private String motive;
+
+    private Boolean expired;
+
+    private Integer deltime;
+
     public Integer getPwdid() {
         return pwdid;
     }
@@ -49,5 +55,29 @@ public class SpLockPassword {
 
     public void setAddtime(Integer addtime) {
         this.addtime = addtime;
+    }
+
+    public String getMotive() {
+        return motive;
+    }
+
+    public void setMotive(String motive) {
+        this.motive = motive == null ? null : motive.trim();
+    }
+
+    public Boolean getExpired() {
+        return expired;
+    }
+
+    public void setExpired(Boolean expired) {
+        this.expired = expired;
+    }
+
+    public Integer getDeltime() {
+        return deltime;
+    }
+
+    public void setDeltime(Integer deltime) {
+        this.deltime = deltime;
     }
 }

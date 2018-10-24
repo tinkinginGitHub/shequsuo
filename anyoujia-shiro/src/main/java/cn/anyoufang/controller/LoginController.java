@@ -332,7 +332,7 @@ public class LoginController extends AbstractController {
     }
 
     /**
-     * 设置安全密码
+     * 重置安全密码
      */
     @RequestMapping("/resetsecurpwd")
     @ApiOperation(value = "重置安全密码", httpMethod = "POST", notes = "member reset security password")
@@ -388,6 +388,9 @@ public class LoginController extends AbstractController {
     public AnyoujiaResult checkAndfindSecurityPwd(@RequestParam String phone,
                                                   @RequestParam String code,
                                                   @RequestParam String answer, HttpServletRequest request) {
+        if(StringUtil.stringParamisEmpty(phone,code,answer)) {
+            return AnyoujiaResult.build(FOUR_H,"参数不能为空");
+        }
         if (!loginService.checkByCode(phone, code)) {
             return AnyoujiaResult.build(FOUR_H, "验证码超时或错误");
         }

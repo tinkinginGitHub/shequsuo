@@ -114,7 +114,7 @@ public interface LoginService {
      */
     boolean updateAdditionalUserInfo(String avatar,String bname,String phone);
 
-     boolean isExist(String phone);
+    // boolean isExist(String phone);
 
     Map<String,Object> doRegister(String account,String password) throws Exception;
 
@@ -163,6 +163,6 @@ public interface LoginService {
      */
     List<SpAdminLock>  getLockAdmin(int memberid);
 
-    public boolean checkAccount1(String phone);
+    boolean checkAccount1(String phone);
 
 }

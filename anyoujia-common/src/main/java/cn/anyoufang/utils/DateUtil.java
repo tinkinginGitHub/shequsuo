@@ -274,9 +274,25 @@ public class DateUtil {
 		return false;
 	}
 
+	/**
+	 * 获取十位时间戳
+	 * @return
+	 */
 	public static int generateTenTime() {
 		long now = System.currentTimeMillis();
 		int ten = (int) (now/1000);
 		return ten;
+	}
+
+	/**
+	 * 获取过期时间（十位）
+	 * @param over
+	 * @return
+	 */
+	public static int getExpiretimeInten(Object over) {
+		String overtime = String.valueOf(over);
+		long endtime = new Long(overtime) * 1000;
+		long now = System.currentTimeMillis();
+		return  (int) ((endtime - now) / 1000);
 	}
 }

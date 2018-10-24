@@ -4,6 +4,7 @@ import cn.anyoufang.controller.AbstractController;
 import cn.anyoufang.entity.SpAdminLock;
 import cn.anyoufang.entity.SpMember;
 import cn.anyoufang.entity.selfdefined.AnyoujiaResult;
+import cn.anyoufang.service.LockMemberService;
 import cn.anyoufang.service.LockService;
 import cn.anyoufang.service.LoginService;
 import cn.anyoufang.utils.Md5Utils;
@@ -42,6 +43,9 @@ public class LockController extends AbstractController {
 
     @Autowired
     private LockService lockService;
+
+    @Autowired
+    private LockMemberService memberService;
 
     /**
      * 获取锁开锁记录和报警记录
@@ -104,7 +108,7 @@ public class LockController extends AbstractController {
     @RequestMapping("/setuser")
     public AnyoujiaResult setLockUserFingerPassword(@RequestParam String fingerid,
                                                     @RequestParam String locksn,
-                                                    @RequestParam(required = false) int endtime,
+                                                    @RequestParam int endtime,
                                                     @RequestParam int usertype,
                                                     @RequestParam(required = false) String fingerdesc,
                                                     HttpServletRequest request) {
@@ -120,7 +124,7 @@ public class LockController extends AbstractController {
         String phone = user.getPhone();
         boolean isAdmin = false;
         List<SpAdminLock> lockAdmin = loginService.getLockAdmin(user.getUid());
-        if(lockAdmin.size() == 0) {
+        if(lockAdmin.isEmpty()) {
             String relationUsername = loginService.getMemberRelation(locksn,phone);
             if(relationUsername != null) {
                 nickname = relationUsername;
@@ -142,6 +146,7 @@ public class LockController extends AbstractController {
      * @param
      * @param locksn
      * @param endtime
+     * @param motive 临时密码的目的
      * @param request
      * @param pwds
      * @return
@@ -149,7 +154,8 @@ public class LockController extends AbstractController {
     @RequestMapping("/setpwd")
     public AnyoujiaResult setLockPwd(@RequestParam int ptype,
                              @RequestParam String locksn,
-                             @RequestParam(required = false) int endtime,
+                             @RequestParam(required = false,defaultValue = "0") int endtime,
+                             @RequestParam(required = false) String motive,
                              HttpServletRequest request,
                              @RequestParam String pwds) {
 
@@ -165,7 +171,7 @@ public class LockController extends AbstractController {
         String phone = user.getPhone();
         boolean isAdmin = false;
          List<SpAdminLock> lockAdmin = loginService.getLockAdmin(user.getUid());
-         if(lockAdmin.size() == 0) {
+         if(lockAdmin.isEmpty()) {
              String relation = loginService.getMemberRelation(locksn,phone);
              if(relation != null) {
                  nickname = relation;
@@ -176,8 +182,7 @@ public class LockController extends AbstractController {
             nickname = "我";
             isAdmin = true;
          }
-
-        Map<String,String> res =  lockService.setLockPwd(ptype,memberid,locksn,endtime,pwds,nickname,user.getPhone(),isAdmin);
+        Map<String,String> res =  lockService.setLockPwd(ptype,memberid,locksn,endtime,pwds,nickname,user.getPhone(),isAdmin,motive);
         if(res == null) {
             return AnyoujiaResult.build(FIVE_H,"系统异常");
         }
@@ -228,4 +233,28 @@ public class LockController extends AbstractController {
         }
         return lockService.registerLockInfo(locksn, user.getUid());
     }
+
+    /**
+     * 移除锁上用户的密码信息
+     * @param locksn
+     * @return
+     */
+    @RequestMapping("/delpwd")
+    public AnyoujiaResult delLockPwd(@RequestParam String locksn,HttpServletRequest request) {
+
+        if(StringUtil.isEmpty(locksn)) {
+            return AnyoujiaResult.build(FOUR_H,"参数异常");
+        }
+        SpMember member = getUser(request,loginService);
+
+        if(member == null) {
+             return AnyoujiaResult.build(FOUR_H_1,"登录超时");
+        }
+
+        if(memberService.deletePermentPwd(member.getUid(),locksn,member.getPhone())) {
+            return AnyoujiaResult.ok();
+        }
+        return AnyoujiaResult.build(FOUR_H,"删除超时,请重试");
+    }
+
 }

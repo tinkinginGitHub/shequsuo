@@ -23,11 +23,11 @@ public class SpMemberRelation {
 
     private Boolean setedlockpwd;
 
-    private Boolean setedlockfinger;
-
     private Boolean lockpwdauth;
 
     private Boolean fingerpwdauth;
+
+    private Integer updatetime;
 
     public Integer getId() {
         return id;
@@ -117,14 +117,6 @@ public class SpMemberRelation {
         this.setedlockpwd = setedlockpwd;
     }
 
-    public Boolean getSetedlockfinger() {
-        return setedlockfinger;
-    }
-
-    public void setSetedlockfinger(Boolean setedlockfinger) {
-        this.setedlockfinger = setedlockfinger;
-    }
-
     public Boolean getLockpwdauth() {
         return lockpwdauth;
     }
@@ -139,5 +131,13 @@ public class SpMemberRelation {
 
     public void setFingerpwdauth(Boolean fingerpwdauth) {
         this.fingerpwdauth = fingerpwdauth;
+    }
+
+    public Integer getUpdatetime() {
+        return updatetime;
+    }
+
+    public void setUpdatetime(Integer updatetime) {
+        this.updatetime = updatetime;
     }
 }

@@ -11,8 +11,6 @@ public class SpAdminLock {
 
     private Boolean setedlockpwd;
 
-    private Boolean setedlockfinger;
-
     private Integer updatetime;
 
     public Integer getId() {
@@ -53,14 +51,6 @@ public class SpAdminLock {
 
     public void setSetedlockpwd(Boolean setedlockpwd) {
         this.setedlockpwd = setedlockpwd;
-    }
-
-    public Boolean getSetedlockfinger() {
-        return setedlockfinger;
-    }
-
-    public void setSetedlockfinger(Boolean setedlockfinger) {
-        this.setedlockfinger = setedlockfinger;
     }
 
     public Integer getUpdatetime() {

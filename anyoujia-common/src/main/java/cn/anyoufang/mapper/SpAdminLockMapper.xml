@@ -7,7 +7,6 @@
     <result column="locksn" property="locksn" jdbcType="VARCHAR" />
     <result column="createtime" property="createtime" jdbcType="INTEGER" />
     <result column="setedlockpwd" property="setedlockpwd" jdbcType="BIT" />
-    <result column="setedlockfinger" property="setedlockfinger" jdbcType="BIT" />
     <result column="updatetime" property="updatetime" jdbcType="INTEGER" />
   </resultMap>
   <sql id="Example_Where_Clause" >
@@ -69,7 +68,7 @@
     </where>
   </sql>
   <sql id="Base_Column_List" >
-    id, adminid, locksn, createtime, setedlockpwd, setedlockfinger, updatetime
+    id, adminid, locksn, createtime, setedlockpwd, updatetime
   </sql>
   <select id="selectByExample" resultMap="BaseResultMap" parameterType="cn.anyoufang.entity.SpAdminLockExample" >
     select
@@ -103,13 +102,13 @@
   </delete>
   <insert id="insert" parameterType="cn.anyoufang.entity.SpAdminLock" >
     insert into sp_admin_lock (id, adminid, locksn, 
-      createtime, setedlockpwd, setedlockfinger, 
-      updatetime)
+      createtime, setedlockpwd, updatetime
+      )
     values (#{id,jdbcType=INTEGER}, #{adminid,jdbcType=INTEGER}, #{locksn,jdbcType=VARCHAR}, 
-      #{createtime,jdbcType=INTEGER}, #{setedlockpwd,jdbcType=BIT}, #{setedlockfinger,jdbcType=BIT}, 
-      #{updatetime,jdbcType=INTEGER})
+      #{createtime,jdbcType=INTEGER}, #{setedlockpwd,jdbcType=BIT}, #{updatetime,jdbcType=INTEGER}
+      )
   </insert>
-  <insert id="insertSelective" parameterType="cn.anyoufang.entity.SpAdminLock" keyProperty="id" useGeneratedKeys="true">
+  <insert id="insertSelective" parameterType="cn.anyoufang.entity.SpAdminLock" useGeneratedKeys="true" keyProperty="id" >
     insert into sp_admin_lock
     <trim prefix="(" suffix=")" suffixOverrides="," >
       <if test="id != null" >
@@ -126,9 +125,6 @@
       </if>
       <if test="setedlockpwd != null" >
         setedlockpwd,
-      </if>
-      <if test="setedlockfinger != null" >
-        setedlockfinger,
       </if>
       <if test="updatetime != null" >
         updatetime,
@@ -149,9 +145,6 @@
       </if>
       <if test="setedlockpwd != null" >
         #{setedlockpwd,jdbcType=BIT},
-      </if>
-      <if test="setedlockfinger != null" >
-        #{setedlockfinger,jdbcType=BIT},
       </if>
       <if test="updatetime != null" >
         #{updatetime,jdbcType=INTEGER},
@@ -182,9 +175,6 @@
       <if test="record.setedlockpwd != null" >
         setedlockpwd = #{record.setedlockpwd,jdbcType=BIT},
       </if>
-      <if test="record.setedlockfinger != null" >
-        setedlockfinger = #{record.setedlockfinger,jdbcType=BIT},
-      </if>
       <if test="record.updatetime != null" >
         updatetime = #{record.updatetime,jdbcType=INTEGER},
       </if>
@@ -200,7 +190,6 @@
       locksn = #{record.locksn,jdbcType=VARCHAR},
       createtime = #{record.createtime,jdbcType=INTEGER},
       setedlockpwd = #{record.setedlockpwd,jdbcType=BIT},
-      setedlockfinger = #{record.setedlockfinger,jdbcType=BIT},
       updatetime = #{record.updatetime,jdbcType=INTEGER}
     <if test="_parameter != null" >
       <include refid="Update_By_Example_Where_Clause" />
@@ -221,9 +210,6 @@
       <if test="setedlockpwd != null" >
         setedlockpwd = #{setedlockpwd,jdbcType=BIT},
       </if>
-      <if test="setedlockfinger != null" >
-        setedlockfinger = #{setedlockfinger,jdbcType=BIT},
-      </if>
       <if test="updatetime != null" >
         updatetime = #{updatetime,jdbcType=INTEGER},
       </if>
@@ -236,7 +222,6 @@
       locksn = #{locksn,jdbcType=VARCHAR},
       createtime = #{createtime,jdbcType=INTEGER},
       setedlockpwd = #{setedlockpwd,jdbcType=BIT},
-      setedlockfinger = #{setedlockfinger,jdbcType=BIT},
       updatetime = #{updatetime,jdbcType=INTEGER}
     where id = #{id,jdbcType=INTEGER}
   </update>

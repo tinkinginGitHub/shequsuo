@@ -814,66 +814,6 @@ public class SpMemberRelationExample {
             return (Criteria) this;
         }
 
-        public Criteria andSetedlockfingerIsNull() {
-            addCriterion("setedlockfinger is null");
-            return (Criteria) this;
-        }
-
-        public Criteria andSetedlockfingerIsNotNull() {
-            addCriterion("setedlockfinger is not null");
-            return (Criteria) this;
-        }
-
-        public Criteria andSetedlockfingerEqualTo(Boolean value) {
-            addCriterion("setedlockfinger =", value, "setedlockfinger");
-            return (Criteria) this;
-        }
-
-        public Criteria andSetedlockfingerNotEqualTo(Boolean value) {
-            addCriterion("setedlockfinger <>", value, "setedlockfinger");
-            return (Criteria) this;
-        }
-
-        public Criteria andSetedlockfingerGreaterThan(Boolean value) {
-            addCriterion("setedlockfinger >", value, "setedlockfinger");
-            return (Criteria) this;
-        }
-
-        public Criteria andSetedlockfingerGreaterThanOrEqualTo(Boolean value) {
-            addCriterion("setedlockfinger >=", value, "setedlockfinger");
-            return (Criteria) this;
-        }
-
-        public Criteria andSetedlockfingerLessThan(Boolean value) {
-            addCriterion("setedlockfinger <", value, "setedlockfinger");
-            return (Criteria) this;
-        }
-
-        public Criteria andSetedlockfingerLessThanOrEqualTo(Boolean value) {
-            addCriterion("setedlockfinger <=", value, "setedlockfinger");
-            return (Criteria) this;
-        }
-
-        public Criteria andSetedlockfingerIn(List<Boolean> values) {
-            addCriterion("setedlockfinger in", values, "setedlockfinger");
-            return (Criteria) this;
-        }
-
-        public Criteria andSetedlockfingerNotIn(List<Boolean> values) {
-            addCriterion("setedlockfinger not in", values, "setedlockfinger");
-            return (Criteria) this;
-        }
-
-        public Criteria andSetedlockfingerBetween(Boolean value1, Boolean value2) {
-            addCriterion("setedlockfinger between", value1, value2, "setedlockfinger");
-            return (Criteria) this;
-        }
-
-        public Criteria andSetedlockfingerNotBetween(Boolean value1, Boolean value2) {
-            addCriterion("setedlockfinger not between", value1, value2, "setedlockfinger");
-            return (Criteria) this;
-        }
-
         public Criteria andLockpwdauthIsNull() {
             addCriterion("lockpwdauth is null");
             return (Criteria) this;
@@ -991,6 +931,66 @@ public class SpMemberRelationExample {
 
         public Criteria andFingerpwdauthNotBetween(Boolean value1, Boolean value2) {
             addCriterion("fingerpwdauth not between", value1, value2, "fingerpwdauth");
+            return (Criteria) this;
+        }
+
+        public Criteria andUpdatetimeIsNull() {
+            addCriterion("updatetime is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andUpdatetimeIsNotNull() {
+            addCriterion("updatetime is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andUpdatetimeEqualTo(Integer value) {
+            addCriterion("updatetime =", value, "updatetime");
+            return (Criteria) this;
+        }
+
+        public Criteria andUpdatetimeNotEqualTo(Integer value) {
+            addCriterion("updatetime <>", value, "updatetime");
+            return (Criteria) this;
+        }
+
+        public Criteria andUpdatetimeGreaterThan(Integer value) {
+            addCriterion("updatetime >", value, "updatetime");
+            return (Criteria) this;
+        }
+
+        public Criteria andUpdatetimeGreaterThanOrEqualTo(Integer value) {
+            addCriterion("updatetime >=", value, "updatetime");
+            return (Criteria) this;
+        }
+
+        public Criteria andUpdatetimeLessThan(Integer value) {
+            addCriterion("updatetime <", value, "updatetime");
+            return (Criteria) this;
+        }
+
+        public Criteria andUpdatetimeLessThanOrEqualTo(Integer value) {
+            addCriterion("updatetime <=", value, "updatetime");
+            return (Criteria) this;
+        }
+
+        public Criteria andUpdatetimeIn(List<Integer> values) {
+            addCriterion("updatetime in", values, "updatetime");
+            return (Criteria) this;
+        }
+
+        public Criteria andUpdatetimeNotIn(List<Integer> values) {
+            addCriterion("updatetime not in", values, "updatetime");
+            return (Criteria) this;
+        }
+
+        public Criteria andUpdatetimeBetween(Integer value1, Integer value2) {
+            addCriterion("updatetime between", value1, value2, "updatetime");
+            return (Criteria) this;
+        }
+
+        public Criteria andUpdatetimeNotBetween(Integer value1, Integer value2) {
+            addCriterion("updatetime not between", value1, value2, "updatetime");
             return (Criteria) this;
         }
     }
