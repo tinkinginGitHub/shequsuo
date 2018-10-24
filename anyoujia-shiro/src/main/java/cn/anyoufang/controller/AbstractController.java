@@ -1,6 +1,7 @@
 package cn.anyoufang.controller;
 
 import cn.anyoufang.entity.SpMember;
+import cn.anyoufang.enumresource.HttpCodeEnum;
 import cn.anyoufang.service.LoginService;
 import cn.anyoufang.utils.AesCBC;
 import cn.anyoufang.utils.JsonUtils;
@@ -21,6 +22,12 @@ import java.util.Map;
  */
 public abstract class AbstractController {
 	protected Logger logger = LoggerFactory.getLogger(getClass());
+
+	protected  static final int TWO_H = HttpCodeEnum.TWO_HUNDRED.getCode();
+	protected  static final int FOUR_H = HttpCodeEnum.FOUR_HUNDRED.getCode();
+	protected  static final int FOUR_H_1 = HttpCodeEnum.FOUR_HUNDRED1.getCode();
+	protected  static final int FIVE_H = HttpCodeEnum.FIVE_HUNDRED.getCode();
+	protected  static final int FOUR_H_4 = HttpCodeEnum.FOUR_HUNDRED4.getCode();
 	
 	protected SpMember getUser(HttpServletRequest request,LoginService loginService) {
 		String token = request.getHeader("token");

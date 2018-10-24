@@ -1,6 +1,9 @@
 package cn.anyoufang.service.impl;
 
 import cn.anyoufang.entity.*;
+import cn.anyoufang.enumresource.ParamEnum;
+import cn.anyoufang.enumresource.PtypeAuthEnum;
+import cn.anyoufang.enumresource.UsertypeEnum;
 import cn.anyoufang.exception.LockException;
 import cn.anyoufang.mapper.SpAdminLockMapper;
 import cn.anyoufang.mapper.SpLockFingerMapper;
@@ -23,6 +26,7 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
+ * 锁相关的人相关业务处理
  * @author daiping
  */
 
@@ -50,8 +54,11 @@ public class LockMemberServiceImpl implements LockMemberService {
     private String pagesize;
     @Value("${lock.url}")
     private String url;
-
-    private int deadline = 30;
+    /**
+     * 被添加成员有效注册天数
+     */
+    @Value("${deadline}")
+    private int deadline;
 
 
     /**
@@ -80,17 +87,17 @@ public class LockMemberServiceImpl implements LockMemberService {
         SpMemberRelation user = new SpMemberRelation();
         user.setUsertype(usertype);
         user.setUsername(username);
-        if(!"-1".equals(phone)){
+        if(!ParamEnum.MINUS_ONE.getCode().equals(phone)){
             user.setPhone(phone);
         }
-        if(!"-1".equals(endtime)) {
+        if(!ParamEnum.MINUS_ONE.getCode().equals(endtime)) {
             user.setEndtime(formatTimeString(endtime));
         }
-        if(!"-1".equals(userrelation)){
+        if(!ParamEnum.MINUS_ONE.getCode().equals(userrelation)){
             user.setUserrelation(userrelation);
         }
 
-        if("2".equals(usertype)){
+        if(UsertypeEnum.TWO.equals(usertype)){
             user.setFingerpwdauth(true);
             user.setLockpwdauth(true);
         }else {
@@ -317,7 +324,7 @@ public class LockMemberServiceImpl implements LockMemberService {
             int end = user.getEndtime();
             String usertype = user.getUsertype();
             //usertype 3表示租户，只有租户有过期时间，当租户30天内未注册系统时，则过期并删除
-            if("3".equals(usertype)) {
+            if(UsertypeEnum.THREE.getCode().equals(usertype)) {
                 if (!loginService.checkAccount1(phone)) {
                     if (DateUtil.isNotExpired(end,deadline)) {
                         validMembers.add(user);
@@ -368,7 +375,7 @@ public class LockMemberServiceImpl implements LockMemberService {
         SpMemberRelationExample.Criteria criteria = example.createCriteria();
         criteria.andIdEqualTo(id).andLocksnEqualTo(locksn);
         SpMemberRelation user = new SpMemberRelation();
-        if("finger".equals(type)) {
+        if(PtypeAuthEnum.FINGER.getCode().equals(type)) {
             if(status == 0) {
                 user.setFingerpwdauth(false);
             }else {

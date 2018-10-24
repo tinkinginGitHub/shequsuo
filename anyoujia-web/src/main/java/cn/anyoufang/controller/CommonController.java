@@ -1,19 +1,16 @@
 package cn.anyoufang.controller;
 
-import cn.anyoufang.entity.selfdefined.AnyoujiaResult;
 import cn.anyoufang.entity.SpMember;
+import cn.anyoufang.entity.selfdefined.AnyoujiaResult;
 import cn.anyoufang.service.CommentService;
 import cn.anyoufang.service.LoginService;
 import cn.anyoufang.util.FastDFSClient;
 import cn.anyoufang.util.SecurityQuestionConstant;
 import cn.anyoufang.utils.JsonUtils;
 import cn.anyoufang.utils.StringUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
@@ -31,35 +28,39 @@ import java.util.Map;
 @RequestMapping("/api")
 public class CommonController  extends AbstractController{
 
-
     @Autowired
     private CommentService commentService;
 
     @Autowired
     private LoginService loginService;
 
+    @Value("${IMAGE_SERVER_URL}")
+    private String IMAGE_SERVER_URL;
+
+
+    /**
+     * 获取安全问题列表
+     * @return
+     */
     @RequestMapping("/questions")
     public List<String> getQuestions() {
         return SecurityQuestionConstant.getQuestions();
     }
 
-    @Value("${IMAGE_SERVER_URL}")
-    private String IMAGE_SERVER_URL;
-    private Logger logger = LoggerFactory.getLogger(CommonController.class);
-
-
+    /**
+     * 评论上传图片请求处理
+     * @param request
+     * @return
+     */
     @RequestMapping("/pic/upload")
     public AnyoujiaResult fileUpload(HttpServletRequest request) {
         try {
 
             MultipartHttpServletRequest mulRequest = request instanceof MultipartHttpServletRequest ? (MultipartHttpServletRequest) request : null;
             if(mulRequest==null){
-                return AnyoujiaResult.build(400,"上传失败");
+                return AnyoujiaResult.build(FOUR_H,"请求失败");
             }
             CommonsMultipartFile uploadFile = null;
-            Map<String, Object> map = new HashMap<String, Object>();
-            MultipartFile file = null;
-
             Iterator<String> fileNames = mulRequest.getFileNames();
             if (fileNames.hasNext()) {
                 String inputName = fileNames.next();
@@ -80,15 +81,17 @@ public class CommonController  extends AbstractController{
                 result.put("url", url);
                 return AnyoujiaResult.ok(result);
             }
-            return AnyoujiaResult.build(500,"上传图片失败");
+            return AnyoujiaResult.build(FOUR_H,"上传图片失败");
 
         } catch (Exception e) {
-            logger.info("上传图片失败: "+e.getMessage());
+            if(logger.isInfoEnabled()) {
+                logger.info("上传图片失败: "+e.getMessage());
+            }
             //5、返回map
             Map result = new HashMap<>();
             result.put("error", 1);
             result.put("message", "图片上传失败");
-            return AnyoujiaResult.build(500, "图片上传失败");
+            return AnyoujiaResult.build(FIVE_H, "系统错误",result);
         }
     }
 
@@ -97,7 +100,7 @@ public class CommonController  extends AbstractController{
                                   @RequestParam(required = false) String url,
                                   HttpServletRequest request) {
         if(StringUtil.isEmpty(comment)) {
-            return AnyoujiaResult.build(400,"请输入有效评论");
+            return AnyoujiaResult.build(FOUR_H,"请输入有效评论");
         }
         try{
           SpMember user =  getUser(request,loginService);
@@ -110,14 +113,20 @@ public class CommonController  extends AbstractController{
             }
 
         }catch (Exception e) {
-            return AnyoujiaResult.build(500,"评论失败，系统错误");
+            if(logger.isInfoEnabled()) {
+                logger.info("评论失败: "+e.getMessage());
+            }
+            return AnyoujiaResult.build(FIVE_H,"评论失败，系统错误");
         }
-        return AnyoujiaResult.build(401,"请登录");
+        return AnyoujiaResult.build(FOUR_H_1,"请登录");
     }
 
-    @PostMapping("/pic/del")
-    @CrossOrigin(value = "*")
-    @ResponseBody
+    /**
+     * 执行删除图片请求
+     * @param url
+     * @return
+     */
+    @RequestMapping("/pic/del")
     public AnyoujiaResult fileDelete(@RequestBody String url) {
 
         Map<String,Object> ul = JsonUtils.jsonToMap(url);
@@ -146,12 +155,15 @@ public class CommonController  extends AbstractController{
                 }
             }
         }catch (Exception e) {
+            if(logger.isInfoEnabled()) {
+                logger.info("删除图片失败: "+e.getMessage());
+            }
             Map result = new HashMap<>();
             result.put("error", 1);
             result.put("message", "图片删除失败");
             return AnyoujiaResult.ok(result);
         }
-        return AnyoujiaResult.build(500,"删除失败");
+        return AnyoujiaResult.build(FIVE_H,"删除失败");
     }
 
     /**
@@ -165,17 +177,17 @@ public class CommonController  extends AbstractController{
                                                 @RequestParam(value = "pd") String password) {
 
         if(StringUtil.isEmpty(password)) {
-            return AnyoujiaResult.build(400,"密码不能为空");
+            return AnyoujiaResult.build(FOUR_H,"密码不能为空");
         }
         SpMember user = getUser(request,loginService);
         if(user == null) {
-            return AnyoujiaResult.build(401,"登录超时");
+            return AnyoujiaResult.build(FOUR_H_1,"登录超时");
         }
         boolean ok = commentService.checkSecurityPassword(user.getSecuritypwd(),password);
         if(ok) {
             return AnyoujiaResult.ok();
         }
-        return AnyoujiaResult.build(400,"密码错误");
+        return AnyoujiaResult.build(FOUR_H_1,"密码错误");
     }
 
 }
