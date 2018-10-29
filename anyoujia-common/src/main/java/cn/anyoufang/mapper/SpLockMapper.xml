@@ -10,20 +10,23 @@
     <result column="addtime" property="addtime" jdbcType="INTEGER" />
     <result column="activetime" property="activetime" jdbcType="INTEGER" />
     <result column="card" property="card" jdbcType="VARCHAR" />
-    <result column="lbs" property="lbs" jdbcType="VARCHAR" />
-    <result column="ping" property="ping" jdbcType="INTEGER" />
-    <result column="upcyc" property="upcyc" jdbcType="INTEGER" />
-    <result column="overtime" property="overtime" jdbcType="INTEGER" />
-    <result column="tcp" property="tcp" jdbcType="INTEGER" />
-    <result column="retry" property="retry" jdbcType="TINYINT" />
-    <result column="ip1" property="ip1" jdbcType="VARCHAR" />
-    <result column="ip2" property="ip2" jdbcType="VARCHAR" />
-    <result column="port1" property="port1" jdbcType="INTEGER" />
-    <result column="port2" property="port2" jdbcType="INTEGER" />
-    <result column="apn" property="apn" jdbcType="VARCHAR" />
-    <result column="dialuser" property="dialuser" jdbcType="VARCHAR" />
-    <result column="dialpass" property="dialpass" jdbcType="VARCHAR" />
-    <result column="adminid" property="adminid" jdbcType="INTEGER" />
+    <result column="community" property="community" jdbcType="INTEGER" />
+    <result column="origin" property="origin" jdbcType="VARCHAR" />
+    <result column="p_date" property="pDate" jdbcType="INTEGER" />
+    <result column="color" property="color" jdbcType="VARCHAR" />
+    <result column="model" property="model" jdbcType="VARCHAR" />
+  </resultMap>
+
+  <resultMap id="combineSelectResultMap" type="cn.anyoufang.entity.selfdefined.LockCombineInfo">
+    <!--<id column="sn" property="sn" jdbcType="VARCHAR" />-->
+    <result column="sn" property="sn" jdbcType="VARCHAR"/>
+    <result column="origin" property="origin" jdbcType="VARCHAR" />
+    <result column="p_date" property="producttime" jdbcType="INTEGER" />
+    <result column="color" property="color" jdbcType="VARCHAR" />
+    <result column="model" property="model" jdbcType="VARCHAR" />
+    <result column="cname" property="cname" jdbcType="VARCHAR" />
+    <result column="address" property="address" jdbcType="VARCHAR" />
+    <result column="code2" property="code2" jdbcType="VARCHAR" />
   </resultMap>
   <sql id="Example_Where_Clause" >
     <where >
@@ -84,8 +87,8 @@
     </where>
   </sql>
   <sql id="Base_Column_List" >
-    sn, code1, code2, active, ver, addtime, activetime, card, lbs, ping, upcyc, overtime, 
-    tcp, retry, ip1, ip2, port1, port2, apn, dialuser, dialpass, adminid
+    sn, code1, code2, active, ver, addtime, activetime, card, community, origin, p_date, 
+    color, model
   </sql>
   <select id="selectByExample" resultMap="BaseResultMap" parameterType="cn.anyoufang.entity.SpLockExample" >
     select
@@ -120,18 +123,14 @@
   <insert id="insert" parameterType="cn.anyoufang.entity.SpLock" >
     insert into sp_lock (sn, code1, code2, 
       active, ver, addtime, activetime, 
-      card, lbs, ping, upcyc, 
-      overtime, tcp, retry, 
-      ip1, ip2, port1, port2, 
-      apn, dialuser, dialpass, 
-      adminid)
+      card, community, origin, 
+      p_date, color, model
+      )
     values (#{sn,jdbcType=VARCHAR}, #{code1,jdbcType=VARCHAR}, #{code2,jdbcType=VARCHAR}, 
       #{active,jdbcType=BIT}, #{ver,jdbcType=VARCHAR}, #{addtime,jdbcType=INTEGER}, #{activetime,jdbcType=INTEGER}, 
-      #{card,jdbcType=VARCHAR}, #{lbs,jdbcType=VARCHAR}, #{ping,jdbcType=INTEGER}, #{upcyc,jdbcType=INTEGER}, 
-      #{overtime,jdbcType=INTEGER}, #{tcp,jdbcType=INTEGER}, #{retry,jdbcType=TINYINT}, 
-      #{ip1,jdbcType=VARCHAR}, #{ip2,jdbcType=VARCHAR}, #{port1,jdbcType=INTEGER}, #{port2,jdbcType=INTEGER}, 
-      #{apn,jdbcType=VARCHAR}, #{dialuser,jdbcType=VARCHAR}, #{dialpass,jdbcType=VARCHAR}, 
-      #{adminid,jdbcType=INTEGER})
+      #{card,jdbcType=VARCHAR}, #{community,jdbcType=INTEGER}, #{origin,jdbcType=VARCHAR}, 
+      #{pDate,jdbcType=INTEGER}, #{color,jdbcType=VARCHAR}, #{model,jdbcType=VARCHAR}
+      )
   </insert>
   <insert id="insertSelective" parameterType="cn.anyoufang.entity.SpLock" >
     insert into sp_lock
@@ -160,47 +159,20 @@
       <if test="card != null" >
         card,
       </if>
-      <if test="lbs != null" >
-        lbs,
+      <if test="community != null" >
+        community,
       </if>
-      <if test="ping != null" >
-        ping,
+      <if test="origin != null" >
+        origin,
       </if>
-      <if test="upcyc != null" >
-        upcyc,
+      <if test="pDate != null" >
+        p_date,
       </if>
-      <if test="overtime != null" >
-        overtime,
+      <if test="color != null" >
+        color,
       </if>
-      <if test="tcp != null" >
-        tcp,
-      </if>
-      <if test="retry != null" >
-        retry,
-      </if>
-      <if test="ip1 != null" >
-        ip1,
-      </if>
-      <if test="ip2 != null" >
-        ip2,
-      </if>
-      <if test="port1 != null" >
-        port1,
-      </if>
-      <if test="port2 != null" >
-        port2,
-      </if>
-      <if test="apn != null" >
-        apn,
-      </if>
-      <if test="dialuser != null" >
-        dialuser,
-      </if>
-      <if test="dialpass != null" >
-        dialpass,
-      </if>
-      <if test="adminid != null" >
-        adminid,
+      <if test="model != null" >
+        model,
       </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides="," >
@@ -228,47 +200,20 @@
       <if test="card != null" >
         #{card,jdbcType=VARCHAR},
       </if>
-      <if test="lbs != null" >
-        #{lbs,jdbcType=VARCHAR},
+      <if test="community != null" >
+        #{community,jdbcType=INTEGER},
       </if>
-      <if test="ping != null" >
-        #{ping,jdbcType=INTEGER},
+      <if test="origin != null" >
+        #{origin,jdbcType=VARCHAR},
       </if>
-      <if test="upcyc != null" >
-        #{upcyc,jdbcType=INTEGER},
+      <if test="pDate != null" >
+        #{pDate,jdbcType=INTEGER},
       </if>
-      <if test="overtime != null" >
-        #{overtime,jdbcType=INTEGER},
+      <if test="color != null" >
+        #{color,jdbcType=VARCHAR},
       </if>
-      <if test="tcp != null" >
-        #{tcp,jdbcType=INTEGER},
-      </if>
-      <if test="retry != null" >
-        #{retry,jdbcType=TINYINT},
-      </if>
-      <if test="ip1 != null" >
-        #{ip1,jdbcType=VARCHAR},
-      </if>
-      <if test="ip2 != null" >
-        #{ip2,jdbcType=VARCHAR},
-      </if>
-      <if test="port1 != null" >
-        #{port1,jdbcType=INTEGER},
-      </if>
-      <if test="port2 != null" >
-        #{port2,jdbcType=INTEGER},
-      </if>
-      <if test="apn != null" >
-        #{apn,jdbcType=VARCHAR},
-      </if>
-      <if test="dialuser != null" >
-        #{dialuser,jdbcType=VARCHAR},
-      </if>
-      <if test="dialpass != null" >
-        #{dialpass,jdbcType=VARCHAR},
-      </if>
-      <if test="adminid != null" >
-        #{adminid,jdbcType=INTEGER},
+      <if test="model != null" >
+        #{model,jdbcType=VARCHAR},
       </if>
     </trim>
   </insert>
@@ -305,47 +250,20 @@
       <if test="record.card != null" >
         card = #{record.card,jdbcType=VARCHAR},
       </if>
-      <if test="record.lbs != null" >
-        lbs = #{record.lbs,jdbcType=VARCHAR},
+      <if test="record.community != null" >
+        community = #{record.community,jdbcType=INTEGER},
       </if>
-      <if test="record.ping != null" >
-        ping = #{record.ping,jdbcType=INTEGER},
+      <if test="record.origin != null" >
+        origin = #{record.origin,jdbcType=VARCHAR},
       </if>
-      <if test="record.upcyc != null" >
-        upcyc = #{record.upcyc,jdbcType=INTEGER},
+      <if test="record.pDate != null" >
+        p_date = #{record.pDate,jdbcType=INTEGER},
       </if>
-      <if test="record.overtime != null" >
-        overtime = #{record.overtime,jdbcType=INTEGER},
+      <if test="record.color != null" >
+        color = #{record.color,jdbcType=VARCHAR},
       </if>
-      <if test="record.tcp != null" >
-        tcp = #{record.tcp,jdbcType=INTEGER},
-      </if>
-      <if test="record.retry != null" >
-        retry = #{record.retry,jdbcType=TINYINT},
-      </if>
-      <if test="record.ip1 != null" >
-        ip1 = #{record.ip1,jdbcType=VARCHAR},
-      </if>
-      <if test="record.ip2 != null" >
-        ip2 = #{record.ip2,jdbcType=VARCHAR},
-      </if>
-      <if test="record.port1 != null" >
-        port1 = #{record.port1,jdbcType=INTEGER},
-      </if>
-      <if test="record.port2 != null" >
-        port2 = #{record.port2,jdbcType=INTEGER},
-      </if>
-      <if test="record.apn != null" >
-        apn = #{record.apn,jdbcType=VARCHAR},
-      </if>
-      <if test="record.dialuser != null" >
-        dialuser = #{record.dialuser,jdbcType=VARCHAR},
-      </if>
-      <if test="record.dialpass != null" >
-        dialpass = #{record.dialpass,jdbcType=VARCHAR},
-      </if>
-      <if test="record.adminid != null" >
-        adminid = #{record.adminid,jdbcType=INTEGER},
+      <if test="record.model != null" >
+        model = #{record.model,jdbcType=VARCHAR},
       </if>
     </set>
     <if test="_parameter != null" >
@@ -362,20 +280,11 @@
       addtime = #{record.addtime,jdbcType=INTEGER},
       activetime = #{record.activetime,jdbcType=INTEGER},
       card = #{record.card,jdbcType=VARCHAR},
-      lbs = #{record.lbs,jdbcType=VARCHAR},
-      ping = #{record.ping,jdbcType=INTEGER},
-      upcyc = #{record.upcyc,jdbcType=INTEGER},
-      overtime = #{record.overtime,jdbcType=INTEGER},
-      tcp = #{record.tcp,jdbcType=INTEGER},
-      retry = #{record.retry,jdbcType=TINYINT},
-      ip1 = #{record.ip1,jdbcType=VARCHAR},
-      ip2 = #{record.ip2,jdbcType=VARCHAR},
-      port1 = #{record.port1,jdbcType=INTEGER},
-      port2 = #{record.port2,jdbcType=INTEGER},
-      apn = #{record.apn,jdbcType=VARCHAR},
-      dialuser = #{record.dialuser,jdbcType=VARCHAR},
-      dialpass = #{record.dialpass,jdbcType=VARCHAR},
-      adminid = #{record.adminid,jdbcType=INTEGER}
+      community = #{record.community,jdbcType=INTEGER},
+      origin = #{record.origin,jdbcType=VARCHAR},
+      p_date = #{record.pDate,jdbcType=INTEGER},
+      color = #{record.color,jdbcType=VARCHAR},
+      model = #{record.model,jdbcType=VARCHAR}
     <if test="_parameter != null" >
       <include refid="Update_By_Example_Where_Clause" />
     </if>
@@ -404,47 +313,20 @@
       <if test="card != null" >
         card = #{card,jdbcType=VARCHAR},
       </if>
-      <if test="lbs != null" >
-        lbs = #{lbs,jdbcType=VARCHAR},
+      <if test="community != null" >
+        community = #{community,jdbcType=INTEGER},
       </if>
-      <if test="ping != null" >
-        ping = #{ping,jdbcType=INTEGER},
+      <if test="origin != null" >
+        origin = #{origin,jdbcType=VARCHAR},
       </if>
-      <if test="upcyc != null" >
-        upcyc = #{upcyc,jdbcType=INTEGER},
+      <if test="pDate != null" >
+        p_date = #{pDate,jdbcType=INTEGER},
       </if>
-      <if test="overtime != null" >
-        overtime = #{overtime,jdbcType=INTEGER},
+      <if test="color != null" >
+        color = #{color,jdbcType=VARCHAR},
       </if>
-      <if test="tcp != null" >
-        tcp = #{tcp,jdbcType=INTEGER},
-      </if>
-      <if test="retry != null" >
-        retry = #{retry,jdbcType=TINYINT},
-      </if>
-      <if test="ip1 != null" >
-        ip1 = #{ip1,jdbcType=VARCHAR},
-      </if>
-      <if test="ip2 != null" >
-        ip2 = #{ip2,jdbcType=VARCHAR},
-      </if>
-      <if test="port1 != null" >
-        port1 = #{port1,jdbcType=INTEGER},
-      </if>
-      <if test="port2 != null" >
-        port2 = #{port2,jdbcType=INTEGER},
-      </if>
-      <if test="apn != null" >
-        apn = #{apn,jdbcType=VARCHAR},
-      </if>
-      <if test="dialuser != null" >
-        dialuser = #{dialuser,jdbcType=VARCHAR},
-      </if>
-      <if test="dialpass != null" >
-        dialpass = #{dialpass,jdbcType=VARCHAR},
-      </if>
-      <if test="adminid != null" >
-        adminid = #{adminid,jdbcType=INTEGER},
+      <if test="model != null" >
+        model = #{model,jdbcType=VARCHAR},
       </if>
     </set>
     where sn = #{sn,jdbcType=VARCHAR}
@@ -458,29 +340,32 @@
       addtime = #{addtime,jdbcType=INTEGER},
       activetime = #{activetime,jdbcType=INTEGER},
       card = #{card,jdbcType=VARCHAR},
-      lbs = #{lbs,jdbcType=VARCHAR},
-      ping = #{ping,jdbcType=INTEGER},
-      upcyc = #{upcyc,jdbcType=INTEGER},
-      overtime = #{overtime,jdbcType=INTEGER},
-      tcp = #{tcp,jdbcType=INTEGER},
-      retry = #{retry,jdbcType=TINYINT},
-      ip1 = #{ip1,jdbcType=VARCHAR},
-      ip2 = #{ip2,jdbcType=VARCHAR},
-      port1 = #{port1,jdbcType=INTEGER},
-      port2 = #{port2,jdbcType=INTEGER},
-      apn = #{apn,jdbcType=VARCHAR},
-      dialuser = #{dialuser,jdbcType=VARCHAR},
-      dialpass = #{dialpass,jdbcType=VARCHAR},
-      adminid = #{adminid,jdbcType=INTEGER}
+      community = #{community,jdbcType=INTEGER},
+      origin = #{origin,jdbcType=VARCHAR},
+      p_date = #{pDate,jdbcType=INTEGER},
+      color = #{color,jdbcType=VARCHAR},
+      model = #{model,jdbcType=VARCHAR}
     where sn = #{sn,jdbcType=VARCHAR}
   </update>
-  <select id="selectUnionByPhone" parameterType="java.lang.String" resultType="java.lang.Integer">
-    SELECT
-	sl.createtime
+
+  <select id="selectLockInfoByCombinetable" resultMap="combineSelectResultMap">
+    SELECT sl.model,
+    sl.origin,
+    sl.color,
+    sl.p_date,
+    sc.address,
+    sc.cname,
+    sl.sn,
+    sl.code2
     FROM
-	sp_member_relation sr
-    JOIN sp_admin_lock sl ON sr.locksn = sl.locksn
-   WHERE
-	sr.phone = #{sl.phone,jdbcType=VARCHAR};
+    sp_lock sl
+    JOIN sp_community sc ON sl.community = sc.cid
+    WHERE
+    <if test="locksns != null and locksns.size()!=0">
+    sl.sn in
+      <foreach collection="locksns" item="item" open="(" close=")" separator=",">
+        #{item}
+      </foreach>
+    </if>
   </select>
 </mapper>

@@ -3,8 +3,12 @@ package cn.anyoufang.util;
 
 import cn.anyoufang.message.aes.AesException;
 import cn.anyoufang.message.aes.WXBizMsgCrypt;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class AesUtils {
+
+    private static final Logger logger = LoggerFactory.getLogger(AesUtils.class);
 
     private static final String APP_ID = "wxaa510935818c342a";
     private static final String TOKEN = "smart";

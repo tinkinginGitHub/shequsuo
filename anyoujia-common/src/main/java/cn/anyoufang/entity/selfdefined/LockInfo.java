@@ -9,11 +9,14 @@ import java.io.Serializable;
  */
 public class LockInfo implements Serializable {
 
+    private static final long serialVersionUID = 1L;
+
     private int lockCreatetime;
     private int power1;
     private int power2;
     private int online;
     private int lockStatus;
+
 
     public int getLockCreatetime() {
         return lockCreatetime;

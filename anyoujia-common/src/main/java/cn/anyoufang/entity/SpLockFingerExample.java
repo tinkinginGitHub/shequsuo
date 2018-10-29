@@ -673,6 +673,66 @@ public class SpLockFingerExample {
             addCriterion("deltime not between", value1, value2, "deltime");
             return (Criteria) this;
         }
+
+        public Criteria andRelationidIsNull() {
+            addCriterion("relationid is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andRelationidIsNotNull() {
+            addCriterion("relationid is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andRelationidEqualTo(Integer value) {
+            addCriterion("relationid =", value, "relationid");
+            return (Criteria) this;
+        }
+
+        public Criteria andRelationidNotEqualTo(Integer value) {
+            addCriterion("relationid <>", value, "relationid");
+            return (Criteria) this;
+        }
+
+        public Criteria andRelationidGreaterThan(Integer value) {
+            addCriterion("relationid >", value, "relationid");
+            return (Criteria) this;
+        }
+
+        public Criteria andRelationidGreaterThanOrEqualTo(Integer value) {
+            addCriterion("relationid >=", value, "relationid");
+            return (Criteria) this;
+        }
+
+        public Criteria andRelationidLessThan(Integer value) {
+            addCriterion("relationid <", value, "relationid");
+            return (Criteria) this;
+        }
+
+        public Criteria andRelationidLessThanOrEqualTo(Integer value) {
+            addCriterion("relationid <=", value, "relationid");
+            return (Criteria) this;
+        }
+
+        public Criteria andRelationidIn(List<Integer> values) {
+            addCriterion("relationid in", values, "relationid");
+            return (Criteria) this;
+        }
+
+        public Criteria andRelationidNotIn(List<Integer> values) {
+            addCriterion("relationid not in", values, "relationid");
+            return (Criteria) this;
+        }
+
+        public Criteria andRelationidBetween(Integer value1, Integer value2) {
+            addCriterion("relationid between", value1, value2, "relationid");
+            return (Criteria) this;
+        }
+
+        public Criteria andRelationidNotBetween(Integer value1, Integer value2) {
+            addCriterion("relationid not between", value1, value2, "relationid");
+            return (Criteria) this;
+        }
     }
 
     public static class Criteria extends GeneratedCriteria {

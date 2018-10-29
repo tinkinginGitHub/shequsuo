@@ -1,11 +1,14 @@
 package cn.anyoufang.utils;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class StringUtil {
-
+    private static final Logger logger = LoggerFactory.getLogger(StringUtil.class);
 	
 	/**
 	 * @author chenyi
@@ -309,6 +312,30 @@ public class StringUtil {
 	public static String[] sortStrings(String[] params) {
         Arrays.sort(params);
         return params;
+    }
+
+
+    /**
+     * 解析同PHP对接的session
+     * @param session
+     * @return
+     */
+    public static Map<String,Object> parseSession(String session) {
+        String result;
+        try {
+            result = AesCBC.getInstance().decrypt(session);
+        } catch (Exception e) {
+            if (logger.isInfoEnabled()) {
+                logger.info(e.getMessage());
+            }
+            return null;
+        }
+        try {
+            JsonUtils.isJSONValid(result);
+        } catch (Exception e) {
+            return null;
+        }
+        return JsonUtils.jsonToMap(result);
     }
 
 

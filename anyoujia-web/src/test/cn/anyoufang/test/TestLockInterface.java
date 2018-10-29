@@ -1,10 +1,14 @@
 package cn.anyoufang.test;
 
-import cn.anyoufang.utils.SimulateGetAndPostUtil;
-import cn.anyoufang.utils.Md5Utils;
+import cn.anyoufang.entity.selfdefined.Data;
+import cn.anyoufang.entity.selfdefined.InitParam;
+import cn.anyoufang.utils.*;
+import net.sf.json.JSONObject;
 import org.junit.Test;
 
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author daiping
@@ -22,13 +26,28 @@ public class TestLockInterface {
     public void testRegister() {
         long timestamp = System.currentTimeMillis()/1000;
         StringBuilder sb = new StringBuilder();
-        String ss = sb.append("5CCF7F1BA450").append(timestamp).append(2).append(s).toString();
+        String ss = sb.append("235435A159").append(timestamp).append(2).append(s).toString();
         String sss = Md5Utils.md5(ss,"UTF-8");
         String param = "method=register.lock.info&userid=2&locksn=5CCF7F1BA450&temptime="+timestamp+"&sign="+sss;
         String result = SimulateGetAndPostUtil.sendPost(url,param);
         System.out.println(result);
         System.out.println(timestamp);
         System.out.println(sss);
+    }
+
+    /**
+     * pwdtype [可选] 密码类型 99:全部 0: APP用户 1: 永久 2：一次 3：限时
+     * usertype 用户类型 99:全部 0: APP 1:密码 2: 指纹 3:IC卡
+     */
+    @Test
+    public void testGetLockTempPwdList() {
+        long timestamp = System.currentTimeMillis()/1000;
+        StringBuilder sb = new StringBuilder();
+        String param=sb.append("555444").append(2).append(timestamp).append(1).append(s).toString();
+        String sign = Md5Utils.md5(param,"UTF-8");
+        String combineParam = "method=get.lock.userlist&locksn="+"555444"+"&temptime="+timestamp+"&sign="+sign + "&usertype="+1+"&pwdtype="+2;
+        String result =  SimulateGetAndPostUtil.sendPost(url,combineParam);
+        System.out.println(result);
     }
 
     /**
@@ -69,7 +88,7 @@ public class TestLockInterface {
     public void testAddPwdUser() {
         long timestamp = System.currentTimeMillis()/1000;
         int ptype = 1;
-        long seqid = 8l;
+        long seqid = 81l;
         String locksn = "5CCF7F1BA456";
         long endtime = System.currentTimeMillis()/1000 + 600;
         String pwds = "12345678";
@@ -99,6 +118,24 @@ public class TestLockInterface {
         System.out.println(result);
     }
 
+
+    /**
+     * 测试管理用户接口
+     *
+     */
+
+    @Test
+    public void testManageUser() {
+        long timestamp = System.currentTimeMillis()/1000;
+        StringBuilder sb = new StringBuilder();//locksn seqid state temptime
+        String ss = sb.append("5CCF7F1BA456").append(36474).append(2).append(timestamp).append(s).toString();
+        String sss = Md5Utils.md5(ss,"UTF-8");
+        String param = "method=edit.lock.user&seqid=3&temptime="+timestamp+"&seqid="+36474+"&state="+2+"&sign="+sss+"&locksn=5CCF7F1BA456";
+        String result = SimulateGetAndPostUtil.sendPost(url,param);
+        System.out.println(result);
+    }
+
+
     /**
      * 测试获取开锁详情
      */
@@ -116,6 +153,87 @@ public class TestLockInterface {
         String result = SimulateGetAndPostUtil.sendPost(url,param);
         System.out.println(result);
 
+    }
+
+
+    @Test
+    public void edit() {
+        long timestamp = System.currentTimeMillis()/1000;
+        //locksn seqid state temptime
+        StringBuilder sb = new StringBuilder();
+        String ss = sb.append("555444").append(7483659).append(2).append(timestamp).append(s).toString();
+        String sign = Md5Utils.md5(ss,"UTF-8");
+        String param = "method=edit.lock.user&seqid="+7483659+"&temptime="+timestamp+"&state="+2+"&sign="+sign+"&locksn="+555444;
+        String result = SimulateGetAndPostUtil.sendPost(url,param);
+        System.out.println(result);
+    }
+
+    @Test
+    public void alarm() throws Exception {
+        Data data1 = new Data();
+        Map<String, String> map = new HashMap<>();
+        map.put("sn", "77776666");
+        map.put("userid", "123");
+        map.put("user_type", "11");
+        map.put("opentime", "1540384417");
+        map.put("status", "1");
+        map.put("type", "40");
+        map.put("uid", "147258");
+        map.put("vid", "001");
+        map.put("isalarm", "1");
+        map.put("nickname", "jack");
+        map.put("pwd_type", "0");
+        map.put("pwds","124356");
+        data1.setData(map);
+        Map<String, String> tempMap = map;
+        Map<String, String> toJson =  data1.getData();
+
+        String json = JsonUtils.objectToJson(SortJsonAesc.sortMap(toJson));
+        System.out.println(json);
+        InitParam p = new InitParam();
+        p.setMod("Alarm");
+        p.setFun("receive");
+       String sign =  genarateSign("Alarm", "receive", json);
+        p.setSign(sign);
+        Map<String, String> data = new HashMap<>(tempMap);
+        p.setData(data);
+       //Map<String,Object> res =  parseResponse();
+        System.out.println(doPhpRequest(p));
+    }
+
+    public Map<String, Object> parseResponse(String response) {
+        Map<String, Object> map = JsonUtils.jsonToMap(response);
+        Integer status = (Integer) map.get("status");
+        Object object = map.get("data");
+        JSONObject json;
+        Map<String, Object> data = new HashMap<>();
+        if (object != null) {
+            if (object instanceof String) {
+                String msg = (String) object;
+                data.put("msg", msg);
+            } else {
+                json = (JSONObject) map.get("data");
+                data.putAll(JsonUtils.jsonToMap(json));
+            }
+
+        }
+        data.put("status", status);
+        return data;
+    }
+
+    private  String genarateSign(String mod, String fun, String jsonData) {
+        StringBuilder sb = new StringBuilder();
+        String result = sb.append(mod).append(fun).append(jsonData).append("575gh5rr556Dfhr67Ohrt8").toString().replaceAll("\t|\n|\r", "");
+        return Md5Utils.md5(result, "utf-8");
+    }
+    private  String doPhpRequest(InitParam initParam) throws Exception {
+        String ss = JsonUtils.objectToJson(initParam);
+        return SimulateGetAndPostUtil.sendPost("http://144.anyoujia.com/Product/Api/index/", genarateParamForPhpRequest(ss));
+    }
+
+    private  String genarateParamForPhpRequest(String s) throws Exception {
+        return "sp=" + AesCBC.getInstance().encrypt(s).
+                replaceAll("\r|\n", "").trim().replaceAll("\\+", "%2B");
     }
 
     public static void main(String[] args) {

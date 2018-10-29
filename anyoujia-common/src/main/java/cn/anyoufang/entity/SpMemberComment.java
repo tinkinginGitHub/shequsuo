@@ -1,6 +1,6 @@
 package cn.anyoufang.entity;
 
-public class SpComment {
+public class SpMemberComment {
     private Integer id;
 
     private String picurl;

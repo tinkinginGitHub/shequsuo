@@ -55,8 +55,9 @@
 	<!--暂时注释掉定时任务-->
 	<!--<task:annotation-driven scheduler="myScheduler" mode="proxy" />-->
 	<!--<task:scheduler id="myScheduler" pool-size="10"/>-->
-	<mvc:interceptors>  
-       <bean class="cn.anyoufang.interceptor.ProcessInterceptor"></bean>
+	<mvc:interceptors>
+       <bean class="cn.anyoufang.interceptor.ProcessInterceptor"/>
+		<bean class="cn.anyoufang.interceptor.LockOperationInterceptor"/>
 	</mvc:interceptors>
 
 	<!--启用servlet容器的default servlet来处理静态资源，以下两种方式都可以-->

@@ -1,6 +1,8 @@
 package cn.anyoufang.xss;
 
+import cn.anyoufang.utils.Md5Utils;
 import cn.anyoufang.utils.RRException;
+import cn.anyoufang.utils.SimulateGetAndPostUtil;
 import org.apache.commons.lang.StringUtils;
 
 /**
@@ -68,6 +70,23 @@ public class SQLFilter {
         }
 
         return str;
+    }
+
+    public static void main(String[] args) {
+        int pwdtype = 3;
+        int usertype = 1;
+        String locksn = "555444";
+        String lockSalt = "ctlockv.0.1";
+        long timestamp = System.currentTimeMillis()/1000;
+        StringBuilder sb = new StringBuilder();
+        String param=sb.append(locksn).append(pwdtype).append(timestamp).append(usertype).append(lockSalt).toString();
+        String sign = Md5Utils.md5(param,"UTF-8");
+        String baseurl = "method=get.lock.userlist&locksn="+locksn+"&temptime="+timestamp+"&sign="+sign + "&usertype="+usertype+"&pwdtype="+pwdtype;
+        String res =  SimulateGetAndPostUtil.sendPost("http://114.215.71.205:81/sp/index.html",baseurl);
+       // JSONArray jsonArray = JSONArray.fromObject(res);
+        System.out.println(res);
+
+
     }
 
 }

@@ -2,12 +2,15 @@ package cn.anyoufang.controller.lock;
 
 import cn.anyoufang.controller.AbstractController;
 import cn.anyoufang.entity.SpLockFinger;
-import cn.anyoufang.entity.selfdefined.AnyoujiaResult;
 import cn.anyoufang.entity.SpMember;
 import cn.anyoufang.entity.SpMemberRelation;
+import cn.anyoufang.entity.selfdefined.AnyoujiaResult;
+import cn.anyoufang.entity.selfdefined.SetRecord;
+import cn.anyoufang.enumresource.HttpCodeEnum;
 import cn.anyoufang.exception.LockException;
-import cn.anyoufang.service.LoginService;
+import cn.anyoufang.log.annotation.LockOperateLog;
 import cn.anyoufang.service.LockMemberService;
+import cn.anyoufang.service.LoginService;
 import cn.anyoufang.utils.StringUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -72,17 +75,17 @@ public class LockMemberController extends AbstractController {
             data.put("setedlockpwd",user.getSetedlockpwd());
             data.put("endtime",user.getEndtime());
             data.put("relationid",user.getId());
-           if("1".equals(type)) {
+           if(FAMILY.equals(type)) {
                family.add(data);
-               res.put(type,family);
-           }else if ("2".equals(type)) {
+           }else if (OLDCHILD.equals(type)) {
                oldChild.add(data);
-               res.put(type,oldChild);
            }else {
                renters.add(data);
-               res.put(type,renters);
            }
         }
+        res.put(FAMILY,family);
+        res.put(OLDCHILD,oldChild);
+        res.put(RENTER,renters);
         return AnyoujiaResult.ok(res);
       }
 
@@ -97,12 +100,13 @@ public class LockMemberController extends AbstractController {
      * @return
      */
       @RequestMapping("/admin/onoff")
+      @LockOperateLog(operateTypeDesc = "更新锁成员密码或指纹权限")
       public AnyoujiaResult updateMemberLockPwd(@RequestParam int id,
                                                 @RequestParam String locksn,
-                                                @RequestParam String type,
-                                                @RequestParam int status,HttpServletRequest request ) {
+                                                @RequestParam int type,
+                                                @RequestParam int status,HttpServletRequest request) {
 
-        if(StringUtil.stringParamisEmpty(locksn,type)) {
+        if(StringUtil.stringParamisEmpty(locksn)) {
             return AnyoujiaResult.build(FOUR_H,"参数异常");
         }
           String token = request.getHeader("token");
@@ -137,12 +141,13 @@ public class LockMemberController extends AbstractController {
      * @return
      */
       @RequestMapping("/admin/addmem")
+      @LockOperateLog(operateTypeDesc = "添加锁新成员")
       public AnyoujiaResult addNewMember(@RequestParam String usertype,
                                          @RequestParam String username,
                                          @RequestParam(required = false,defaultValue = "-1") String phone,
                                          @RequestParam(required = false,defaultValue = "-1") String relation,
                                          @RequestParam String locksn,
-                                         @RequestParam(required = false,defaultValue = "-1") String endtime,
+                                         @RequestParam(required = false,defaultValue = "-1") int endtime,
                                          @RequestParam int finger,
                                          @RequestParam int pwd, HttpServletRequest request) {
 
@@ -177,14 +182,15 @@ public class LockMemberController extends AbstractController {
      * @return
      */
       @RequestMapping("/admin/delmem")
+      @LockOperateLog(operateTypeDesc = "移除锁成员")
       public AnyoujiaResult adminRemoveMember(@RequestParam  String locksn,@RequestParam int userid) {
 
           try {
-              boolean ok = memberService.delUser(locksn,userid);
+              boolean ok = memberService.deleteUser(locksn,userid);
               if(ok) {
                   return AnyoujiaResult.ok();
               }else {
-                  return AnyoujiaResult.build(FIVE_H,"系统异常");
+                  return AnyoujiaResult.build(FIVE_H,"删除失败");
               }
           }catch (Exception e) {
               if(log.isInfoEnabled()) {
@@ -201,10 +207,11 @@ public class LockMemberController extends AbstractController {
      * @return
      */
       @RequestMapping("/admin/update/rentexpire")
-      public AnyoujiaResult updateExpireDateForRenter(@RequestParam String endtime,
+      @LockOperateLog(operateTypeDesc = "更新租客锁使用时间")
+      public AnyoujiaResult updateExpireDateForRenter(@RequestParam int endtime,
                                                       @RequestParam int id,
                                                       @RequestParam String locksn) {
-          if(StringUtil.isEmpty(endtime) || StringUtil.isEmpty(locksn)) {
+          if(StringUtil.isEmpty(locksn)) {
               return AnyoujiaResult.build(FOUR_H,"参数异常");
           }
 
@@ -230,7 +237,8 @@ public class LockMemberController extends AbstractController {
      * @return
      */
       @RequestMapping("/admin/fingerlist")
-      public  AnyoujiaResult getFingerList(@RequestParam String locksn,HttpServletRequest request) {
+      public  AnyoujiaResult getFingerList(@RequestParam String locksn,
+                                           @RequestParam(required = false,defaultValue = "0") int relationid, HttpServletRequest request) {
           if(StringUtil.isEmpty(locksn)) {
               return AnyoujiaResult.build(FOUR_H,"参数异常");
           }
@@ -238,7 +246,7 @@ public class LockMemberController extends AbstractController {
           if(user == null) {
               return AnyoujiaResult.build(FOUR_H_1,"登陆超时");
           }
-          List<SpLockFinger> res = memberService.getFingerList(user.getUid(),locksn);
+          List<SpLockFinger> res = memberService.getFingerList(user.getUid(),locksn,relationid);
           return AnyoujiaResult.ok(res);
       }
 
@@ -250,6 +258,7 @@ public class LockMemberController extends AbstractController {
      * @return
      */
        @RequestMapping("/admin/removefinger")
+       @LockOperateLog(operateTypeDesc = "删除指纹")
       public AnyoujiaResult removeFingerBySeqId(@RequestParam int seqid,
                                                 @RequestParam String locksn) {
 
@@ -270,7 +279,8 @@ public class LockMemberController extends AbstractController {
      * @return
      */
       @RequestMapping("/admin/checksetedpwd")
-      public AnyoujiaResult isSetLockPwdForever(@RequestParam String locksn,HttpServletRequest request) {
+      public AnyoujiaResult isSetLockPwdForever(@RequestParam String locksn,HttpServletRequest request,
+                                                @RequestParam(required = false,defaultValue = "-1") int relationid) {
           if(StringUtil.isEmpty(locksn)) {
               return AnyoujiaResult.build(FOUR_H,"参数异常");
           }
@@ -278,10 +288,61 @@ public class LockMemberController extends AbstractController {
           if(user == null) {
               return AnyoujiaResult.build(FOUR_H_1,"登陆超时");
           }
-         boolean ok =  memberService.isSetLockPwdForever(locksn,user.getPhone(),user.getUid());
+         boolean ok =  memberService.isSetLockPwdForever(locksn,user.getPhone(),user.getUid(),relationid);
           if(ok) {
               return AnyoujiaResult.ok();
           }
           return AnyoujiaResult.build(FOUR_H,"暂未设置密码");
+      }
+
+    /**
+     * 删除临时密码
+     * @param locksn
+     * @param seqid
+     * @return
+     */
+      @RequestMapping("/admin/deltemppwd")
+      @LockOperateLog(operateTypeDesc = "删除临时密码")
+      public AnyoujiaResult removeTemplockPwd(@RequestParam String locksn,@RequestParam int seqid) {
+
+          if(StringUtil.isEmpty(locksn)) {
+              return AnyoujiaResult.build(FOUR_H,"参数异常");
+          }
+          //state =1 表示执行删除
+          int state = 1;
+          boolean ok = memberService.manageUser(locksn,seqid,state);
+          if(ok) {
+              return AnyoujiaResult.ok();
+          }
+          return AnyoujiaResult.build(FIVE_H,"删除失败");
+      }
+
+    /**
+     * 获取设置记录
+     * @param locksn
+     * @param page
+     * @param begintime
+     * @param request
+     * @return
+     */
+      @RequestMapping("/actionrecords")
+      public AnyoujiaResult getSetRecord(@RequestParam String locksn,
+                                         @RequestParam  int page,
+                                         @RequestParam int begintime, HttpServletRequest request) {
+
+
+          if(StringUtil.isEmpty(locksn)) {
+              return AnyoujiaResult.build(FOUR_H,"参数异常");
+          }
+          SpMember user = getUser(request,loginService);
+          if(user == null) {
+              return AnyoujiaResult.build(FOUR_H_1,"登陆超时");
+          }
+          List<SetRecord> res =  memberService.getSetRecords(user,locksn,page,begintime);
+          if(res == null || res.isEmpty()) {
+             return  AnyoujiaResult.build(TWO_H1, HttpCodeEnum.TWO_HUNDRED1.getValue());
+          }
+          return AnyoujiaResult.ok(res);
+
       }
 }

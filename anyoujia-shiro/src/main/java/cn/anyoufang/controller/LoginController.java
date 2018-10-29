@@ -131,7 +131,7 @@ public class LoginController extends AbstractController {
         }
         Map<String, Object> res;
         try {
-            res = loginService.memberLoginByVerifyCode(account, code, IPUtils.getIpAddr(request));
+            res = loginService.memberLoginByVerifyCode(account, IPUtils.getIpAddr(request));
         } catch (Exception e) {
             if (LOGGER.isInfoEnabled()) {
                 LOGGER.info(e.getMessage());

@@ -17,6 +17,8 @@ public class SpLockPassword {
 
     private Integer deltime;
 
+    private Integer relationid;
+
     public Integer getPwdid() {
         return pwdid;
     }
@@ -79,5 +81,13 @@ public class SpLockPassword {
 
     public void setDeltime(Integer deltime) {
         this.deltime = deltime;
+    }
+
+    public Integer getRelationid() {
+        return relationid;
+    }
+
+    public void setRelationid(Integer relationid) {
+        this.relationid = relationid;
     }
 }

@@ -262,6 +262,12 @@ public class DateUtil {
 		res = simpleDateFormat.format(date);
 		return res;
 	}
+	public static boolean notExpired(int endtime) {
+		Date now = new Date();
+		Date time = new Date(Long.valueOf(endtime+"000"));
+		return now.before(time);
+	}
+
 
 	public static boolean isNotExpired(int end,int deadline) {
 		Date time = new Date(Long.valueOf(end+"000"));
@@ -272,6 +278,10 @@ public class DateUtil {
 			return true;
 		}
 		return false;
+	}
+
+	public static void main(String[] args) {
+		System.out.println(notExpired(1830297600));
 	}
 
 	/**

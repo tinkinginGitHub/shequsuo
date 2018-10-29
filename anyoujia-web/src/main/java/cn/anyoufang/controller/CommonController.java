@@ -2,15 +2,19 @@ package cn.anyoufang.controller;
 
 import cn.anyoufang.entity.SpMember;
 import cn.anyoufang.entity.selfdefined.AnyoujiaResult;
-import cn.anyoufang.service.CommentService;
+import cn.anyoufang.service.CommonService;
 import cn.anyoufang.service.LoginService;
 import cn.anyoufang.util.FastDFSClient;
 import cn.anyoufang.util.SecurityQuestionConstant;
+import cn.anyoufang.utils.DateUtil;
 import cn.anyoufang.utils.JsonUtils;
 import cn.anyoufang.utils.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
@@ -29,7 +33,7 @@ import java.util.Map;
 public class CommonController  extends AbstractController{
 
     @Autowired
-    private CommentService commentService;
+    private CommonService commonService;
 
     @Autowired
     private LoginService loginService;
@@ -106,7 +110,7 @@ public class CommonController  extends AbstractController{
           SpMember user =  getUser(request,loginService);
             if(user != null) {
                  String phone = user.getPhone();
-                 boolean commentOk =  commentService.saveComments(comment,url,phone);
+                 boolean commentOk =  commonService.saveComments(comment,url,phone);
                if(commentOk) {
                    return AnyoujiaResult.ok();
                }
@@ -183,11 +187,33 @@ public class CommonController  extends AbstractController{
         if(user == null) {
             return AnyoujiaResult.build(FOUR_H_1,"登录超时");
         }
-        boolean ok = commentService.checkSecurityPassword(user.getSecuritypwd(),password);
+        boolean ok = commonService.checkSecurityPassword(user.getSecuritypwd(),password);
         if(ok) {
             return AnyoujiaResult.ok();
         }
         return AnyoujiaResult.build(FOUR_H_1,"密码错误");
+    }
+
+    /**
+     * 记录用户动作
+     * @param locksn
+     * @param action
+     * @param request
+     * @return
+     */
+    @RequestMapping("/recordaction")
+    public AnyoujiaResult recordLockActions(@RequestParam String locksn,
+                                            @RequestParam String action,
+                                            HttpServletRequest request) {
+
+        SpMember user = getUser(request,loginService);
+
+        if(user == null) {
+            return AnyoujiaResult.build(FOUR_H_1,"登录超时");
+        }
+        int when = DateUtil.generateTenTime();
+        commonService.saveActionRecords(locksn,user.getUid(),action,when);
+        return AnyoujiaResult.ok();
     }
 
 }
