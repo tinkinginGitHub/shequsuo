@@ -1,6 +1,6 @@
 package cn.anyoufang.entity;
 
-public class SpAdminLock {
+public class SpLockAdmin {
     private Integer id;
 
     private Integer adminid;

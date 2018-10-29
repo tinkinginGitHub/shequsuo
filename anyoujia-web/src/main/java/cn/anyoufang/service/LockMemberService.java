@@ -1,11 +1,15 @@
 package cn.anyoufang.service;
 
 import cn.anyoufang.entity.SpLockFinger;
+import cn.anyoufang.entity.SpMember;
 import cn.anyoufang.entity.SpMemberRelation;
+import cn.anyoufang.entity.selfdefined.SetRecord;
 
 import java.util.List;
 
 /**
+ *
+ * 锁相关用户业务操作
  * @author daiping
  */
 public interface LockMemberService {
@@ -23,13 +27,7 @@ public interface LockMemberService {
      * @param endtime
      * @return
      */
-    boolean addUser(String usertype,
-                             String username,
-                             String phone,
-                             String userrelation,
-                             String locksn,
-                             int finger,
-                             int pwd,int adminId,String endtime);
+    boolean addUser(String usertype, String username, String phone, String userrelation, String locksn, int finger, int pwd,int adminId,int endtime);
 
     /**
      * 管理员删除锁成员的所有权限（指纹以及密码）
@@ -37,7 +35,7 @@ public interface LockMemberService {
      * @param userid
      * @return
      */
-     boolean delUser(String locksn,int userid);
+     boolean deleteUser(String locksn,int userid);
 
     /**
      * 获取锁成员
@@ -56,7 +54,7 @@ public interface LockMemberService {
      * @return
      * @throws Exception
      */
-    boolean updateMemberLockPwdOrFinger(int id,String locksn,int status,String type) throws Exception;
+    boolean updateMemberLockPwdOrFinger(int id,String locksn,int status,int type) throws Exception;
 
     /**
      * 调用硬件云提供接口 删除锁密码/指纹/IC卡用户信息
@@ -72,7 +70,7 @@ public interface LockMemberService {
      * @param locksn
      * @return
      */
-    boolean updateExpireDateForRenter(int userid,String locksn,String endtime);
+    boolean updateExpireDateForRenter(int userid,String locksn,int endtime);
 
     /**
      * 用户删除指纹
@@ -88,7 +86,7 @@ public interface LockMemberService {
      * @param locksn
      * @return
      */
-    List<SpLockFinger> getFingerList(int memberid,String locksn);
+    List<SpLockFinger> getFingerList(int memberid,String locksn,int relationid);
 
     /**
      * 判断是否已经设置永久密码
@@ -96,7 +94,7 @@ public interface LockMemberService {
      * @param phone
      * @return boolean
      */
-    boolean isSetLockPwdForever(String locksn,String phone,int memberid);
+    boolean isSetLockPwdForever(String locksn,String phone,int memberid,int relationid);
 
     /**
      * 删除锁密码用户相关信息
@@ -104,5 +102,24 @@ public interface LockMemberService {
      * @param locksn
      * @return
      */
-    boolean deletePermentPwd(int memberid,String locksn,String phone);
+    boolean deletePermentPwd(int memberid,String locksn,String phone,int relationid);
+
+    /**
+     *管理用户信息
+     * @param locksn
+     * @param seqid
+     * @param state 状态 1：删除 2：启用 3：暂停
+     * @return
+     */
+    boolean manageUser(String locksn,int seqid,int state);
+
+    /**
+     * 获取所有设置记录
+     * @param member
+     * @param locksn
+     * @param page
+     * @param begintime
+     * @return
+     */
+    List<SetRecord> getSetRecords(SpMember member, String locksn,int page,int begintime);
 }

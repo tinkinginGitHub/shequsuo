@@ -1,16 +1,12 @@
 package cn.anyoufang.utils;
 
 
-import cn.anyoufang.entity.selfdefined.Data;
-import cn.anyoufang.entity.selfdefined.InitParam;
 import sun.misc.BASE64Decoder;
 import sun.misc.BASE64Encoder;
 
 import javax.crypto.Cipher;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * AES 是一种可逆加密算法，对用户的敏感信息加密处理
@@ -53,9 +49,8 @@ public class AesCBC {
         String result = new BASE64Encoder().encode(encrypted).replaceAll("\r|\n", "");;
         return result;
     }
-
     // 解密
-    public String decrypt(String sSrc) throws Exception {
+    public String decrypt(String sSrc){
         try {
             byte[] raw = sKey.getBytes("ASCII");
             SecretKeySpec skeySpec = new SecretKeySpec(raw, "AES");
@@ -70,103 +65,4 @@ public class AesCBC {
             return null;
         }
     }
-    public static  Map<String,Object> updateLogin(String username, String session) throws Exception {
-        StringBuilder sb = new StringBuilder();
-        Data data1 = new Data();
-        Map<String,String> map = new HashMap<>();
-        map.put("username",username);
-        map.put("session",session);
-        data1.setData(map);
-        String json = JsonUtils.objectToJson(data1.getData());
-        System.out.println(json);
-        String result =  sb.append("Sso").append("updatelogin").append(json).append(salt).toString();
-        System.out.println(result);
-        String sign = Md5Utils.md5(result,"utf-8");
-        System.out.println(sign);
-        InitParam p = new InitParam();
-        p.setMod("Sso");
-        p.setFun("updatelogin");
-        p.setSign(sign);
-        Map<String,String> data = new HashMap<>();
-        data.put("username",username);
-        data.put("session",session);
-        p.setData(data);
-        String ss =  JsonUtils.objectToJson(p);
-        // 加密
-        System.out.println(ss);
-        String enString = AesCBC.getInstance().encrypt(ss).replaceAll("\\+","%2B");
-        String param = "sp=" + enString;
-        String response =  SimulateGetAndPostUtil.sendPost("http://144.anyoujia.com/Sso/Api/index/",param);
-        System.out.println(response);
-      //  Map<String,Object> result1 = parseResponse(response);
-        return null;
-    }
-
-    public static Map<String,Object> doLogin(String account, String password, String ip) throws Exception {
-        StringBuilder sb = new StringBuilder();
-        Data data1 = new Data();
-        Map<String,String> map = new HashMap<>();
-        map.put("username",account);
-        map.put("password",password);
-        map.put("ip",ip);
-        data1.setData(map);
-        String json = JsonUtils.objectToJson(data1.getData());
-        System.out.println(json);
-        String result =  sb.append("Sso").append("login").append(json).append(salt).toString().replaceAll("\t|\n|\r","");
-        String sign = Md5Utils.md5(result,"utf-8");
-        InitParam p = new InitParam();
-        p.setMod("Sso");
-        p.setFun("login");
-        p.setSign(sign);
-        Map<String,String> data = new HashMap<>();
-        data.put("username",account);
-        data.put("password",password);
-        data.put("ip",ip);
-        p.setData(data);
-        String ss =  JsonUtils.objectToJson(p);
-        // 加密
-        String enString = AesCBC.getInstance().encrypt(ss).replaceAll("\r|\n", "").trim().replaceAll("\\+","%2B");
-        String param = "sp=" + enString;
-        String response =  SimulateGetAndPostUtil.sendPost("http://144.anyoujia.com/Sso/Api/index/",param);
-        System.out.println(response);
-        return null;
-    }
-    public static Map<String,Object> doRegister(String account, String password) throws Exception {
-        StringBuilder sb = new StringBuilder();
-        Data data1 = new Data();
-        Map<String,String> map = new HashMap<>();
-        map.put("username",account);
-        map.put("password",password);
-        map.put("type","1");
-        data1.setData(map);
-        String json = JsonUtils.objectToJson(data1.getData());
-        System.out.println(json);
-        String result =  sb.append("Sso").append("register").append(json).append(salt).toString().replaceAll("\t|\n|\r","");
-        System.out.println(result);
-        String sign = Md5Utils.md5(result,"utf-8");
-        InitParam p = new InitParam();
-        p.setMod("Sso");
-        p.setFun("register");
-        p.setSign(sign);
-        Map<String,String> data = new HashMap<>();
-        data.put("username",account);
-        data.put("password",password);
-        data.put("type","1");
-        p.setData(data);
-        String ss =  JsonUtils.objectToJson(p);
-        // 加密
-        String enString = AesCBC.getInstance().encrypt(ss).replaceAll("\r|\n", "").trim().replaceAll("\\+","%2B");
-        String param = "sp=" + enString;
-        String response =  SimulateGetAndPostUtil.sendPost("http://144.anyoujia.com/Sso/Api/index/",param);
-        System.out.println(response);
-        return null;
-    }
-    public static void main(String[] args) throws Exception {
-        //updateLogin("daping0","KF9taj6UCYzeVVpfV/IXYdvBEcQDNhTRLFmEiMhuS7gx30RB0Ba7q1dvOPMRlpy1");
-        //doLogin("daping0","4607e782c4d86fd5364d7e4508bb10d9","125.19.1.32");
-        doRegister("JIANMING","4607e782c4d86fd5364d7e4508bb10d9");
-        //String s = Md5Utils.md5("Ssoupdatelogin{\"session\":\"/q5I3d1Z4FyF1Mm0cpN3obPwyyC4F9jeKQ/aRAyKLu/ieTxONNC+T1vQ5PbMXXoh\",\"username\":\"sunpeng\"}575gh5rr556Dfhr67Ohrt8","utf-8");
-        //System.out.println(s);
-    }
-
 }

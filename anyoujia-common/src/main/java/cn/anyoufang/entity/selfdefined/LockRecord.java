@@ -8,6 +8,8 @@ import java.io.Serializable;
  */
 public class LockRecord implements Serializable {
 
+    private static final long serialVersionUID = 1L;
+
     private String nickname;
     private int opentime;
     private int pwdType;

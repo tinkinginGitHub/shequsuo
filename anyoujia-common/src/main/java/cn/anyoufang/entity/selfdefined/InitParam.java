@@ -8,6 +8,8 @@ import java.util.Map;
  */
 public class InitParam implements Serializable {
 
+    private static final long serialVersionUID = 1L;
+
     private String mod;
     private String fun;
     private String sign;

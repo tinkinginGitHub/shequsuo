@@ -2,7 +2,6 @@ package cn.anyoufang.service.Impl;
 
 import cn.anyoufang.entity.*;
 import cn.anyoufang.entity.selfdefined.AnyoujiaResult;
-import cn.anyoufang.entity.selfdefined.Data;
 import cn.anyoufang.entity.selfdefined.InitParam;
 import cn.anyoufang.entity.selfdefined.LoginResult;
 import cn.anyoufang.enumresource.HttpCodeEnum;
@@ -54,7 +53,7 @@ public class LoginServiceImpl implements LoginService {
     private SpMemberRelationMapper relationMapper;
 
     @Autowired
-    private SpAdminLockMapper adminLockMapper;
+    private SpLockAdminMapper adminLockMapper;
 
     /**
      * 阿里云短信模板id
@@ -188,13 +187,12 @@ public class LoginServiceImpl implements LoginService {
     /**
      * 验证码登录
      * @param phone
-     * @param code
      * @param ip
      * @return
      * @throws Exception
      */
     @Override
-    public Map<String, Object> memberLoginByVerifyCode(String phone, String code, String ip) throws Exception {
+    public Map<String, Object> memberLoginByVerifyCode(String phone, String ip) throws Exception {
         List<SpMember> list = memberMapper.selectByExample(createExample(phone));
         if (list.isEmpty()) {
             return new Null();
@@ -367,6 +365,8 @@ public class LoginServiceImpl implements LoginService {
         if (!cacheCode.equals(code.trim())) {
             return false;
         }
+        //验证码只能使用一次
+        RedisUtils.del(temp);
         return true;
     }
 
@@ -391,11 +391,11 @@ public class LoginServiceImpl implements LoginService {
     }
 
     @Override
-    public List<SpAdminLock> getLockAdmin(int memberid) {
+    public List<SpLockAdmin> getLockAdmin(int memberid,String locksn) {
 
-        SpAdminLockExample example = new SpAdminLockExample();
-        SpAdminLockExample.Criteria criteria = example.createCriteria();
-        criteria.andAdminidEqualTo(memberid);
+        SpLockAdminExample example = new SpLockAdminExample();
+        SpLockAdminExample.Criteria criteria = example.createCriteria();
+        criteria.andAdminidEqualTo(memberid).andLocksnEqualTo(locksn);
         return adminLockMapper.selectByExample(example);
     }
 
@@ -407,6 +407,11 @@ public class LoginServiceImpl implements LoginService {
         }
 
         return false;
+    }
+
+    @Override
+    public SpMemberRelation getRelationMember(int relationid) {
+       return relationMapper.selectByPrimaryKey(relationid);
     }
 
 
@@ -461,22 +466,16 @@ public class LoginServiceImpl implements LoginService {
      */
     @Override
     public Map<String, Object> doRegister(String account, String password) throws Exception {
-        Data data1 = new Data();
         Map<String, String> map = new HashMap<>();
         map.put("username", account);
         map.put("password", password);
         map.put("type", "1");
-        data1.setData(map);
-        String json = JsonUtils.objectToJson(data1.getData());
+        String json = JsonUtils.objectToJson(SortJsonAesc.sortMap(map));
         InitParam p = new InitParam();
         p.setMod("Sso");
         p.setFun("register");
         p.setSign(genarateSign(SSO, "register", json));
-        Map<String, String> data = new HashMap<>();
-        data.put("username", account);
-        data.put("password", password);
-        data.put("type", "1");
-        p.setData(data);
+        p.setData(map);
         return parseResponse(doPhpRequest(p));
     }
 
@@ -488,24 +487,17 @@ public class LoginServiceImpl implements LoginService {
      */
     @Override
     public Map<String, Object> doLogin(String account, String password, String ip) throws Exception {
-        Data data1 = new Data();
         Map<String, String> map = new HashMap<>();
         map.put("username", account);
         map.put("password", password);
         map.put("type", "1");
         map.put("ip", ip);
-        data1.setData(map);
-        String json = JsonUtils.objectToJson(data1.getData());
+        String json = JsonUtils.objectToJson(SortJsonAesc.sortMap(map));
         InitParam p = new InitParam();
         p.setMod(SSO);
         p.setFun("login");
         p.setSign(genarateSign(SSO, "login", json));
-        Map<String, String> data = new HashMap<>();
-        data.put("username", account);
-        data.put("password", password);
-        data.put("ip", ip);
-        data.put("type", "1");
-        p.setData(data);
+        p.setData(map);
         return parseResponse(doPhpRequest(p));
     }
 
@@ -514,20 +506,15 @@ public class LoginServiceImpl implements LoginService {
      */
     @Override
     public Map<String, Object> updateUserPassword(String username, String password) throws Exception {
-        Data data1 = new Data();
         Map<String, String> map = new HashMap<>();
         map.put("username", username);
         map.put("password", password);
-        data1.setData(map);
-        String json = JsonUtils.objectToJson(data1.getData());
+        String json = JsonUtils.objectToJson(SortJsonAesc.sortMap(map));
         InitParam p = new InitParam();
         p.setMod(SSO);
         p.setFun("updateuser");
         p.setSign(genarateSign(SSO, "updateuser", json));
-        Map<String, String> data = new HashMap<>();
-        data.put("username", username);
-        data.put("password", password);
-        p.setData(data);
+        p.setData(map);
         return parseResponse(doPhpRequest(p));
     }
 
@@ -536,20 +523,15 @@ public class LoginServiceImpl implements LoginService {
      */
     @Override
     public Map<String, Object> updateLogin(String username, String session) throws Exception {
-        Data data1 = new Data();
         Map<String, String> map = new HashMap<>();
         map.put("username", username);
         map.put("session", session);
-        data1.setData(map);
-        String json = JsonUtils.objectToJson(data1.getData());
+        String json = JsonUtils.objectToJson(map);
         InitParam p = new InitParam();
         p.setMod(SSO);
         p.setFun("updatelogin");
         p.setSign(genarateSign(SSO, "updatelogin", json));
-        Map<String, String> data = new HashMap<>();
-        data.put("username", username);
-        data.put("session", session);
-        p.setData(data);
+        p.setData(map);
         return parseResponse(doPhpRequest(p));
     }
     //=>结束调用PHP鉴权中心进行登录注册相关
@@ -586,7 +568,7 @@ public class LoginServiceImpl implements LoginService {
     @Override
     public SpMember getUserByAccount(String account) {
         List<SpMember> list = memberMapper.selectByExample(createExample(account));
-        if (list.size() > 0) {
+        if (!list.isEmpty()) {
             return list.get(0);
         }
         return null;

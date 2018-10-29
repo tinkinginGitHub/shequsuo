@@ -2,7 +2,9 @@ package cn.anyoufang.service;
 
 import cn.anyoufang.entity.SpMember;
 import cn.anyoufang.entity.selfdefined.AnyoujiaResult;
+import cn.anyoufang.entity.selfdefined.Temppwd;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -20,6 +22,7 @@ public interface LockService {
      * @param pwds
      * @param nickname
      * @param phone
+     * @param relationid
      * @return
      */
     Map<String,String> setLockPwd(int ptype,
@@ -28,7 +31,7 @@ public interface LockService {
                                   int endtime,
                                   String pwds,
                                   String nickname,
-                                  String phone,boolean isAdmin,String motive);
+                                  String phone,boolean isAdmin,String motive,int relationid);
 
     /**
      * 设置用户指纹密码
@@ -40,6 +43,7 @@ public interface LockService {
      * @param phone
      * @param fingerdesc
      * @param fingerid
+     * @param relationid
      * @return
      */
 
@@ -48,7 +52,7 @@ public interface LockService {
                                               int endtime,
                                               int usertype,
                                               String nickname,
-                                              String phone,String fingerdesc,String fingerid,boolean isAdmin);
+                                              String phone,String fingerdesc,String fingerid,boolean isAdmin, int relationid);
 
 
     /**
@@ -83,6 +87,15 @@ public interface LockService {
      * @return
      */
     AnyoujiaResult getLockInfo(String locksn);
+
+    /**
+     * 获取临时密码列表
+     * @param locksn
+     * @param pwdtype
+     * @param usertype
+     * @return
+     */
+    List<Temppwd> getLockTempPwdList(String locksn, int pwdtype, int usertype,int memberid,int begintime,int page);
 
 
 }

@@ -2,11 +2,11 @@ package cn.anyoufang.controller;
 
 import cn.anyoufang.entity.SpMember;
 import cn.anyoufang.enumresource.HttpCodeEnum;
+import cn.anyoufang.enumresource.UsertypeEnum;
 import cn.anyoufang.service.LoginService;
-import cn.anyoufang.utils.AesCBC;
-import cn.anyoufang.utils.JsonUtils;
 import cn.anyoufang.utils.Md5Utils;
 import cn.anyoufang.utils.RedisUtils;
+import cn.anyoufang.utils.StringUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,10 +24,16 @@ public abstract class AbstractController {
 	protected Logger logger = LoggerFactory.getLogger(getClass());
 
 	protected  static final int TWO_H = HttpCodeEnum.TWO_HUNDRED.getCode();
+    protected  static final int TWO_H1 = HttpCodeEnum.TWO_HUNDRED1.getCode();
 	protected  static final int FOUR_H = HttpCodeEnum.FOUR_HUNDRED.getCode();
 	protected  static final int FOUR_H_1 = HttpCodeEnum.FOUR_HUNDRED1.getCode();
 	protected  static final int FIVE_H = HttpCodeEnum.FIVE_HUNDRED.getCode();
 	protected  static final int FOUR_H_4 = HttpCodeEnum.FOUR_HUNDRED4.getCode();
+
+
+	protected  static final String FAMILY = UsertypeEnum.ONE.getCode();
+    protected  static final String OLDCHILD = UsertypeEnum.TWO.getCode();
+    protected  static final String RENTER = UsertypeEnum.THREE.getCode();
 	
 	protected SpMember getUser(HttpServletRequest request,LoginService loginService) {
 		String token = request.getHeader("token");
@@ -109,27 +115,14 @@ public abstract class AbstractController {
                 Integer endtime = new Integer(overtime);
                 int now = (int) (System.currentTimeMillis()/1000);
                 int expire = endtime - now;
-               String phone =  (String) result.get("username");
+                String phone =  (String) result.get("username");
                 RedisUtils.setex(Md5Utils.md5(phone,"utf-8"),"1" ,expire);
             }
         }
 	}
+
 	protected Map<String,Object> parseSession(String session){
-        String result;
-        try {
-            result = AesCBC.getInstance().decrypt(session);
-        } catch (Exception e) {
-            if (logger.isInfoEnabled()) {
-                logger.info(e.getMessage());
-            }
-            return null;
-        }
-        try {
-		    JsonUtils.isJSONValid(result);
-        }catch (Exception e) {
-		    return null;
-        }
-		return JsonUtils.jsonToMap(result);
+       return StringUtil.parseSession(session);
 	}
 
     /**

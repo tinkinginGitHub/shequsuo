@@ -7,8 +7,9 @@ package cn.anyoufang.enumresource;
 public enum HttpCodeEnum {
 
     TWO_HUNDRED(200,"成功"),
+    TWO_HUNDRED1(201,"暂无数据"),
     FOUR_HUNDRED(400,"请求失败"),
-    FOUR_HUNDRED1(401,"没有相应的权限"),
+    FOUR_HUNDRED1(401,"登录超时"),
     FIVE_HUNDRED(500,"系统错误"),
     FOUR_HUNDRED4(404,"资源未找到");
 

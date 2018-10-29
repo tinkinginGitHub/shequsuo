@@ -17,33 +17,15 @@ public class SpLock {
 
     private String card;
 
-    private String lbs;
+    private Integer community;
 
-    private Integer ping;
+    private String origin;
 
-    private Integer upcyc;
+    private Integer pDate;
 
-    private Integer overtime;
+    private String color;
 
-    private Integer tcp;
-
-    private Byte retry;
-
-    private String ip1;
-
-    private String ip2;
-
-    private Integer port1;
-
-    private Integer port2;
-
-    private String apn;
-
-    private String dialuser;
-
-    private String dialpass;
-
-    private Integer adminid;
+    private String model;
 
     public String getSn() {
         return sn;
@@ -109,115 +91,43 @@ public class SpLock {
         this.card = card == null ? null : card.trim();
     }
 
-    public String getLbs() {
-        return lbs;
+    public Integer getCommunity() {
+        return community;
     }
 
-    public void setLbs(String lbs) {
-        this.lbs = lbs == null ? null : lbs.trim();
+    public void setCommunity(Integer community) {
+        this.community = community;
     }
 
-    public Integer getPing() {
-        return ping;
+    public String getOrigin() {
+        return origin;
     }
 
-    public void setPing(Integer ping) {
-        this.ping = ping;
+    public void setOrigin(String origin) {
+        this.origin = origin == null ? null : origin.trim();
     }
 
-    public Integer getUpcyc() {
-        return upcyc;
+    public Integer getpDate() {
+        return pDate;
     }
 
-    public void setUpcyc(Integer upcyc) {
-        this.upcyc = upcyc;
+    public void setpDate(Integer pDate) {
+        this.pDate = pDate;
     }
 
-    public Integer getOvertime() {
-        return overtime;
+    public String getColor() {
+        return color;
     }
 
-    public void setOvertime(Integer overtime) {
-        this.overtime = overtime;
+    public void setColor(String color) {
+        this.color = color == null ? null : color.trim();
     }
 
-    public Integer getTcp() {
-        return tcp;
+    public String getModel() {
+        return model;
     }
 
-    public void setTcp(Integer tcp) {
-        this.tcp = tcp;
-    }
-
-    public Byte getRetry() {
-        return retry;
-    }
-
-    public void setRetry(Byte retry) {
-        this.retry = retry;
-    }
-
-    public String getIp1() {
-        return ip1;
-    }
-
-    public void setIp1(String ip1) {
-        this.ip1 = ip1 == null ? null : ip1.trim();
-    }
-
-    public String getIp2() {
-        return ip2;
-    }
-
-    public void setIp2(String ip2) {
-        this.ip2 = ip2 == null ? null : ip2.trim();
-    }
-
-    public Integer getPort1() {
-        return port1;
-    }
-
-    public void setPort1(Integer port1) {
-        this.port1 = port1;
-    }
-
-    public Integer getPort2() {
-        return port2;
-    }
-
-    public void setPort2(Integer port2) {
-        this.port2 = port2;
-    }
-
-    public String getApn() {
-        return apn;
-    }
-
-    public void setApn(String apn) {
-        this.apn = apn == null ? null : apn.trim();
-    }
-
-    public String getDialuser() {
-        return dialuser;
-    }
-
-    public void setDialuser(String dialuser) {
-        this.dialuser = dialuser == null ? null : dialuser.trim();
-    }
-
-    public String getDialpass() {
-        return dialpass;
-    }
-
-    public void setDialpass(String dialpass) {
-        this.dialpass = dialpass == null ? null : dialpass.trim();
-    }
-
-    public Integer getAdminid() {
-        return adminid;
-    }
-
-    public void setAdminid(Integer adminid) {
-        this.adminid = adminid;
+    public void setModel(String model) {
+        this.model = model == null ? null : model.trim();
     }
 }

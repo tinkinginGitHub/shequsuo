@@ -3,6 +3,7 @@ package cn.anyoufang.utils.selfdefine;
 import cn.anyoufang.entity.selfdefined.Lock;
 import cn.anyoufang.entity.selfdefined.LockInfo;
 import cn.anyoufang.entity.selfdefined.LockRecord;
+import cn.anyoufang.entity.selfdefined.Temppwd;
 import cn.anyoufang.utils.JsonUtils;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
@@ -109,6 +110,43 @@ public class CommonUtil {
     }
 
     /**
+     * 获取临时密码列表
+     * @param data
+     * @return
+     */
+    public static List<Temppwd> exactTemppwd(String data) {
+        List<Temppwd> res = new ArrayList<>();
+        if(successResponse(data)) {
+            Map<String,Object> map = JsonUtils.jsonToMap(data);
+            Object objects = map.get("data");
+            if(objects != null) {
+                JSONArray json = JSONArray.fromObject(objects);
+                int size =  json.size();
+                for(int index=0;index<size;index++) {
+                    JSONObject job = json.getJSONObject(index);
+                    int ptype = job.getInt("pwd_type");
+                    //排除0 app 1 永久密码，只返回临时密码
+                    if(ptype == 0 || ptype == 1) {
+                        continue;
+                    }
+                    Temppwd temppwd = new Temppwd();
+                     temppwd.setSeqid(job.getInt("seqid"));
+                     temppwd.setNickname(job.getString("nickname"));
+                     temppwd.setCreatetime(job.getInt("createtime"));
+                     temppwd.setPwd(job.getInt("pwds"));
+                     temppwd.setExpire(job.getInt("endtime"));
+                     temppwd.setPtype(ptype);
+                     temppwd.setStatus(job.getInt("visible"));
+                     res.add(temppwd);
+                }
+                return res;
+            }
+            return null;
+        }
+        return null;
+    }
+
+    /**
      * 解析并封装成员角色的锁信息返回给前台
      * @param list
      * @param pwdauths
@@ -136,8 +174,16 @@ public class CommonUtil {
                     lock.setLocksn(locksn);
                     lock.setLockStatus(job.getInt("lock_status"));
                     lock.setAdmin(false);
-                    lock.setLockfingerAuth(pwdauths.get(locksn));
-                    lock.setLockpwdAuth(fingerauths.get(locksn));
+                    if(pwdauths.get(locksn) == null) {
+                        lock.setLockpwdAuth(false);
+                    }else {
+                        lock.setLockpwdAuth(pwdauths.get(locksn));
+                    }
+                    if(fingerauths.get(locksn) == null) {
+                        lock.setLockfingerAuth(false);
+                    }else {
+                        lock.setLockfingerAuth(fingerauths.get(locksn));
+                    }
                     res.add(lock);
                 }
             }

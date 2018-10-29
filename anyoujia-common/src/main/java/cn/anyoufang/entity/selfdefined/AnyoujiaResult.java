@@ -39,10 +39,10 @@ public class AnyoujiaResult implements Serializable {
     public AnyoujiaResult() {
 
     }
-
     public static AnyoujiaResult build(Integer status, String msg) {
         return new AnyoujiaResult(status, msg, null);
     }
+
 
     public AnyoujiaResult(Integer status, String msg, Object data) {
         this.status = status;
@@ -55,7 +55,6 @@ public class AnyoujiaResult implements Serializable {
         this.msg = "success";
         this.data = data;
     }
-
 
     public Integer getStatus() {
         return status;
@@ -81,33 +80,6 @@ public class AnyoujiaResult implements Serializable {
         this.data = data;
     }
 
-    /**
-     * 将json结果集转化为AnyoujiaResult对象
-     *
-     * @param jsonData json数据
-     * @param clazz AnyoujiaResult中的object类型
-     * @return
-     */
-    public static AnyoujiaResult formatToPojo(String jsonData, Class<?> clazz) {
-        try {
-            if (clazz == null) {
-                return MAPPER.readValue(jsonData, AnyoujiaResult.class);
-            }
-            JsonNode jsonNode = MAPPER.readTree(jsonData);
-            JsonNode data = jsonNode.get("data");
-            Object obj = null;
-            if (clazz != null) {
-                if (data.isObject()) {
-                    obj = MAPPER.readValue(data.traverse(), clazz);
-                } else if (data.isTextual()) {
-                    obj = MAPPER.readValue(data.asText(), clazz);
-                }
-            }
-            return build(jsonNode.get("status").intValue(), jsonNode.get("msg").asText(), obj);
-        } catch (Exception e) {
-            return null;
-        }
-    }
 
     /**
      * 没有object对象的转化
@@ -131,7 +103,7 @@ public class AnyoujiaResult implements Serializable {
      * @param clazz 集合中的类型
      * @return
      */
-    public static AnyoujiaResult formatToList(String jsonData, Class<?> clazz) {
+    public  static AnyoujiaResult formatToList(String jsonData, Class<?> clazz) {
         try {
             JsonNode jsonNode = MAPPER.readTree(jsonData);
             JsonNode data = jsonNode.get("data");
@@ -139,6 +111,34 @@ public class AnyoujiaResult implements Serializable {
             if (data.isArray() && data.size() > 0) {
                 obj = MAPPER.readValue(data.traverse(),
                         MAPPER.getTypeFactory().constructCollectionType(List.class, clazz));
+            }
+            return build(jsonNode.get("status").intValue(), jsonNode.get("msg").asText(), obj);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    /**
+     * 将json结果集转化为AnyoujiaResult对象
+     *
+     * @param jsonData json数据
+     * @param clazz AnyoujiaResult中的object类型
+     * @return
+     */
+    public static AnyoujiaResult formatToPojo(String jsonData, Class<?> clazz) {
+        try {
+            if (clazz == null) {
+                return MAPPER.readValue(jsonData, AnyoujiaResult.class);
+            }
+            JsonNode jsonNode = MAPPER.readTree(jsonData);
+            JsonNode data = jsonNode.get("data");
+            Object obj = null;
+            if (clazz != null) {
+                if (data.isObject()) {
+                    obj = MAPPER.readValue(data.traverse(), clazz);
+                } else if (data.isTextual()) {
+                    obj = MAPPER.readValue(data.asText(), clazz);
+                }
             }
             return build(jsonNode.get("status").intValue(), jsonNode.get("msg").asText(), obj);
         } catch (Exception e) {

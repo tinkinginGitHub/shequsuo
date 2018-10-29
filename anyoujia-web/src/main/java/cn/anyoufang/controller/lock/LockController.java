@@ -1,14 +1,15 @@
 package cn.anyoufang.controller.lock;
 
 import cn.anyoufang.controller.AbstractController;
-import cn.anyoufang.entity.SpAdminLock;
+import cn.anyoufang.entity.SpLockAdmin;
 import cn.anyoufang.entity.SpMember;
 import cn.anyoufang.entity.selfdefined.AnyoujiaResult;
+import cn.anyoufang.entity.selfdefined.Temppwd;
+import cn.anyoufang.enumresource.HttpCodeEnum;
+import cn.anyoufang.log.annotation.LockOperateLog;
 import cn.anyoufang.service.LockMemberService;
 import cn.anyoufang.service.LockService;
 import cn.anyoufang.service.LoginService;
-import cn.anyoufang.utils.Md5Utils;
-import cn.anyoufang.utils.SimulateGetAndPostUtil;
 import cn.anyoufang.utils.StringUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -65,38 +66,6 @@ public class LockController extends AbstractController {
     }
 
     /**
-     *获取锁密码/指纹/IC卡/临时密码用户列表
-     * @param locksn
-     * @param pwdtype
-     * @param usertype
-     * @return
-     */
-    @RequestMapping("/users")
-    public String getLockUserList(@RequestParam String locksn,
-                                  @RequestParam(required = false,defaultValue = "-1") int pwdtype,
-                                  @RequestParam int usertype) {
-
-
-        long timestamp = System.currentTimeMillis()/1000;
-        StringBuilder sb = new StringBuilder();
-        String param;
-        if(pwdtype == -1){
-            param=sb.append(locksn).append(timestamp).append(usertype).append(lockSalt).toString();
-        }else{
-            param=sb.append(locksn).append(pwdtype).append(timestamp).append(usertype).append(lockSalt).toString();
-        }
-        String sign = Md5Utils.md5(param,"UTF-8");
-        String combineParam;
-        String baseurl = "method=get.lock.userlist&locksn="+locksn+"&temptime="+timestamp+"&sign="+sign + "&usertype="+usertype;
-        if(pwdtype != -1){
-            combineParam = baseurl +"&pwdtype="+pwdtype;
-        }else {
-            combineParam = baseurl;
-        }
-        return  SimulateGetAndPostUtil.sendPost(url,combineParam);
-    }
-
-    /**
      * 添加指纹/IC卡用户信息
      * @param fingerid 指纹id
      * @param locksn
@@ -106,12 +75,13 @@ public class LockController extends AbstractController {
      * @return
      */
     @RequestMapping("/setuser")
+    @LockOperateLog(operateTypeDesc="添加指纹")
     public AnyoujiaResult setLockUserFingerPassword(@RequestParam String fingerid,
                                                     @RequestParam String locksn,
                                                     @RequestParam int endtime,
                                                     @RequestParam int usertype,
                                                     @RequestParam(required = false) String fingerdesc,
-                                                    HttpServletRequest request) {
+                                                    HttpServletRequest request,@RequestParam(required = false,defaultValue = "0") int relationid) {
         if(StringUtil.isEmpty(locksn) || StringUtil.isEmpty(fingerid)) {
             return AnyoujiaResult.build(FOUR_H,"参数异常");
         }
@@ -123,7 +93,7 @@ public class LockController extends AbstractController {
         int memberid = user.getUid();
         String phone = user.getPhone();
         boolean isAdmin = false;
-        List<SpAdminLock> lockAdmin = loginService.getLockAdmin(user.getUid());
+        List<SpLockAdmin> lockAdmin = loginService.getLockAdmin(user.getUid(),locksn);
         if(lockAdmin.isEmpty()) {
             String relationUsername = loginService.getMemberRelation(locksn,phone);
             if(relationUsername != null) {
@@ -136,7 +106,7 @@ public class LockController extends AbstractController {
             isAdmin = true;
         }
 
-        return lockService.setLockUserFingerPassword(memberid,locksn,endtime,usertype,nickname,phone,fingerdesc,fingerid,isAdmin);
+        return lockService.setLockUserFingerPassword(memberid,locksn,endtime,usertype,nickname,phone,fingerdesc,fingerid,isAdmin,relationid);
     }
 
 
@@ -149,15 +119,17 @@ public class LockController extends AbstractController {
      * @param motive 临时密码的目的
      * @param request
      * @param pwds
+     * @param relationid
      * @return
      */
     @RequestMapping("/setpwd")
+    @LockOperateLog(operateTypeDesc="添加锁密码")
     public AnyoujiaResult setLockPwd(@RequestParam int ptype,
                              @RequestParam String locksn,
                              @RequestParam(required = false,defaultValue = "0") int endtime,
                              @RequestParam(required = false) String motive,
                              HttpServletRequest request,
-                             @RequestParam String pwds) {
+                             @RequestParam String pwds,@RequestParam(required = false,defaultValue = "0") int relationid) {
 
         if(StringUtil.isEmpty(locksn) ||StringUtil.isEmpty(pwds)) {
             return AnyoujiaResult.build(FOUR_H,"参数异常");
@@ -170,7 +142,7 @@ public class LockController extends AbstractController {
         int memberid = user.getUid();
         String phone = user.getPhone();
         boolean isAdmin = false;
-         List<SpAdminLock> lockAdmin = loginService.getLockAdmin(user.getUid());
+         List<SpLockAdmin> lockAdmin = loginService.getLockAdmin(user.getUid(),locksn);
          if(lockAdmin.isEmpty()) {
              String relation = loginService.getMemberRelation(locksn,phone);
              if(relation != null) {
@@ -182,7 +154,8 @@ public class LockController extends AbstractController {
             nickname = "我";
             isAdmin = true;
          }
-        Map<String,String> res =  lockService.setLockPwd(ptype,memberid,locksn,endtime,pwds,nickname,user.getPhone(),isAdmin,motive);
+
+        Map<String,String> res =  lockService.setLockPwd(ptype,memberid,locksn,endtime,pwds,nickname,user.getPhone(),isAdmin,motive,relationid);
         if(res == null) {
             return AnyoujiaResult.build(FIVE_H,"系统异常");
         }
@@ -200,6 +173,7 @@ public class LockController extends AbstractController {
        if(user == null) {
           return AnyoujiaResult.build(FOUR_H_1,"登录超时");
        }
+
         return lockService.getAllLockList(user);
     }
 
@@ -223,6 +197,7 @@ public class LockController extends AbstractController {
      * @return
      */
     @RequestMapping("/register")
+    @LockOperateLog(operateTypeDesc="注册锁")
     public AnyoujiaResult registerLockInfo(@RequestParam String locksn,HttpServletRequest request) {
         if (StringUtil.isEmpty(locksn)) {
             return AnyoujiaResult.build(FOUR_H, "参数异常");
@@ -237,10 +212,14 @@ public class LockController extends AbstractController {
     /**
      * 移除锁上用户的密码信息
      * @param locksn
+     * @param relationid
      * @return
      */
     @RequestMapping("/delpwd")
-    public AnyoujiaResult delLockPwd(@RequestParam String locksn,HttpServletRequest request) {
+    @LockOperateLog(operateTypeDesc = "删除密码")
+    public AnyoujiaResult delLockPwd(@RequestParam String locksn,
+                                     @RequestParam(required = false,defaultValue = "-1") int relationid,
+                                     HttpServletRequest request) {
 
         if(StringUtil.isEmpty(locksn)) {
             return AnyoujiaResult.build(FOUR_H,"参数异常");
@@ -251,10 +230,40 @@ public class LockController extends AbstractController {
              return AnyoujiaResult.build(FOUR_H_1,"登录超时");
         }
 
-        if(memberService.deletePermentPwd(member.getUid(),locksn,member.getPhone())) {
+        if(memberService.deletePermentPwd(member.getUid(),locksn,member.getPhone(),relationid)) {
             return AnyoujiaResult.ok();
         }
         return AnyoujiaResult.build(FOUR_H,"删除超时,请重试");
+    }
+
+    /**
+     * pwdtype 99,获取全部
+     * usertype 用户类型 99:全部 0: APP 1:密码 2: 指纹 3:IC卡
+     * @param locksn
+     * @return
+     */
+    @RequestMapping("/templocklist")
+    public AnyoujiaResult tempLockPwdList(@RequestParam String locksn,
+                                          @RequestParam int begintime,
+                                          @RequestParam int page,HttpServletRequest request) {
+
+        SpMember member = getUser(request,loginService);
+
+        if(member == null) {
+            return AnyoujiaResult.build(FOUR_H_1,HttpCodeEnum.FOUR_HUNDRED1.getValue());
+        }
+        //pwdtype 99,获取全部
+        int pwdtype =  99;
+        // 1表示密码
+        int usertype = 1;
+        int memberid = member.getUid();
+        List<Temppwd> res =  lockService.getLockTempPwdList(locksn,pwdtype,usertype,memberid,begintime,page);
+
+        if( res==null || res.isEmpty()) {
+           return AnyoujiaResult.build(TWO_H1, HttpCodeEnum.TWO_HUNDRED1.getValue());
+        }
+
+        return AnyoujiaResult.ok(res);
     }
 
 }

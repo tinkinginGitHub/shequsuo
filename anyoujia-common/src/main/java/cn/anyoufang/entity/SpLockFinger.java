@@ -19,6 +19,8 @@ public class SpLockFinger {
 
     private Integer deltime;
 
+    private Integer relationid;
+
     public Integer getId() {
         return id;
     }
@@ -89,5 +91,13 @@ public class SpLockFinger {
 
     public void setDeltime(Integer deltime) {
         this.deltime = deltime;
+    }
+
+    public Integer getRelationid() {
+        return relationid;
+    }
+
+    public void setRelationid(Integer relationid) {
+        this.relationid = relationid;
     }
 }

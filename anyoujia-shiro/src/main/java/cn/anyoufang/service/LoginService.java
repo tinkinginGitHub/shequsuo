@@ -1,7 +1,8 @@
 package cn.anyoufang.service;
 
-import cn.anyoufang.entity.SpAdminLock;
+import cn.anyoufang.entity.SpLockAdmin;
 import cn.anyoufang.entity.SpMember;
+import cn.anyoufang.entity.SpMemberRelation;
 import cn.anyoufang.entity.selfdefined.AnyoujiaResult;
 import com.aliyuncs.exceptions.ClientException;
 
@@ -9,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
+ * 登录相关业务
  * @author daiping
  */
 public interface LoginService {
@@ -32,10 +34,10 @@ public interface LoginService {
 
     /**
      * 用户使用验证码登录
-     * @param code
+     * @param
      * @return
      */
-    Map<String,Object>  memberLoginByVerifyCode(String phone,String code,String ip) throws Exception;
+    Map<String,Object>  memberLoginByVerifyCode(String phone,String ip) throws Exception;
 
     /**
      * 用户登出系统
@@ -99,14 +101,14 @@ public interface LoginService {
     boolean checkAccountAndAnswer(String account,String code,String answer);
 
     /**
-     *
+     *获取用户已经选择的安全问题
      * @param id
      * @return
      */
     String getUserCheckedQuestion(int id);
 
     /**
-     *
+     *用户空缺信息
      * @param avatar
      * @param bname
      * @param phone
@@ -116,13 +118,52 @@ public interface LoginService {
 
     // boolean isExist(String phone);
 
+    /**
+     * 调用PHP鉴权中心注册
+     * @param account
+     * @param password
+     * @return
+     * @throws Exception
+     */
+
     Map<String,Object> doRegister(String account,String password) throws Exception;
+
+    /**
+     * 调用PHP鉴权中心接口登录
+     * @param account
+     * @param password
+     * @param ip
+     * @return
+     * @throws Exception
+     */
 
     Map<String,Object> doLogin(String account,String password,String ip) throws Exception;
 
+    /**
+     * 更新用户密码
+     * @param username
+     * @param password
+     * @return
+     * @throws Exception
+     */
+
     Map<String,Object> updateUserPassword(String username,String password) throws Exception;
 
+    /**
+     * 更新登录状态
+     * @param username
+     * @param session
+     * @return
+     * @throws Exception
+     */
+
     Map<String,Object> updateLogin(String username,String session) throws Exception;
+
+    /**
+     * 判断用户是否注册
+     * @param account
+     * @return
+     */
     SpMember getUserByAccount(String account);
 
     /**
@@ -157,12 +198,19 @@ public interface LoginService {
     String getMemberRelation(String locksn,String phone);
 
     /**
-     * 锁和锁管理员是一对一关系，只需要锁管理员id就可以获取锁和管理员之间的对应相应关系
+     * 一个人可以是多把锁的管理员
      * @param memberid
      * @return
      */
-    List<SpAdminLock>  getLockAdmin(int memberid);
+    List<SpLockAdmin>  getLockAdmin(int memberid, String locksn);
 
+    /**
+     * 查询账户
+     * @param phone
+     * @return
+     */
     boolean checkAccount1(String phone);
+
+    SpMemberRelation getRelationMember(int relationid);
 
 }

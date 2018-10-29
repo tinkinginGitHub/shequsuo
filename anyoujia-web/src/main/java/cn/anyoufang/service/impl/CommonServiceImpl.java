@@ -1,8 +1,10 @@
 package cn.anyoufang.service.impl;
 
-import cn.anyoufang.entity.SpComment;
-import cn.anyoufang.mapper.SpCommentMapper;
-import cn.anyoufang.service.CommentService;
+import cn.anyoufang.entity.SpActionRecords;
+import cn.anyoufang.entity.SpMemberComment;
+import cn.anyoufang.mapper.SpActionRecordsMapper;
+import cn.anyoufang.mapper.SpMemberCommentMapper;
+import cn.anyoufang.service.CommonService;
 import cn.anyoufang.utils.DateUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -12,16 +14,19 @@ import org.springframework.stereotype.Service;
  */
 
 @Service
-public class CommentServiceImpl implements CommentService {
+public class CommonServiceImpl implements CommonService {
 
     @Autowired
-    private SpCommentMapper commentMapper;
+    private SpMemberCommentMapper commentMapper;
+
+    @Autowired
+    private SpActionRecordsMapper actionRecordsMapper;
 
 
 
     @Override
     public boolean saveComments(String comment, String url,String phone) {
-        SpComment comment1 = new SpComment();
+        SpMemberComment comment1 = new SpMemberComment();
         comment1.setComment(comment);
         comment1.setPicurl(url);
         comment1.setPhone(phone);
@@ -45,5 +50,16 @@ public class CommentServiceImpl implements CommentService {
          return true;
      }
         return false;
+    }
+
+    @Override
+    public boolean saveActionRecords(String locksn, int memberid, String action, int when) {
+        SpActionRecords record = new SpActionRecords();
+        record.setAction(action);
+        record.setLocksn(locksn);
+        record.setMemberid(memberid);
+        record.setActiontime(when);
+        actionRecordsMapper.insertSelective(record);
+        return true;
     }
 }

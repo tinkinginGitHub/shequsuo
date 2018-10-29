@@ -2,6 +2,7 @@ package cn.anyoufang.mapper;
 
 import cn.anyoufang.entity.SpLock;
 import cn.anyoufang.entity.SpLockExample;
+import cn.anyoufang.entity.selfdefined.LockCombineInfo;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
@@ -29,6 +30,10 @@ public interface SpLockMapper {
 
     int updateByPrimaryKey(SpLock record);
 
-    //关联查询锁注册时间
-    int selectUnionByPhone(String phone);
+    /**
+     * 自定义连表查询锁型号地址等信息
+     * @param list
+     * @return
+     */
+    List<LockCombineInfo> selectLockInfoByCombinetable(@Param("locksns") List<String> list);
 }
