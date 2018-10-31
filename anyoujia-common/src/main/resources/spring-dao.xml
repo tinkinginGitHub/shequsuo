@@ -18,17 +18,6 @@
 	<!-- 配置包扫描器，扫描所有带@Service注解的类 -->
 	<context:component-scan base-package="cn.anyoufang.service" />
 	<context:property-placeholder location="classpath:resouces.properties" />
-
-	<!--<bean id="ehcacheManagerFactory"-->
-		<!--class="org.springframework.cache.ehcache.EhCacheManagerFactoryBean">-->
-		<!--<property name="configLocation" value="classpath:ehcache.xml" />-->
-	<!--</bean>-->
-	<!--<bean id="ehcacheManager" class="org.springframework.cache.ehcache.EhCacheCacheManager">-->
-		<!--<property name="cacheManager" ref="ehcacheManagerFactory" />-->
-	<!--</bean>-->
-	<!--&lt;!&ndash; 启用缓存注解功能 &ndash;&gt;-->
-	<!--<cache:annotation-driven cache-manager="ehcacheManager" />-->
-	
 	<bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource"
 		init-method="init" destroy-method="close">
 		<property name="url">

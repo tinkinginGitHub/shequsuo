@@ -97,5 +97,10 @@ public interface LockService {
      */
     List<Temppwd> getLockTempPwdList(String locksn, int pwdtype, int usertype,int memberid,int begintime,int page);
 
-
+    /**
+     * 获取锁激活状态和地址
+     * @param locksn
+     * @return
+     */
+    AnyoujiaResult getLockActiveAndAddress(String locksn);
 }

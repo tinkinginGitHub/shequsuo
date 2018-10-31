@@ -3,16 +3,17 @@ package cn.anyoufang.enumresource;
 import cn.anyoufang.utils.EnumMessage;
 
 /**
- *
- * 2017/7/20.
+ * 锁激活状态
  */
 public enum StateEnum implements EnumMessage {
-    ENABLE("400","启用"),
-    LIMIT("0","禁用");
+
+    ACTIVED("1","锁已经激活"),
+    NONACTIVE("0","锁未激活");
 
     private final String code;
     private final String value;
-    private StateEnum(String code, String value) {
+
+    StateEnum(String code, String value) {
         this.code = code;
         this.value = value;
     }

@@ -64,7 +64,7 @@ public class CommonController  extends AbstractController{
             if(mulRequest==null){
                 return AnyoujiaResult.build(FOUR_H,"请求失败");
             }
-            CommonsMultipartFile uploadFile = null;
+            CommonsMultipartFile uploadFile;
             Iterator<String> fileNames = mulRequest.getFileNames();
             if (fileNames.hasNext()) {
                 String inputName = fileNames.next();

@@ -5,6 +5,7 @@ import cn.anyoufang.annotation.AccessToken;
 import cn.anyoufang.entity.Null;
 import cn.anyoufang.entity.SpMember;
 import cn.anyoufang.entity.selfdefined.AnyoujiaResult;
+import cn.anyoufang.entity.selfdefined.ErrorPwd;
 import cn.anyoufang.service.LoginService;
 import cn.anyoufang.service.WxUserService;
 import cn.anyoufang.utils.IPUtils;
@@ -42,7 +43,10 @@ public class LoginController extends AbstractController {
     @Autowired
     private WxUserService wxUserService;
 
-    //被添加成员的截止有效注册日期，过期，则被添加的关系将被移除
+    /**
+     *  被添加成员的截止有效注册日期，
+     *  过期，则被添加的关系将被移除
+     */
     @Value("${deadline}")
     private int deadline;
 
@@ -55,8 +59,7 @@ public class LoginController extends AbstractController {
     public AnyoujiaResult register(@ApiParam(required = true, value = "用户手机号", name = "phone") @RequestParam String phone,
                                    @ApiParam(required = true, value = "验证码", name = "code") @RequestParam String code,
                                    @RequestParam String wxcode,
-                                   @ApiParam(required = true, value = "密码", name = "pwd") @RequestParam String pwd,
-                                   HttpServletRequest request) {
+                                   @ApiParam(required = true, value = "密码", name = "pwd") @RequestParam String pwd) {
 
 
         if(StringUtil.stringParamisEmpty(code,phone,pwd,wxcode)) {
@@ -103,6 +106,9 @@ public class LoginController extends AbstractController {
                 LOGGER.info(e.getMessage());
             }
             return AnyoujiaResult.build(FIVE_H, "系统错误");
+        }
+        if(res instanceof ErrorPwd) {
+            return AnyoujiaResult.build(FOUR_H, "密码错误");
         }
         if (res instanceof Null) {
             return AnyoujiaResult.build(FOUR_H, "账号不存在");
@@ -218,13 +224,23 @@ public class LoginController extends AbstractController {
 
     /**
      * 获取验证码
+     * @param phone
+     * @param isregist 是否为注册获取验证码
+     * @return
      */
     @RequestMapping("/verifycode")
     @ApiOperation(value = "获取验证码", httpMethod = "POST", notes = "member get code")
-    public AnyoujiaResult verifyCode(@RequestParam String phone) {
+    public AnyoujiaResult verifyCode(@RequestParam String phone,
+                                     @RequestParam(required = false,defaultValue = "n") String isregist) {
 
-        if(StringUtil.stringParamisEmpty(phone)) {
+        if(StringUtil.isEmpty(phone)) {
             AnyoujiaResult.build(FOUR_H,"参数不能为空");
+        }
+
+        if("y".equals(isregist)) {
+            if(loginService.getUserByAccount(phone) != null) {
+                return AnyoujiaResult.build(FOUR_H, "该号码已经注册");
+            }
         }
         String res = "";
         try {
@@ -238,11 +254,14 @@ public class LoginController extends AbstractController {
         if("true".equals(res)) {
 
             return AnyoujiaResult.build(TWO_H, "获取验证码成功");
-        }else if("false".equals(res)) {
+        }
+
+        if("false".equals(res)) {
 
             return AnyoujiaResult.build(FOUR_H, "获取验证码失败");
         }
-        return AnyoujiaResult.build(FOUR_H, "您短信使用次数已达最大次数");
+
+        return AnyoujiaResult.build(FOUR_H, "您短信使用次数已达最大值，请稍后再试");
     }
 
     /**

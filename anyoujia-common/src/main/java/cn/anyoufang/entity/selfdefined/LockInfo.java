@@ -17,9 +17,84 @@ public class LockInfo implements Serializable {
     private int online;
     private int lockStatus;
 
+    /**
+     * 产品型号
+     */
+    private String model;
+    /**
+     * 产品产地
+     */
+    private String origin;
+    /**
+     * 产品颜色
+     */
+    private String color;
+    /**
+     * 生产日期
+     */
+    private int producttime;
+
+    /**
+     * 锁地址
+     */
+
+    private String address;
+
+    /**
+     * 二维码
+     */
+    private String code2;
+
+    public String getCode2() {
+        return code2;
+    }
+
+    public void setCode2(String code2) {
+        this.code2 = code2;
+    }
 
     public int getLockCreatetime() {
         return lockCreatetime;
+    }
+
+    public String getModel() {
+        return model;
+    }
+
+    public void setModel(String model) {
+        this.model = model;
+    }
+
+    public String getOrigin() {
+        return origin;
+    }
+
+    public void setOrigin(String origin) {
+        this.origin = origin;
+    }
+
+    public String getColor() {
+        return color;
+    }
+
+    public void setColor(String color) {
+        this.color = color;
+    }
+
+    public int getProducttime() {
+        return producttime;
+    }
+
+    public void setProducttime(int producttime) {
+        this.producttime = producttime;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
     }
 
     public void setLockCreatetime(int lockCreatetime) {

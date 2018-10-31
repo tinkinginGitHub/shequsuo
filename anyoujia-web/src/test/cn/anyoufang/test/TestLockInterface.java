@@ -172,9 +172,9 @@ public class TestLockInterface {
     public void alarm() throws Exception {
         Data data1 = new Data();
         Map<String, String> map = new HashMap<>();
-        map.put("sn", "77776666");
-        map.put("userid", "123");
-        map.put("user_type", "11");
+        map.put("sn", "1123");
+        map.put("userid", "36479");
+        map.put("user_type", "15");
         map.put("opentime", "1540384417");
         map.put("status", "1");
         map.put("type", "40");

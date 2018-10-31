@@ -201,14 +201,17 @@ public class CommonUtil {
     public  static LockInfo getLockInfo(String data) {
         Map<String,Object> map = JsonUtils.jsonToMap(data);
         Object objects = map.get("data");
-        JSONObject jsonObject = JSONObject.fromObject(objects);
-        LockInfo lockInfo = new LockInfo();
-        lockInfo.setLockCreatetime(jsonObject.getInt("lock_createtime"));
-        lockInfo.setPower1(jsonObject.getInt("power1"));
-        lockInfo.setPower2(jsonObject.getInt("power2"));
-        lockInfo.setOnline(jsonObject.getInt("online"));
-        lockInfo.setLockStatus(jsonObject.getInt("lock_status"));
-        return lockInfo;
+        if(objects != null) {
+            JSONObject jsonObject = JSONObject.fromObject(objects);
+            LockInfo lockInfo = new LockInfo();
+            lockInfo.setLockCreatetime(jsonObject.getInt("lock_createtime"));
+            lockInfo.setPower1(jsonObject.getInt("power1"));
+            lockInfo.setPower2(jsonObject.getInt("power2"));
+            lockInfo.setOnline(jsonObject.getInt("online"));
+            lockInfo.setLockStatus(jsonObject.getInt("lock_status"));
+            return lockInfo;
+        }
+        return null;
     }
 
     /**
