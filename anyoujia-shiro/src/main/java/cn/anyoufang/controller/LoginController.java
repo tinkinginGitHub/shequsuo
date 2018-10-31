@@ -390,13 +390,13 @@ public class LoginController extends AbstractController {
             if (LOGGER.isInfoEnabled()) {
                 LOGGER.info(e.getMessage());
             }
-            return AnyoujiaResult.build(FOUR_H_1, "找回密码失败");
+            return AnyoujiaResult.build(FIVE_H, "找回密码失败");
         }
         boolean existAccount = loginService.checkAccount(phone);
         if (existAccount) {
             return AnyoujiaResult.build(TWO_H, "找回成功");
         }
-        return AnyoujiaResult.build(FOUR_H_1, "账户不存在");
+        return AnyoujiaResult.build(FOUR_H, "账户不存在");
     }
 
     /**
@@ -415,7 +415,7 @@ public class LoginController extends AbstractController {
         }
         updateLogin(request, loginService);
         if (!loginService.checkAccount(phone)) {
-            return AnyoujiaResult.build(FOUR_H_1, "账号不存在");
+            return AnyoujiaResult.build(FOUR_H, "账号不存在");
         }
 
         boolean existAccount = loginService.checkAccountAndAnswer(phone, code, answer);
@@ -423,7 +423,7 @@ public class LoginController extends AbstractController {
             return AnyoujiaResult.build(TWO_H, "找回成功");
         }
 
-        return AnyoujiaResult.build(FOUR_H_1, "安全问题回答错误");
+        return AnyoujiaResult.build(FOUR_H, "安全问题回答错误");
 
     }
 

@@ -4,6 +4,7 @@ import cn.anyoufang.entity.SpMember;
 import cn.anyoufang.enumresource.HttpCodeEnum;
 import cn.anyoufang.enumresource.UsertypeEnum;
 import cn.anyoufang.service.LoginService;
+import cn.anyoufang.utils.LoginStateUtil;
 import cn.anyoufang.utils.Md5Utils;
 import cn.anyoufang.utils.RedisUtils;
 import cn.anyoufang.utils.StringUtil;
@@ -81,44 +82,7 @@ public abstract class AbstractController {
 	}
 
 	protected void updateLogin(HttpServletRequest  request, LoginService loginService) {
-		String token = request.getHeader("token");
-        Map<String,Object> result = null;
-        try {
-            result = parseSession(token);
-        } catch (Exception e) {
-            if (logger.isInfoEnabled()) {
-                logger.info(e.getMessage());
-            }
-            return;
-        }
-        if(result == null) {
-		    return;
-        }
-		String username = (String) result.get("username");
-        String overtime1 = String.valueOf(result.get("overtime"));
-        long endtime1 = new Long(overtime1) * 1000;
-        long now1 = System.currentTimeMillis();
-        long check = endtime1 - now1;
-        if(check <= 0) {
-            Map<String, Object> data = null;
-            try {
-                data = loginService.updateLogin(username, token);
-            } catch (Exception e) {
-                if (logger.isInfoEnabled()) {
-                    logger.info(e.getMessage());
-                }
-                return;
-            }
-            Integer status = (Integer) data.get("status");
-            String overtime = String.valueOf(data.get("overtime"));
-            if (status == 200) {
-                Integer endtime = new Integer(overtime);
-                int now = (int) (System.currentTimeMillis()/1000);
-                int expire = endtime - now;
-                String phone =  (String) result.get("username");
-                RedisUtils.setex(Md5Utils.md5(phone,"utf-8"),"1" ,expire);
-            }
-        }
+        LoginStateUtil.doUpdateLoginState(request,loginService);
 	}
 
 	protected Map<String,Object> parseSession(String session){

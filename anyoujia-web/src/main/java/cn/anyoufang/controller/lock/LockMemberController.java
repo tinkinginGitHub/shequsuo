@@ -113,7 +113,6 @@ public class LockMemberController extends AbstractController {
           if(!isLogin(token)) {
               return AnyoujiaResult.build(FOUR_H_1,"登陆超时");
           }
-
           boolean ok;
           try {
                ok = memberService.updateMemberLockPwdOrFinger(id, locksn, status,type);

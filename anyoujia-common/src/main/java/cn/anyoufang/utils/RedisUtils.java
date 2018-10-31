@@ -78,6 +78,27 @@ public class RedisUtils {
     }
 
     /**
+     * 获取key过期时间
+     * @param key
+     * @return
+     */
+    public static Long getTtl(String key){
+        Jedis jedis = null;
+        Long value = null;
+        try {
+            jedis = pool.getResource();
+            value = jedis.ttl(key);
+        } catch (Exception e) {
+            LOGGER.error(e.getMessage());
+        } finally {
+            returnResource(pool, jedis);
+        }
+        return value;
+    }
+
+
+
+    /**
      * <p>向redis存入key和value,并释放连接资源</p>
      * <p>如果key已经存在 则覆盖</p>
      * @param key
