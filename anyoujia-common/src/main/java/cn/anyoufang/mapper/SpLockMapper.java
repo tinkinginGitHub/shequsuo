@@ -6,6 +6,7 @@ import cn.anyoufang.entity.selfdefined.LockCombineInfo;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
+import java.util.Map;
 
 public interface SpLockMapper {
     int countByExample(SpLockExample example);
@@ -36,4 +37,18 @@ public interface SpLockMapper {
      * @return
      */
     List<LockCombineInfo> selectLockInfoByCombinetable(@Param("locksns") List<String> list);
+
+    /**
+     * 自定义关联查询获取单个锁信息
+     * @param locksn
+     * @return
+     */
+    LockCombineInfo selectLockInfoByLocksn(@Param("sn") String locksn);
+
+    /**
+     * 自定义关联查询获取锁状态和地址
+     * @param locksn
+     * @return
+     */
+    Map<String,String> selectLockActiveByLocksn(@Param("sn") String locksn);
 }

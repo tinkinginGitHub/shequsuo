@@ -2,6 +2,7 @@ package cn.anyoufang.service.Impl;
 
 import cn.anyoufang.entity.*;
 import cn.anyoufang.entity.selfdefined.AnyoujiaResult;
+import cn.anyoufang.entity.selfdefined.ErrorPwd;
 import cn.anyoufang.entity.selfdefined.InitParam;
 import cn.anyoufang.entity.selfdefined.LoginResult;
 import cn.anyoufang.enumresource.HttpCodeEnum;
@@ -137,7 +138,7 @@ public class LoginServiceImpl implements LoginService {
         } else {
             md5Pwd = Md5Utils.md5(tempPwd, "UTF-8");
             if (!md5Pwd.equals(dbPwd)) {
-                return new Null();
+                return new ErrorPwd();
             }
         }
         Map<String, Object> res = doLogin(account, md5Pwd, ip);

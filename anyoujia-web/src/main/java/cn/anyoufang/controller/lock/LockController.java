@@ -266,4 +266,16 @@ public class LockController extends AbstractController {
         return AnyoujiaResult.ok(res);
     }
 
+    /**
+     * 用于根据锁SN查询锁激活状态信息
+     * @param locksn
+     * @return
+     */
+    @RequestMapping("/activeinfo")
+    public AnyoujiaResult getActiveInfo(@RequestParam String locksn) {
+        if(StringUtil.isEmpty(locksn)) {
+            return AnyoujiaResult.build(FOUR_H,"锁序列号不能为空");
+        }
+        return lockService.getLockActiveAndAddress(locksn);
+    }
 }

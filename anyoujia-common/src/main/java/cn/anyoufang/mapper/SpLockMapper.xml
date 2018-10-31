@@ -368,4 +368,31 @@
       </foreach>
     </if>
   </select>
+
+  <select id="selectLockInfoByLocksn" resultMap="combineSelectResultMap">
+    SELECT sl.model,
+    sl.origin,
+    sl.color,
+    sl.p_date,
+    sc.address,
+    sc.cname,
+    sl.sn,
+    sl.code2
+    FROM
+    sp_lock sl
+    JOIN sp_community sc ON sl.community = sc.cid
+    WHERE
+      sl.sn =#{sn,jdbcType=VARCHAR}
+  </select>
+
+  <select id="selectLockActiveByLocksn" resultType="java.util.Map">
+    SELECT
+    sl.active,
+    sc.address,
+    sc.cname
+    FROM
+    sp_lock sl
+    JOIN sp_community sc ON sl.community = sc.cid
+    WHERE sl.sn =#{sn,jdbcType=VARCHAR}
+  </select>
 </mapper>

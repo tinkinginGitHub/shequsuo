@@ -55,7 +55,7 @@ public class MQTTSubscribe implements MqttCallback {
 //            MqttTopic topic = client.getTopic(TOPIC);
 //            options.setWill(topic, "close".getBytes(), 2, true);
             client.connect(options);
-            int[] Qos = {2};
+            int[] Qos = {1};
             String[] topic1 = {TOPIC};
             client.subscribe(topic1, Qos);
         } catch (Exception e) {

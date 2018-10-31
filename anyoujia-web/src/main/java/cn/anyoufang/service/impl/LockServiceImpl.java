@@ -1,12 +1,10 @@
 package cn.anyoufang.service.impl;
 
 import cn.anyoufang.entity.*;
-import cn.anyoufang.entity.selfdefined.AnyoujiaResult;
-import cn.anyoufang.entity.selfdefined.Lock;
-import cn.anyoufang.entity.selfdefined.LockCombineInfo;
-import cn.anyoufang.entity.selfdefined.Temppwd;
+import cn.anyoufang.entity.selfdefined.*;
 import cn.anyoufang.enumresource.HttpCodeEnum;
 import cn.anyoufang.enumresource.PwdTypeEnum;
+import cn.anyoufang.enumresource.StateEnum;
 import cn.anyoufang.exception.LockException;
 import cn.anyoufang.mapper.*;
 import cn.anyoufang.service.LockService;
@@ -37,6 +35,7 @@ public class LockServiceImpl implements LockService{
     private static final int FIVE_H = HttpCodeEnum.FIVE_HUNDRED.getCode();
     private static final int T_H_1 = HttpCodeEnum.TWO_HUNDRED1.getCode();
     private static final String T_H_1_MSG = HttpCodeEnum.TWO_HUNDRED1.getValue();
+
     @Value("${lock.salt}")
     private String lockSalt;
     @Value("${pageSize}")
@@ -396,7 +395,7 @@ public class LockServiceImpl implements LockService{
                         StringBuilder sb = new StringBuilder(l.getCname());
                         String address = sb.append(l.getAddress()).toString();
                         lock.setAddress(address);
-                        lock.setVcode(l.getCode2());
+                        lock.setCode2(l.getCode2());
                         lock.setProducttime(l.getProducttime());
                     }
                 }
@@ -438,9 +437,45 @@ public class LockServiceImpl implements LockService{
         String combineParam = "method=get.lock.info&locksn="+locksn+"&temptime="+timestamp+"&sign="+sign;
         String res = SimulateGetAndPostUtil.sendPost(url,combineParam);
         if(CommonUtil.successResponse(res)) {
-            return AnyoujiaResult.ok(CommonUtil.getLockInfo(res));
+            LockInfo lockInfo = CommonUtil.getLockInfo(res);
+            if(lockInfo == null) {
+                return AnyoujiaResult.build(T_H_1,T_H_1_MSG);
+            }
+            LockCombineInfo lockCombineInfo = lockinfoMapper.selectLockInfoByLocksn(locksn);
+            if(lockCombineInfo == null) {
+                return AnyoujiaResult.ok(lockInfo);
+            }
+            return AnyoujiaResult.ok(updateInfoOfLock(lockCombineInfo,lockInfo));
         }
         return AnyoujiaResult.build(CommonUtil.paseResFromHardware(res),CommonUtil.getMessage(res));
+    }
+
+    /**
+     * 封装返回数据
+     * @param lockCombineInfo
+     * @param baseInfo
+     * @return LockInfo
+     */
+    private LockInfo updateInfoOfLock(LockCombineInfo lockCombineInfo,LockInfo baseInfo) {
+        LockInfo fullInfo = new LockInfo();
+        String color = lockCombineInfo.getColor();
+        if(color != null) {
+            String[] c = color.split(",");
+            fullInfo.setColor(c[1]);
+        }
+        fullInfo.setModel(lockCombineInfo.getModel());
+        fullInfo.setOrigin(lockCombineInfo.getOrigin());
+        StringBuilder sb = new StringBuilder(lockCombineInfo.getCname());
+        String address = sb.append(lockCombineInfo.getAddress()).toString();
+        fullInfo.setAddress(address);
+        fullInfo.setCode2(lockCombineInfo.getCode2());
+        fullInfo.setProducttime(lockCombineInfo.getProducttime());
+        fullInfo.setLockCreatetime(baseInfo.getLockCreatetime());
+        fullInfo.setPower1(baseInfo.getPower1());
+        fullInfo.setPower2(baseInfo.getPower2());
+        fullInfo.setOnline(baseInfo.getOnline());
+        fullInfo.setLockStatus(baseInfo.getLockStatus());
+        return fullInfo;
     }
 
     /**
@@ -494,6 +529,29 @@ public class LockServiceImpl implements LockService{
             }
         }
         return  res;
+    }
+
+    /**
+     * 获取锁激活状态和地址
+     * 0表示未激活状态,1表示已经激活
+     */
+    @Override
+    public AnyoujiaResult getLockActiveAndAddress(String locksn) {
+        Map<String,String> res = new HashMap<>();
+        Map<String,String> data = lockinfoMapper.selectLockActiveByLocksn(locksn);
+        if(data == null || data.size() == 0) {
+            return AnyoujiaResult.build(T_H_1,T_H_1_MSG);
+        }
+        String active = StateEnum.NONACTIVE.getCode();
+
+        if("true".equals(data.get("active"))) {
+            active = StateEnum.ACTIVED.getCode();
+        }
+        res.put("active",active);
+        StringBuilder sb = new StringBuilder();
+        String address = sb.append(data.get("cname")).append(data.get("address")).toString();
+        res.put("address",address);
+        return AnyoujiaResult.ok(res);
     }
 
     private List<SpLockAdmin> getAdminLocks(int adminid) {
