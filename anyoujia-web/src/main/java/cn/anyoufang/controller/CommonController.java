@@ -191,7 +191,7 @@ public class CommonController  extends AbstractController{
         if(ok) {
             return AnyoujiaResult.ok();
         }
-        return AnyoujiaResult.build(FOUR_H_1,"密码错误");
+        return AnyoujiaResult.build(FOUR_H,"密码错误");
     }
 
     /**

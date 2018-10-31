@@ -6,7 +6,9 @@ import cn.anyoufang.log.annotation.LockOperateLog;
 import cn.anyoufang.service.CommonService;
 import cn.anyoufang.service.LoginService;
 import cn.anyoufang.utils.DateUtil;
-import cn.anyoufang.utils.StringUtil;
+import cn.anyoufang.utils.LoginStateUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.ModelAndView;
@@ -17,8 +19,11 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.Arrays;
 import java.util.Map;
 
+import static cn.anyoufang.utils.StringUtil.parseSession;
+
 public class LockOperationInterceptor extends HandlerInterceptorAdapter {
 
+    private static final Logger logger = LoggerFactory.getLogger(LockOperationInterceptor.class);
     @Autowired
     private CommonService commonService;
 
@@ -42,7 +47,7 @@ public class LockOperationInterceptor extends HandlerInterceptorAdapter {
 
     private SpMember getUser(HttpServletRequest request) {
         String token = request.getHeader("token");
-        Map<String,Object> result = StringUtil.parseSession(token);
+        Map<String,Object> result = parseSession(token);
         if(result != null) {
             String username = (String) result.get("username");
             SpMember user = loginService.getUserByAccount(username);
@@ -52,10 +57,17 @@ public class LockOperationInterceptor extends HandlerInterceptorAdapter {
         }
         return null;
     }
+    private void updateLogin(HttpServletRequest  request, LoginService loginService) {
+        LoginStateUtil.doUpdateLoginState(request,loginService);
+    }
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-
+//        String token = request.getHeader("token");
+//        //token失效
+//        if(token != null) {
+//            updateLogin(request,loginService);
+//        }
         if (handler instanceof HandlerMethod) {
             HandlerMethod methodHandler = (HandlerMethod) handler;
             LockOperateLog operateLog = methodHandler.getMethod().getAnnotation(LockOperateLog.class);
