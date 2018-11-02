@@ -7,7 +7,7 @@ public class SpCommunity {
 
     private String address;
 
-    private String lbs;
+    private String longitude;
 
     private Integer province;
 
@@ -16,6 +16,10 @@ public class SpCommunity {
     private Integer area;
 
     private Integer region;
+
+    private Integer addtime;
+
+    private String latitude;
 
     public Integer getCid() {
         return cid;
@@ -41,12 +45,12 @@ public class SpCommunity {
         this.address = address == null ? null : address.trim();
     }
 
-    public String getLbs() {
-        return lbs;
+    public String getLongitude() {
+        return longitude;
     }
 
-    public void setLbs(String lbs) {
-        this.lbs = lbs == null ? null : lbs.trim();
+    public void setLongitude(String longitude) {
+        this.longitude = longitude == null ? null : longitude.trim();
     }
 
     public Integer getProvince() {
@@ -79,5 +83,21 @@ public class SpCommunity {
 
     public void setRegion(Integer region) {
         this.region = region;
+    }
+
+    public Integer getAddtime() {
+        return addtime;
+    }
+
+    public void setAddtime(Integer addtime) {
+        this.addtime = addtime;
+    }
+
+    public String getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(String latitude) {
+        this.latitude = latitude == null ? null : latitude.trim();
     }
 }

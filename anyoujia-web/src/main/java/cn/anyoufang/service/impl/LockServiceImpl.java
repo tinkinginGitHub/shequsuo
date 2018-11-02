@@ -31,7 +31,7 @@ public class LockServiceImpl implements LockService{
 
     private static final Logger log = LoggerFactory.getLogger(LockServiceImpl.class);
     private static final int T_H = HttpCodeEnum.TWO_HUNDRED.getCode();
-    private static final int FOUR_H_1 = HttpCodeEnum.FOUR_HUNDRED1.getCode();
+    private static final int FOUR_H = HttpCodeEnum.FOUR_HUNDRED.getCode();
     private static final int FIVE_H = HttpCodeEnum.FIVE_HUNDRED.getCode();
     private static final int T_H_1 = HttpCodeEnum.TWO_HUNDRED1.getCode();
     private static final String T_H_1_MSG = HttpCodeEnum.TWO_HUNDRED1.getValue();
@@ -248,7 +248,7 @@ public class LockServiceImpl implements LockService{
     public AnyoujiaResult registerLockInfo(String locksn, int userid) {
 
         if(checkLockRegisted(locksn)) {
-            return AnyoujiaResult.build(FOUR_H_1,"门锁已经注册");
+            return AnyoujiaResult.build(FOUR_H,"门锁已经注册");
         }
         long timestamp = System.currentTimeMillis()/1000;
         long time = timestamp;
