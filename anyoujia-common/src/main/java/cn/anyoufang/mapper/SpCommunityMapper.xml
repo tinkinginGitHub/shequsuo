@@ -5,11 +5,13 @@
     <id column="cid" property="cid" jdbcType="INTEGER" />
     <result column="cname" property="cname" jdbcType="VARCHAR" />
     <result column="address" property="address" jdbcType="VARCHAR" />
-    <result column="lbs" property="lbs" jdbcType="VARCHAR" />
+    <result column="longitude" property="longitude" jdbcType="VARCHAR" />
     <result column="province" property="province" jdbcType="INTEGER" />
     <result column="city" property="city" jdbcType="INTEGER" />
     <result column="area" property="area" jdbcType="INTEGER" />
     <result column="region" property="region" jdbcType="INTEGER" />
+    <result column="addtime" property="addtime" jdbcType="INTEGER" />
+    <result column="latitude" property="latitude" jdbcType="VARCHAR" />
   </resultMap>
   <sql id="Example_Where_Clause" >
     <where >
@@ -70,7 +72,7 @@
     </where>
   </sql>
   <sql id="Base_Column_List" >
-    cid, cname, address, lbs, province, city, area, region
+    cid, cname, address, longitude, province, city, area, region, addtime, latitude
   </sql>
   <select id="selectByExample" resultMap="BaseResultMap" parameterType="cn.anyoufang.entity.SpCommunityExample" >
     select
@@ -104,11 +106,13 @@
   </delete>
   <insert id="insert" parameterType="cn.anyoufang.entity.SpCommunity" >
     insert into sp_community (cid, cname, address, 
-      lbs, province, city, 
-      area, region)
+      longitude, province, city, 
+      area, region, addtime, 
+      latitude)
     values (#{cid,jdbcType=INTEGER}, #{cname,jdbcType=VARCHAR}, #{address,jdbcType=VARCHAR}, 
-      #{lbs,jdbcType=VARCHAR}, #{province,jdbcType=INTEGER}, #{city,jdbcType=INTEGER}, 
-      #{area,jdbcType=INTEGER}, #{region,jdbcType=INTEGER})
+      #{longitude,jdbcType=VARCHAR}, #{province,jdbcType=INTEGER}, #{city,jdbcType=INTEGER}, 
+      #{area,jdbcType=INTEGER}, #{region,jdbcType=INTEGER}, #{addtime,jdbcType=INTEGER}, 
+      #{latitude,jdbcType=VARCHAR})
   </insert>
   <insert id="insertSelective" parameterType="cn.anyoufang.entity.SpCommunity" >
     insert into sp_community
@@ -122,8 +126,8 @@
       <if test="address != null" >
         address,
       </if>
-      <if test="lbs != null" >
-        lbs,
+      <if test="longitude != null" >
+        longitude,
       </if>
       <if test="province != null" >
         province,
@@ -137,6 +141,12 @@
       <if test="region != null" >
         region,
       </if>
+      <if test="addtime != null" >
+        addtime,
+      </if>
+      <if test="latitude != null" >
+        latitude,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides="," >
       <if test="cid != null" >
@@ -148,8 +158,8 @@
       <if test="address != null" >
         #{address,jdbcType=VARCHAR},
       </if>
-      <if test="lbs != null" >
-        #{lbs,jdbcType=VARCHAR},
+      <if test="longitude != null" >
+        #{longitude,jdbcType=VARCHAR},
       </if>
       <if test="province != null" >
         #{province,jdbcType=INTEGER},
@@ -162,6 +172,12 @@
       </if>
       <if test="region != null" >
         #{region,jdbcType=INTEGER},
+      </if>
+      <if test="addtime != null" >
+        #{addtime,jdbcType=INTEGER},
+      </if>
+      <if test="latitude != null" >
+        #{latitude,jdbcType=VARCHAR},
       </if>
     </trim>
   </insert>
@@ -183,8 +199,8 @@
       <if test="record.address != null" >
         address = #{record.address,jdbcType=VARCHAR},
       </if>
-      <if test="record.lbs != null" >
-        lbs = #{record.lbs,jdbcType=VARCHAR},
+      <if test="record.longitude != null" >
+        longitude = #{record.longitude,jdbcType=VARCHAR},
       </if>
       <if test="record.province != null" >
         province = #{record.province,jdbcType=INTEGER},
@@ -198,6 +214,12 @@
       <if test="record.region != null" >
         region = #{record.region,jdbcType=INTEGER},
       </if>
+      <if test="record.addtime != null" >
+        addtime = #{record.addtime,jdbcType=INTEGER},
+      </if>
+      <if test="record.latitude != null" >
+        latitude = #{record.latitude,jdbcType=VARCHAR},
+      </if>
     </set>
     <if test="_parameter != null" >
       <include refid="Update_By_Example_Where_Clause" />
@@ -208,11 +230,13 @@
     set cid = #{record.cid,jdbcType=INTEGER},
       cname = #{record.cname,jdbcType=VARCHAR},
       address = #{record.address,jdbcType=VARCHAR},
-      lbs = #{record.lbs,jdbcType=VARCHAR},
+      longitude = #{record.longitude,jdbcType=VARCHAR},
       province = #{record.province,jdbcType=INTEGER},
       city = #{record.city,jdbcType=INTEGER},
       area = #{record.area,jdbcType=INTEGER},
-      region = #{record.region,jdbcType=INTEGER}
+      region = #{record.region,jdbcType=INTEGER},
+      addtime = #{record.addtime,jdbcType=INTEGER},
+      latitude = #{record.latitude,jdbcType=VARCHAR}
     <if test="_parameter != null" >
       <include refid="Update_By_Example_Where_Clause" />
     </if>
@@ -226,8 +250,8 @@
       <if test="address != null" >
         address = #{address,jdbcType=VARCHAR},
       </if>
-      <if test="lbs != null" >
-        lbs = #{lbs,jdbcType=VARCHAR},
+      <if test="longitude != null" >
+        longitude = #{longitude,jdbcType=VARCHAR},
       </if>
       <if test="province != null" >
         province = #{province,jdbcType=INTEGER},
@@ -241,6 +265,12 @@
       <if test="region != null" >
         region = #{region,jdbcType=INTEGER},
       </if>
+      <if test="addtime != null" >
+        addtime = #{addtime,jdbcType=INTEGER},
+      </if>
+      <if test="latitude != null" >
+        latitude = #{latitude,jdbcType=VARCHAR},
+      </if>
     </set>
     where cid = #{cid,jdbcType=INTEGER}
   </update>
@@ -248,11 +278,13 @@
     update sp_community
     set cname = #{cname,jdbcType=VARCHAR},
       address = #{address,jdbcType=VARCHAR},
-      lbs = #{lbs,jdbcType=VARCHAR},
+      longitude = #{longitude,jdbcType=VARCHAR},
       province = #{province,jdbcType=INTEGER},
       city = #{city,jdbcType=INTEGER},
       area = #{area,jdbcType=INTEGER},
-      region = #{region,jdbcType=INTEGER}
+      region = #{region,jdbcType=INTEGER},
+      addtime = #{addtime,jdbcType=INTEGER},
+      latitude = #{latitude,jdbcType=VARCHAR}
     where cid = #{cid,jdbcType=INTEGER}
   </update>
 </mapper>
