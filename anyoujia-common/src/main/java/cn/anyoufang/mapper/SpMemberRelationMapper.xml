@@ -17,6 +17,11 @@
     <result column="fingerpwdauth" property="fingerpwdauth" jdbcType="BIT" />
     <result column="updatetime" property="updatetime" jdbcType="INTEGER" />
   </resultMap>
+  <resultMap id="useInfoMap" type="cn.anyoufang.entity.selfdefined.UserInfo">
+    <result column="userrelation" property="userrelation" jdbcType="VARCHAR" />
+    <result column="avatar" property="avatar" jdbcType="VARCHAR" />
+    <result column="gender" property="gender" jdbcType="INTEGER" />
+  </resultMap>
   <sql id="Example_Where_Clause" >
     <where >
       <foreach collection="oredCriteria" item="criteria" separator="or" >
@@ -350,4 +355,5 @@
       updatetime = #{updatetime,jdbcType=INTEGER}
     where id = #{id,jdbcType=INTEGER}
   </update>
+
 </mapper>

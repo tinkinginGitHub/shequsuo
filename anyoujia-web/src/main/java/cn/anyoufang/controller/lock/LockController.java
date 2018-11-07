@@ -206,7 +206,14 @@ public class LockController extends AbstractController {
         if (user == null) {
             return AnyoujiaResult.build(FOUR_H, "登录超时");
         }
-        return lockService.registerLockInfo(locksn, user.getUid());
+        try {
+           return lockService.registerLockInfo(locksn, user.getUid());
+        } catch (Exception e) {
+            if(logger.isInfoEnabled()){
+                logger.info("添加锁发生程序异常: " + e.getMessage());
+            }
+            return AnyoujiaResult.build(FIVE_H,"程序异常");
+        }
     }
 
     /**

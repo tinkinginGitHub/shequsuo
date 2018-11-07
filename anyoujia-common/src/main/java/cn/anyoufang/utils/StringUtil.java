@@ -22,6 +22,13 @@ public class StringUtil {
         }
 		return s.replaceFirst(s.substring(0, 1),s.substring(0, 1).toLowerCase()) ;
 	}
+
+	public static int getInt(String s){
+	    if(s ==null){
+	        return 0;
+        }
+        return Integer.valueOf(s);
+    }
 	
 	
 	/**

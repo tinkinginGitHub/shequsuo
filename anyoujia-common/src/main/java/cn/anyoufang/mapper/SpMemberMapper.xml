@@ -9,7 +9,7 @@
     <result column="name" property="name" jdbcType="VARCHAR" />
     <result column="email" property="email" jdbcType="VARCHAR" />
     <result column="avatar" property="avatar" jdbcType="VARCHAR" />
-    <result column="gender" property="gender" jdbcType="BIT" />
+    <result column="gender" property="gender" jdbcType="INTEGER" />
     <result column="wx" property="wx" jdbcType="INTEGER" />
     <result column="say" property="say" jdbcType="VARCHAR" />
     <result column="securitypwd" property="securitypwd" jdbcType="VARCHAR" />
@@ -112,16 +112,16 @@
   <insert id="insert" parameterType="cn.anyoufang.entity.SpMember" >
     insert into sp_member (uid, phone, password, 
       bname, name, email, 
-      avatar, gender, wx, say, 
-      securitypwd, securityquestion, securityanswer, 
-      registtime)
+      avatar, gender, wx, 
+      say, securitypwd, securityquestion, 
+      securityanswer, registtime)
     values (#{uid,jdbcType=INTEGER}, #{phone,jdbcType=VARCHAR}, #{password,jdbcType=VARCHAR}, 
       #{bname,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR}, #{email,jdbcType=VARCHAR}, 
-      #{avatar,jdbcType=VARCHAR}, #{gender,jdbcType=BIT}, #{wx,jdbcType=INTEGER}, #{say,jdbcType=VARCHAR}, 
-      #{securitypwd,jdbcType=VARCHAR}, #{securityquestion,jdbcType=VARCHAR}, #{securityanswer,jdbcType=VARCHAR}, 
-      #{registtime,jdbcType=INTEGER})
+      #{avatar,jdbcType=VARCHAR}, #{gender,jdbcType=INTEGER}, #{wx,jdbcType=INTEGER}, 
+      #{say,jdbcType=VARCHAR}, #{securitypwd,jdbcType=VARCHAR}, #{securityquestion,jdbcType=VARCHAR}, 
+      #{securityanswer,jdbcType=VARCHAR}, #{registtime,jdbcType=INTEGER})
   </insert>
-  <insert id="insertSelective" parameterType="cn.anyoufang.entity.SpMember" useGeneratedKeys="true" keyProperty="uid">
+  <insert id="insertSelective" parameterType="cn.anyoufang.entity.SpMember" keyProperty="uid" useGeneratedKeys="true">
     insert into sp_member
     <trim prefix="(" suffix=")" suffixOverrides="," >
       <if test="uid != null" >
@@ -190,7 +190,7 @@
         #{avatar,jdbcType=VARCHAR},
       </if>
       <if test="gender != null" >
-        #{gender,jdbcType=BIT},
+        #{gender,jdbcType=INTEGER},
       </if>
       <if test="wx != null" >
         #{wx,jdbcType=INTEGER},
@@ -243,7 +243,7 @@
         avatar = #{record.avatar,jdbcType=VARCHAR},
       </if>
       <if test="record.gender != null" >
-        gender = #{record.gender,jdbcType=BIT},
+        gender = #{record.gender,jdbcType=INTEGER},
       </if>
       <if test="record.wx != null" >
         wx = #{record.wx,jdbcType=INTEGER},
@@ -277,7 +277,7 @@
       name = #{record.name,jdbcType=VARCHAR},
       email = #{record.email,jdbcType=VARCHAR},
       avatar = #{record.avatar,jdbcType=VARCHAR},
-      gender = #{record.gender,jdbcType=BIT},
+      gender = #{record.gender,jdbcType=INTEGER},
       wx = #{record.wx,jdbcType=INTEGER},
       say = #{record.say,jdbcType=VARCHAR},
       securitypwd = #{record.securitypwd,jdbcType=VARCHAR},
@@ -310,7 +310,7 @@
         avatar = #{avatar,jdbcType=VARCHAR},
       </if>
       <if test="gender != null" >
-        gender = #{gender,jdbcType=BIT},
+        gender = #{gender,jdbcType=INTEGER},
       </if>
       <if test="wx != null" >
         wx = #{wx,jdbcType=INTEGER},
@@ -341,7 +341,7 @@
       name = #{name,jdbcType=VARCHAR},
       email = #{email,jdbcType=VARCHAR},
       avatar = #{avatar,jdbcType=VARCHAR},
-      gender = #{gender,jdbcType=BIT},
+      gender = #{gender,jdbcType=INTEGER},
       wx = #{wx,jdbcType=INTEGER},
       say = #{say,jdbcType=VARCHAR},
       securitypwd = #{securitypwd,jdbcType=VARCHAR},
@@ -350,4 +350,30 @@
       registtime = #{registtime,jdbcType=INTEGER}
     where uid = #{uid,jdbcType=INTEGER}
   </update>
+
+  <select id="selectBySn" parameterType="java.lang.String" resultType="java.util.Map">
+    select
+        sm.bname,sm.phone
+    from
+        sp_member sm join sp_lock_admin sla
+    on
+        sm.uid = sla.adminid
+    where
+        sla.locksn =#{sla.locksn,jdbcType=VARCHAR}
+  </select>
+
+  <select id="selectByIdJoinFind" resultType="java.util.Map" parameterType="java.lang.Integer">
+    SELECT
+	sm.avatar,
+	sm.gender,
+    smr.userrelation
+  FROM
+	sp_member sm
+  JOIN
+      sp_member_relation smr
+  ON
+      sm.phone = smr.phone
+   WHERE
+	sm.uid = #{sm.uid,jdbcType=INTEGER};
+  </select>
 </mapper>

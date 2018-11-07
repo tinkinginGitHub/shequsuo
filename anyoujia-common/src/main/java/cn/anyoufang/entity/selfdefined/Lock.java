@@ -13,7 +13,18 @@ public class Lock extends LockInfo implements Serializable {
     private boolean lockpwdAuth;
     private boolean lockfingerAuth;
     private String locksn;
+    /**
+     * 管理员昵称，如果没有，将会使用手机号代替
+     */
+    private String nickname;
 
+    public String getNickname() {
+        return nickname;
+    }
+
+    public void setNickname(String nickname) {
+        this.nickname = nickname;
+    }
 
     public String getLocksn() {
         return locksn;

@@ -1,17 +1,38 @@
 package cn.anyoufang.service.impl;
 
-import cn.anyoufang.entity.*;
-import cn.anyoufang.entity.selfdefined.*;
+import cn.anyoufang.entity.SpLock;
+import cn.anyoufang.entity.SpLockAdmin;
+import cn.anyoufang.entity.SpLockAdminExample;
+import cn.anyoufang.entity.SpLockFinger;
+import cn.anyoufang.entity.SpLockPassword;
+import cn.anyoufang.entity.SpLockPasswordExample;
+import cn.anyoufang.entity.SpMember;
+import cn.anyoufang.entity.SpMemberRelation;
+import cn.anyoufang.entity.SpMemberRelationExample;
+import cn.anyoufang.entity.selfdefined.AnyoujiaResult;
+import cn.anyoufang.entity.selfdefined.InitParam;
+import cn.anyoufang.entity.selfdefined.Lock;
+import cn.anyoufang.entity.selfdefined.LockCombineInfo;
+import cn.anyoufang.entity.selfdefined.LockInfo;
+import cn.anyoufang.entity.selfdefined.LockRecord;
+import cn.anyoufang.entity.selfdefined.Temppwd;
 import cn.anyoufang.enumresource.HttpCodeEnum;
 import cn.anyoufang.enumresource.PwdTypeEnum;
 import cn.anyoufang.enumresource.StateEnum;
 import cn.anyoufang.exception.LockException;
-import cn.anyoufang.mapper.*;
+import cn.anyoufang.mapper.SpLockAdminMapper;
+import cn.anyoufang.mapper.SpLockFingerMapper;
+import cn.anyoufang.mapper.SpLockMapper;
+import cn.anyoufang.mapper.SpLockPasswordMapper;
+import cn.anyoufang.mapper.SpMemberMapper;
+import cn.anyoufang.mapper.SpMemberRelationMapper;
 import cn.anyoufang.service.LockService;
 import cn.anyoufang.utils.DateUtil;
 import cn.anyoufang.utils.JsonUtils;
 import cn.anyoufang.utils.Md5Utils;
 import cn.anyoufang.utils.SimulateGetAndPostUtil;
+import cn.anyoufang.utils.SortJsonAesc;
+import cn.anyoufang.utils.StringUtil;
 import cn.anyoufang.utils.pagehelper.PageHelper;
 import cn.anyoufang.utils.selfdefine.CommonUtil;
 import org.slf4j.Logger;
@@ -21,7 +42,17 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.locks.ReentrantLock;
+
+import static cn.anyoufang.utils.HandlePhpRequestUtil.doPhpRequest;
+import static cn.anyoufang.utils.HandlePhpRequestUtil.genarateSign;
+import static cn.anyoufang.utils.HandlePhpRequestUtil.parseResponse;
 
 /**
  * @author daiping
@@ -45,11 +76,17 @@ public class LockServiceImpl implements LockService{
 
     @Value("${deadline}")
     private int deadline;
+
+    @Value("${php.Project.url}")
+    private String phpProjectUrl;
     @Resource
     private SpMemberRelationMapper relationMapper;
 
     @Autowired
     private SpLockAdminMapper lockMapper;
+
+    @Autowired
+    private SpMemberMapper memberMapper;
 
     @Autowired
     private SpLockPasswordMapper passwordMapper;
@@ -93,7 +130,6 @@ public class LockServiceImpl implements LockService{
             lockPassword.setRelationid(relationid);
         }
         //临时密码的过期时间，永久密码的删除时间,这里不做判断，因为在删除永久密码的时候会更新删除时间
-        lockPassword.setDeltime(endtime);
         lockPassword.setDeltime(endtime);
         lockPassword.setAddtime(DateUtil.generateTenTime());
         passwordMapper.insertSelective(lockPassword);
@@ -245,10 +281,15 @@ public class LockServiceImpl implements LockService{
      * @return
      */
     @Override
-    public AnyoujiaResult registerLockInfo(String locksn, int userid) {
+    public AnyoujiaResult registerLockInfo(String locksn, int userid) throws Exception {
 
         if(checkLockRegisted(locksn)) {
             return AnyoujiaResult.build(FOUR_H,"门锁已经注册");
+        }
+        //调用PHP接口判断锁位置是否正确
+        AnyoujiaResult ar = callPhpToActiveLock(locksn,userid);
+        if(ar != null){
+            return ar;
         }
         long timestamp = System.currentTimeMillis()/1000;
         long time = timestamp;
@@ -256,14 +297,13 @@ public class LockServiceImpl implements LockService{
         lock.setAdminid(userid);
         lock.setLocksn(locksn);
         lock.setCreatetime((int)time);
-
         try {
             lockMapper.insertSelective(lock);
         }catch (Exception e) {
             if(log.isInfoEnabled()) {
                 log.info(e.getMessage());
             }
-            return AnyoujiaResult.build(FIVE_H,"系统异常添加锁失败");
+            return AnyoujiaResult.build(FIVE_H,"添加锁发生异常，请重新操作");
         }
         StringBuilder sb = new StringBuilder();
         int id = lock.getId();
@@ -282,8 +322,16 @@ public class LockServiceImpl implements LockService{
         }
         String state = String.valueOf(data.get("code"));
         Integer status = Integer.valueOf(state);
+        if(status == T_H){
+            SpLock  spLock = new SpLock();
+            spLock.setSn(locksn);
+            spLock.setActive(true);
+            spLock.setActivetime(DateUtil.generateTenTime());
+            lockinfoMapper.updateByPrimaryKeySelective(spLock);
+        }
         return AnyoujiaResult.build(status,String.valueOf(data.get("message")));
     }
+
 
     /**
      * 检查锁已经被注册
@@ -342,49 +390,48 @@ public class LockServiceImpl implements LockService{
         }
         List<Integer> adminIds = new ArrayList<>();
         List<String> locksns = new ArrayList<>();
-        Map<String, Boolean> pwdauths = new HashMap<>();
-        Map<String, Boolean> fingerauths = new HashMap<>();
-
-        if (valid.isEmpty()) {
-            return AnyoujiaResult.build(T_H_1, T_H_1_MSG);
-        }
-
-        Iterator<SpMemberRelation> iteratorVal = valid.iterator();
-        while(iteratorVal.hasNext()) {
-            SpMemberRelation u = iteratorVal.next();
-            Integer parentid = u.getParentid();
-            String locksn = u.getLocksn();
-            pwdauths.put(locksn, u.getLockpwdauth());
-            fingerauths.put(locksn, u.getFingerpwdauth());
-            adminIds.add(parentid);
-            locksns.add(locksn);
-        }
-        //获取seqid
-        //后期优化
-        SpLockAdminExample e = new SpLockAdminExample();
-        SpLockAdminExample.Criteria criteria = e.createCriteria();
-        criteria.andAdminidIn(adminIds).andLocksnIn(locksns);
-        List<SpLockAdmin> locks = lockMapper.selectByExample(e);
-        List<String> memberLockResList = new ArrayList<>();
-        Iterator<SpLockAdmin> iterator = locks.iterator();
-        while (iterator.hasNext()) {
-            SpLockAdmin adminLock = iterator.next();
-            memberLockResList.add(getLockResFromHardare(adminLock));
+        List<Lock> member = null;
+        if(!valid.isEmpty()){
+            Map<String, Boolean> pwdauths = new HashMap<>();
+            Map<String, Boolean> fingerauths = new HashMap<>();
+            Iterator<SpMemberRelation> iteratorVal = valid.iterator();
+            while(iteratorVal.hasNext()) {
+                SpMemberRelation u = iteratorVal.next();
+                Integer parentid = u.getParentid();
+                String locksn = u.getLocksn();
+                pwdauths.put(locksn, u.getLockpwdauth());
+                fingerauths.put(locksn, u.getFingerpwdauth());
+                adminIds.add(parentid);
+                locksns.add(locksn);
+            }
+            //后期优化
+            SpLockAdminExample e = new SpLockAdminExample();
+            SpLockAdminExample.Criteria criteria = e.createCriteria();
+            criteria.andAdminidIn(adminIds).andLocksnIn(locksns);
+            List<SpLockAdmin> locks = lockMapper.selectByExample(e);
+            List<String> memberLockResList = new ArrayList<>();
+            Iterator<SpLockAdmin> iterator = locks.iterator();
+            while (iterator.hasNext()) {
+                SpLockAdmin adminLock = iterator.next();
+                memberLockResList.add(getLockResFromHardare(adminLock));
+            }
+            member = CommonUtil.getMemberLockList(memberLockResList, pwdauths, fingerauths);
         }
         //将成员锁和管理员锁的sn放在一起去拿锁基本信息
         allLocksns.addAll(locksns);
         //获取锁相关基本信息
         List<LockCombineInfo> combineInfos = lockinfoMapper.selectLockInfoByCombinetable(allLocksns);
-
         //将自己作为管理员的和作为成员的锁分开
         List<Lock> admin = CommonUtil.getAdminLockList(adminLockResList);
-        List<Lock> member = CommonUtil.getMemberLockList(memberLockResList, pwdauths, fingerauths);
         List<Lock> res = new LinkedList<>(admin);
-        res.addAll(member);
+        if(member != null&& !member.isEmpty()){
+            res.addAll(member);
+        }
         if (!combineInfos.isEmpty()){
+            String locksn;
             for (Lock lock : res) {
                 for (LockCombineInfo l : combineInfos) {
-                    if (lock.getLocksn().equals(l.getSn())) {
+                    if ((locksn=lock.getLocksn()).equals(l.getSn())) {
                         String color = l.getColor();
                         if (color != null) {
                             String[] c = color.split(",");
@@ -397,6 +444,15 @@ public class LockServiceImpl implements LockService{
                         lock.setAddress(address);
                         lock.setCode2(l.getCode2());
                         lock.setProducttime(l.getProducttime());
+                        Map<String,String> nicknameAndPhone = memberMapper.selectBySn(locksn);
+                        String adminNickname = nicknameAndPhone.get("bname");
+                        if(adminNickname !=null){
+                            lock.setNickname(adminNickname);
+                        }else {
+                            String adminPhone = nicknameAndPhone.get("phone");
+                            lock.setNickname(adminPhone);
+                        }
+
                     }
                 }
             }
@@ -422,10 +478,58 @@ public class LockServiceImpl implements LockService{
         String sign = Md5Utils.md5(param,"UTF-8");
         String combineParam = "method=get.lock.openlist&page="+page+"&pagesize="+pagesize+"&locksn="+locksn+"&temptime="+timestamp+"&sign="+sign + "&isalarm="+isalarm;
         String res =  SimulateGetAndPostUtil.sendPost(url,combineParam);
-       if(CommonUtil.successResponse(res)) {
-          return AnyoujiaResult.ok(CommonUtil.getRecords(res));
+        if(CommonUtil.successResponse(res)) {
+          List<LockRecord> list =  CommonUtil.getRecords(res);
+          if(list.isEmpty()){
+              return AnyoujiaResult.ok();
+          }
+         Iterator<LockRecord> iterator = list.iterator();
+          while(iterator.hasNext()){
+              LockRecord lr = iterator.next();
+              int userid = lr.getPwdRecordId();
+              int oldChildId;
+              //470101011 一个神奇的数字！！！
+              if(isUseridSmaller(userid, 470101011)){
+                  SpLockPassword slp =  passwordMapper.selectByPrimaryKey(userid);
+                  if(slp != null){
+                      if((oldChildId = slp.getRelationid()) != 0) {
+                          //老人儿童
+                          SpMemberRelation sr =  relationMapper.selectByPrimaryKey(oldChildId);
+                          lr.setRelation(sr.getUserrelation());
+                      }else{
+                         Map<String,String> sr =  memberMapper.selectByIdJoinFind(slp.getMemberid());
+                         if(sr != null){
+                            lr.setHeadurl(sr.get("avatar"));
+                            lr.setRelation(sr.get("userrelation"));
+                            lr.setGender(StringUtil.getInt(sr.get("gender")));
+                         }
+                      }
+                  }
+              }else {
+                  SpLockFinger slf = fingerMapper.selectByPrimaryKey(userid);
+                  if(slf != null){
+                      if((oldChildId = slf.getRelationid()) != 0) {
+                          //老人儿童
+                          SpMemberRelation sr =  relationMapper.selectByPrimaryKey(oldChildId);
+                          lr.setRelation(sr.getUserrelation());
+                      }else{
+                          Map<String,String> sr =  memberMapper.selectByIdJoinFind(slf.getMemberid());
+                          if(sr != null){
+                              lr.setHeadurl(sr.get("avatar"));
+                              lr.setRelation(sr.get("userrelation"));
+                              lr.setGender(StringUtil.getInt(sr.get("gender")));
+                          }
+                      }
+                  }
+              }
+          }
+          return AnyoujiaResult.ok(list);
        }
         return AnyoujiaResult.build(CommonUtil.paseResFromHardware(res),CommonUtil.getMessage(res));
+    }
+
+    private boolean isUseridSmaller(int userid,int pwdOrFingerId){
+        return pwdOrFingerId < userid;
     }
 
     @Override
@@ -552,6 +656,31 @@ public class LockServiceImpl implements LockService{
         String address = sb.append(data.get("cname")).append(data.get("address")).toString();
         res.put("address",address);
         return AnyoujiaResult.ok(res);
+    }
+
+    /**
+     * 调用PHP比对锁地址和小区地址是否匹配
+     */
+    @Override
+    public AnyoujiaResult callPhpToActiveLock(String locksn, int uid) throws Exception {
+
+        Map<String, String> map = new HashMap<>();
+        map.put("sn", locksn);
+        map.put("uid", String.valueOf(uid));
+        String json = JsonUtils.objectToJson(SortJsonAesc.sortMap(map));
+        InitParam p = new InitParam();
+        p.setMod("Com");
+        p.setFun("register");
+        String sign =  genarateSign("Com", "register", json);
+        p.setSign(sign);
+        p.setData(map);
+        String s = doPhpRequest(p,phpProjectUrl);
+        Map<String,Object> res =  parseResponse(s);
+        Integer status = (Integer) res.get("status");
+        if (status != T_H) {
+            return AnyoujiaResult.build(status, String.valueOf(res.get("data")));
+        }
+        return null;
     }
 
     private List<SpLockAdmin> getAdminLocks(int adminid) {

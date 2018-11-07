@@ -159,19 +159,19 @@ public class LockMemberController extends AbstractController {
               return AnyoujiaResult.build(FOUR_H_1,"登陆超时");
           }
         int adminId = admin.getUid();
-
           try {
               boolean ok = memberService.addUser(usertype,username,phone,relation,locksn,finger,pwd,adminId,endtime);
               if(ok) {
                   return AnyoujiaResult.ok();
               }
+              return AnyoujiaResult.build(FOUR_H,"添加用户失败");
           }catch (Exception e) {
               if(log.isInfoEnabled()) {
                   log.info(e.getMessage());
               }
               return AnyoujiaResult.build(FIVE_H,"系统异常");
           }
-          return AnyoujiaResult.build(FIVE_H,"系统异常");
+
       }
 
     /**

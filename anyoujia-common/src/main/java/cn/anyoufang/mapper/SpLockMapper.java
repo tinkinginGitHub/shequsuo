@@ -51,4 +51,6 @@ public interface SpLockMapper {
      * @return
      */
     Map<String,String> selectLockActiveByLocksn(@Param("sn") String locksn);
+
+
 }

@@ -15,7 +15,7 @@ public class SpMember {
 
     private String avatar;
 
-    private Boolean gender;
+    private Integer gender;
 
     private Integer wx;
 
@@ -85,11 +85,11 @@ public class SpMember {
         this.avatar = avatar == null ? null : avatar.trim();
     }
 
-    public Boolean getGender() {
+    public Integer getGender() {
         return gender;
     }
 
-    public void setGender(Boolean gender) {
+    public void setGender(Integer gender) {
         this.gender = gender;
     }
 

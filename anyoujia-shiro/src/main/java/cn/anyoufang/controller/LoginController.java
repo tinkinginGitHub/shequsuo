@@ -151,16 +151,26 @@ public class LoginController extends AbstractController {
         return AnyoujiaResult.ok(res);
     }
 
+    /**
+     * gender 0未知，1男，2女
+     * @param avatar
+     * @param bname
+     * @param gender
+     * @param phone
+     * @param request
+     * @return
+     */
     @RequestMapping("/addtioninfo")
     public AnyoujiaResult additionalInfo(@RequestParam String avatar,
                                          @RequestParam String bname,
+                                         @RequestParam int gender,
                                          @RequestParam String phone,HttpServletRequest request) {
         if(StringUtil.stringParamisEmpty(avatar,bname,phone)) {
          return AnyoujiaResult.build(FOUR_H,"参数不能为空");
         }
         boolean addOk;
         try {
-           addOk = loginService.updateAdditionalUserInfo(avatar, bname, phone);
+           addOk = loginService.updateAdditionalUserInfo(avatar, bname, phone,gender);
             if (addOk) {
                 return AnyoujiaResult.ok();
             }

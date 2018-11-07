@@ -28,4 +28,5 @@ public interface SpMemberRelationMapper {
     int updateByPrimaryKeySelective(SpMemberRelation record);
 
     int updateByPrimaryKey(SpMemberRelation record);
+
 }

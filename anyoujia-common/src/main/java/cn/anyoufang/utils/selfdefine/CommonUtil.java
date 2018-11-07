@@ -62,12 +62,18 @@ public class CommonUtil {
                 LockRecord record = new LockRecord();
                 int opentime = job.getInt("opentime");
                 int pwdType = job.getInt("pwd_type");
+                int status = job.getInt("status");
+                int userid = job.getInt("userid");
                 String nickname = job.getString("nickname");
                 int isAlarm = job.getInt("isalarm");
+                //int userType = job.getInt("user_type");
                 record.setIsAlarm(isAlarm);
                 record.setOpentime(opentime);
+                record.setStatus(status);
                 record.setPwdType(pwdType);
                 record.setNickname(nickname);
+                record.setPwdRecordId(userid);
+               // record.setUserType(userType);
                 res.add(record);
             }
         }
@@ -225,5 +231,4 @@ public class CommonUtil {
         }
         return false;
     }
-
 }

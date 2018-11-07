@@ -61,7 +61,7 @@ public interface LockService {
      * @param userid
      * @return
      */
-    AnyoujiaResult registerLockInfo(String locksn, int userid);
+    AnyoujiaResult registerLockInfo(String locksn, int userid) throws Exception;
 
 
     /**
@@ -103,4 +103,13 @@ public interface LockService {
      * @return
      */
     AnyoujiaResult getLockActiveAndAddress(String locksn);
+
+    /**
+     * 调用PHP比对锁地址和小区地址是否匹配
+     * @param locksn
+     * @param uid
+     * @return
+     */
+    AnyoujiaResult callPhpToActiveLock(String locksn,int uid) throws Exception;
+
 }
