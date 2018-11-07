@@ -5,8 +5,10 @@ import cn.anyoufang.entity.SpMemberExample;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
+import java.util.Map;
 
 public interface SpMemberMapper {
+
     int countByExample(SpMemberExample example);
 
     int deleteByExample(SpMemberExample example);
@@ -28,4 +30,19 @@ public interface SpMemberMapper {
     int updateByPrimaryKeySelective(SpMember record);
 
     int updateByPrimaryKey(SpMember record);
+
+    /**
+     * 自定义查询
+     * @param locksn
+     * @return
+     */
+    Map<String,String> selectBySn(String locksn);
+
+    /**
+     * 自定义关联查询
+     * @param uid
+     * @return
+     */
+    Map<String,String> selectByIdJoinFind(Integer uid);
+
 }

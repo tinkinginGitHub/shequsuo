@@ -2,7 +2,11 @@ package cn.anyoufang.test;
 
 import cn.anyoufang.entity.selfdefined.Data;
 import cn.anyoufang.entity.selfdefined.InitParam;
-import cn.anyoufang.utils.*;
+import cn.anyoufang.utils.AesCBC;
+import cn.anyoufang.utils.JsonUtils;
+import cn.anyoufang.utils.Md5Utils;
+import cn.anyoufang.utils.SimulateGetAndPostUtil;
+import cn.anyoufang.utils.SortJsonAesc;
 import net.sf.json.JSONObject;
 import org.junit.Test;
 
@@ -201,6 +205,21 @@ public class TestLockInterface {
         System.out.println(doPhpRequest(p));
     }
 
+    @Test
+    public void testActiveLock()throws Exception{
+        Map<String, String> map = new HashMap<>();
+        map.put("sn", "1123");
+        map.put("uid", "36479");
+        String json = JsonUtils.objectToJson(SortJsonAesc.sortMap(map));
+        InitParam p = new InitParam();
+        p.setMod("Com");
+        p.setFun("register");
+        String sign =  genarateSign("Com", "register", json);
+        p.setSign(sign);
+        p.setData(map);
+        System.out.println(doPhpRequest(p));
+    }
+
     public Map<String, Object> parseResponse(String response) {
         Map<String, Object> map = JsonUtils.jsonToMap(response);
         Integer status = (Integer) map.get("status");
@@ -228,7 +247,7 @@ public class TestLockInterface {
     }
     private  String doPhpRequest(InitParam initParam) throws Exception {
         String ss = JsonUtils.objectToJson(initParam);
-        return SimulateGetAndPostUtil.sendPost("http://144.anyoujia.com/Product/Api/index/", genarateParamForPhpRequest(ss));
+        return SimulateGetAndPostUtil.sendPost("http://144.anyoujia.com/Project/Api/index/", genarateParamForPhpRequest(ss));
     }
 
     private  String genarateParamForPhpRequest(String s) throws Exception {

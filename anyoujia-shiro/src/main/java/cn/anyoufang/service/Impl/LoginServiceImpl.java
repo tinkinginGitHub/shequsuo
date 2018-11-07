@@ -1,18 +1,37 @@
 package cn.anyoufang.service.Impl;
 
-import cn.anyoufang.entity.*;
+import cn.anyoufang.entity.Null;
+import cn.anyoufang.entity.SpLockAdmin;
+import cn.anyoufang.entity.SpLockAdminExample;
+import cn.anyoufang.entity.SpMember;
+import cn.anyoufang.entity.SpMemberExample;
+import cn.anyoufang.entity.SpMemberLogin;
+import cn.anyoufang.entity.SpMemberRelation;
+import cn.anyoufang.entity.SpMemberRelationExample;
+import cn.anyoufang.entity.SpMemberWx;
 import cn.anyoufang.entity.selfdefined.AnyoujiaResult;
 import cn.anyoufang.entity.selfdefined.ErrorPwd;
 import cn.anyoufang.entity.selfdefined.InitParam;
 import cn.anyoufang.entity.selfdefined.LoginResult;
 import cn.anyoufang.enumresource.HttpCodeEnum;
 import cn.anyoufang.enumresource.UsertypeEnum;
-import cn.anyoufang.mapper.*;
+import cn.anyoufang.mapper.SpLockAdminMapper;
+import cn.anyoufang.mapper.SpMemberLoginMapper;
+import cn.anyoufang.mapper.SpMemberMapper;
+import cn.anyoufang.mapper.SpMemberRelationMapper;
+import cn.anyoufang.mapper.SpMemberWxMapper;
 import cn.anyoufang.service.LoginService;
-import cn.anyoufang.utils.*;
+import cn.anyoufang.utils.AesCBC;
+import cn.anyoufang.utils.DateUtil;
+import cn.anyoufang.utils.JsonUtils;
+import cn.anyoufang.utils.Md5Utils;
+import cn.anyoufang.utils.RedisUtils;
+import cn.anyoufang.utils.SendSmsUtil;
+import cn.anyoufang.utils.SortJsonAesc;
+import cn.anyoufang.utils.StringUtil;
+import cn.anyoufang.utils.UUID;
 import com.aliyuncs.dysmsapi.model.v20170525.SendSmsResponse;
 import com.aliyuncs.exceptions.ClientException;
-import net.sf.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +42,10 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import static cn.anyoufang.utils.HandlePhpRequestUtil.doPhpRequest;
+import static cn.anyoufang.utils.HandlePhpRequestUtil.genarateSign;
+import static cn.anyoufang.utils.HandlePhpRequestUtil.parseResponse;
 
 /**
  * 处理用户登录注册相关
@@ -69,10 +92,8 @@ public class LoginServiceImpl implements LoginService {
     /**
      * PHp接口加密参数
      */
-    @Value("${php.url}")
+    @Value("${php.Sso.url}")
     private String phpurl;
-    @Value("${php.salt}")
-    private String salt;
     @Value("${php.sso}")
     private String SSO;
 
@@ -450,10 +471,11 @@ public class LoginServiceImpl implements LoginService {
      */
     @Override
     @Transactional(rollbackFor = RuntimeException.class)
-    public boolean updateAdditionalUserInfo(String avatar, String bname, String phone) {
+    public boolean updateAdditionalUserInfo(String avatar, String bname, String phone,int gender) {
         SpMember member = new SpMember();
         member.setAvatar(avatar);
         member.setBname(bname);
+        member.setGender(gender);
         int index = memberMapper.updateByExampleSelective(member, createExample(phone));
         if (index > 0) {
             return true;
@@ -477,7 +499,7 @@ public class LoginServiceImpl implements LoginService {
         p.setFun("register");
         p.setSign(genarateSign(SSO, "register", json));
         p.setData(map);
-        return parseResponse(doPhpRequest(p));
+        return parseResponse(doPhpRequest(p,phpurl));
     }
 
     /**
@@ -499,7 +521,7 @@ public class LoginServiceImpl implements LoginService {
         p.setFun("login");
         p.setSign(genarateSign(SSO, "login", json));
         p.setData(map);
-        return parseResponse(doPhpRequest(p));
+        return parseResponse(doPhpRequest(p,phpurl));
     }
 
     /**
@@ -516,7 +538,7 @@ public class LoginServiceImpl implements LoginService {
         p.setFun("updateuser");
         p.setSign(genarateSign(SSO, "updateuser", json));
         p.setData(map);
-        return parseResponse(doPhpRequest(p));
+        return parseResponse(doPhpRequest(p,phpurl));
     }
 
     /**
@@ -533,35 +555,11 @@ public class LoginServiceImpl implements LoginService {
         p.setFun("updatelogin");
         p.setSign(genarateSign(SSO, "updatelogin", json));
         p.setData(map);
-        return parseResponse(doPhpRequest(p));
+        return parseResponse(doPhpRequest(p,phpurl));
     }
     //=>结束调用PHP鉴权中心进行登录注册相关
 
-    /**
-     * 工具方法负责发送请求
-     */
-    private String doPhpRequest(InitParam initParam) throws Exception {
-        String ss = JsonUtils.objectToJson(initParam);
-        return SimulateGetAndPostUtil.sendPost(phpurl, genarateParamForPhpRequest(ss));
-    }
 
-    /**
-     * 工具方法负责生成签名
-     */
-    private String genarateSign(String mod, String fun, String jsonData) {
-        StringBuilder sb = new StringBuilder();
-        String result = sb.append(mod).append(fun).append(jsonData).append(salt)
-                .toString().replaceAll("\t|\n|\r", "");
-        return Md5Utils.md5(result, "utf-8");
-    }
-
-    /**
-     * 工具方法负责生成请求参数
-     */
-    private String genarateParamForPhpRequest(String s) throws Exception {
-        return "sp=" + AesCBC.getInstance().encrypt(s).
-                replaceAll("\r|\n", "").trim().replaceAll("\\+", "%2B");
-    }
 
     /**
      * 根据手机号获取用户
@@ -602,29 +600,6 @@ public class LoginServiceImpl implements LoginService {
         return false;
     }
 
-
-    /**
-     * 解析PHP鉴权中心响应结果
-     */
-    public Map<String, Object> parseResponse(String response) {
-        Map<String, Object> map = JsonUtils.jsonToMap(response);
-        Integer status = (Integer) map.get("status");
-        Object object = map.get("data");
-        JSONObject json;
-        Map<String, Object> data = new HashMap<>();
-        if (object != null) {
-            if (object instanceof String) {
-                String msg = (String) object;
-                data.put("msg", msg);
-            } else {
-                json = (JSONObject) map.get("data");
-                data.putAll(JsonUtils.jsonToMap(json));
-            }
-
-        }
-        data.put("status", status);
-        return data;
-    }
 
     /**
      * 解析PHP返回的加密session

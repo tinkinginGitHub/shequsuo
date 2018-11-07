@@ -14,6 +14,60 @@ public class LockRecord implements Serializable {
     private int opentime;
     private int pwdType;
     private int isAlarm;
+    private int gender;
+    private int userType;
+    private String headurl;
+    private String relation;
+    private int status;
+    private int pwdRecordId;
+
+    public int getUserType() {
+        return userType;
+    }
+
+    public void setUserType(int userType) {
+        this.userType = userType;
+    }
+
+    public int getPwdRecordId() {
+        return pwdRecordId;
+    }
+
+    public void setPwdRecordId(int pwdRecordId) {
+        this.pwdRecordId = pwdRecordId;
+    }
+
+    public int getStatus() {
+        return status;
+    }
+
+    public void setStatus(int status) {
+        this.status = status;
+    }
+
+    public int getGender() {
+        return gender;
+    }
+
+    public void setGender(int gender) {
+        this.gender = gender;
+    }
+
+    public String getHeadurl() {
+        return headurl;
+    }
+
+    public void setHeadurl(String headurl) {
+        this.headurl = headurl;
+    }
+
+    public String getRelation() {
+        return relation;
+    }
+
+    public void setRelation(String relation) {
+        this.relation = relation;
+    }
 
     public String getNickname() {
         return nickname;

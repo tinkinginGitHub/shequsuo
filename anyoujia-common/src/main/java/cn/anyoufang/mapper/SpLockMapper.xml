@@ -360,13 +360,14 @@
     FROM
     sp_lock sl
     JOIN sp_community sc ON sl.community = sc.cid
-    WHERE
+    <where>
     <if test="locksns != null and locksns.size()!=0">
     sl.sn in
       <foreach collection="locksns" item="item" open="(" close=")" separator=",">
         #{item}
       </foreach>
     </if>
+    </where>
   </select>
 
   <select id="selectLockInfoByLocksn" resultMap="combineSelectResultMap">

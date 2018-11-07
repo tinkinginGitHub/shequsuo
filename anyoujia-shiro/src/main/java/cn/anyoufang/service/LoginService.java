@@ -114,7 +114,7 @@ public interface LoginService {
      * @param phone
      * @return
      */
-    boolean updateAdditionalUserInfo(String avatar,String bname,String phone);
+    boolean updateAdditionalUserInfo(String avatar,String bname,String phone,int gender);
 
     // boolean isExist(String phone);
 
