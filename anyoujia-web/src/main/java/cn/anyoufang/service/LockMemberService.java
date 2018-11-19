@@ -6,6 +6,7 @@ import cn.anyoufang.entity.SpMemberRelation;
 import cn.anyoufang.entity.selfdefined.SetRecord;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  *
@@ -94,7 +95,7 @@ public interface LockMemberService {
      * @param phone
      * @return boolean
      */
-    boolean isSetLockPwdForever(String locksn,String phone,int memberid,int relationid);
+    Map isSetLockPwdForever(String locksn, String phone, int memberid, int relationid);
 
     /**
      * 删除锁密码用户相关信息
@@ -102,7 +103,7 @@ public interface LockMemberService {
      * @param locksn
      * @return
      */
-    boolean deletePermentPwd(int memberid,String locksn,String phone,int relationid);
+    boolean deletePermentPwd(int memberid,String locksn,String phone,int relationid,int pwdid);
 
     /**
      *管理用户信息

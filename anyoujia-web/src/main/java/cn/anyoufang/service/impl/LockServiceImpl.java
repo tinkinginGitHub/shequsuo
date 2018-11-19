@@ -48,7 +48,6 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.locks.ReentrantLock;
 
 import static cn.anyoufang.utils.HandlePhpRequestUtil.doPhpRequest;
 import static cn.anyoufang.utils.HandlePhpRequestUtil.genarateSign;
@@ -125,6 +124,7 @@ public class LockServiceImpl implements LockService{
         lockPassword.setLocksn(locksn);
         lockPassword.setMemberid(memberid);
         lockPassword.setPtype(ptype);
+        lockPassword.setExpired(false);
         lockPassword.setMotive(motive);
         if(relationid !=0){
             lockPassword.setRelationid(relationid);
@@ -134,6 +134,12 @@ public class LockServiceImpl implements LockService{
         lockPassword.setAddtime(DateUtil.generateTenTime());
         passwordMapper.insertSelective(lockPassword);
         int seqid = lockPassword.getPwdid();
+        if(ptype == 1){
+            //update by代平：永久密码不通过硬件接口，直接返回所需要的id接口(2018.11.16)
+            Map<String,String> res = new HashMap<>(1);
+            res.put("pwdid",String.valueOf(seqid));
+            return res;
+        }
         long timestamp = System.currentTimeMillis()/1000;
         StringBuilder sb = new StringBuilder();
         //永久密码不传时间
@@ -151,7 +157,7 @@ public class LockServiceImpl implements LockService{
         String res = SimulateGetAndPostUtil.sendPost(url,combineParam);
          try {
             Map<String,Object> data =  JsonUtils.jsonToMap(res);
-            Map<String,String> parsedMap = new HashMap<>();
+            Map<String,String> parsedMap = new HashMap<>(2);
             String code =  String.valueOf(data.get("code"));
             parsedMap.put("code",code);
             parsedMap.put("msg",String.valueOf(data.get("message")));
@@ -224,6 +230,7 @@ public class LockServiceImpl implements LockService{
         lockFinger.setFingerdesc(fingerdesc);
         lockFinger.setFingerid(fingerid);
         lockFinger.setLocksn(locksn);
+        lockFinger.setExpired(false);
         if(relationid != 0) {
             lockFinger.setRelationid(relationid);
         }
@@ -306,7 +313,7 @@ public class LockServiceImpl implements LockService{
             return AnyoujiaResult.build(FIVE_H,"添加锁发生异常，请重新操作");
         }
         StringBuilder sb = new StringBuilder();
-        int id = lock.getId();
+        final int id = lock.getId();
         String param = sb.append(locksn).append(timestamp).append(id).append(lockSalt).toString();
         String sign = Md5Utils.md5(param,"UTF-8");
         String combineParam = "method=register.lock.info&userid="+id+"&locksn="+locksn+"&temptime="+timestamp+"&sign="+sign;
@@ -328,6 +335,9 @@ public class LockServiceImpl implements LockService{
             spLock.setActive(true);
             spLock.setActivetime(DateUtil.generateTenTime());
             lockinfoMapper.updateByPrimaryKeySelective(spLock);
+        }else {
+            //如果不成功，则删除无用数据，防止不能再次添加
+            lockMapper.deleteByPrimaryKey(id);
         }
         return AnyoujiaResult.build(status,String.valueOf(data.get("message")));
     }
@@ -444,6 +454,7 @@ public class LockServiceImpl implements LockService{
                         lock.setAddress(address);
                         lock.setCode2(l.getCode2());
                         lock.setProducttime(l.getProducttime());
+                        lock.setProkey(l.getProkey());
                         Map<String,String> nicknameAndPhone = memberMapper.selectBySn(locksn);
                         String adminNickname = nicknameAndPhone.get("bname");
                         if(adminNickname !=null){
@@ -640,21 +651,26 @@ public class LockServiceImpl implements LockService{
      * 0表示未激活状态,1表示已经激活
      */
     @Override
-    public AnyoujiaResult getLockActiveAndAddress(String locksn) {
-        Map<String,String> res = new HashMap<>();
-        Map<String,String> data = lockinfoMapper.selectLockActiveByLocksn(locksn);
+    public AnyoujiaResult getLockActiveAndAddress(String locksn,String prokey) {
+        final Map<String,String> params = new HashMap<>(2);
+        params.put("prokey",prokey);
+        params.put("locksn",locksn);
+        Map<String,String> data = lockinfoMapper.selectLockActiveByLocksnOrProkey(params);
         if(data == null || data.size() == 0) {
-            return AnyoujiaResult.build(T_H_1,T_H_1_MSG);
+            return AnyoujiaResult.build(T_H_1,"设备不存在，请重试");
         }
         String active = StateEnum.NONACTIVE.getCode();
 
         if("true".equals(data.get("active"))) {
             active = StateEnum.ACTIVED.getCode();
         }
+        Map<String,String> res = new HashMap<>();
         res.put("active",active);
         StringBuilder sb = new StringBuilder();
         String address = sb.append(data.get("cname")).append(data.get("address")).toString();
         res.put("address",address);
+        res.put("prokey",data.get("pro_key"));
+        res.put("locksn",data.get("sn"));
         return AnyoujiaResult.ok(res);
     }
 
@@ -683,6 +699,79 @@ public class LockServiceImpl implements LockService{
         return null;
     }
 
+    @Override
+    public AnyoujiaResult getProuctNum(String locksn) throws Exception {
+
+        Map<String, String> map = new HashMap<>();
+        map.put("sn", locksn);
+        String json = JsonUtils.objectToJson(SortJsonAesc.sortMap(map));
+        InitParam p = new InitParam();
+        p.setMod("Com");
+        p.setFun("code_gongcheng");
+        String sign =  genarateSign("Com", "code_gongcheng", json);
+        p.setSign(sign);
+        p.setData(map);
+        String resString = doPhpRequest(p,phpProjectUrl);
+        Map<String,Object> res =  parseResponse(resString);
+        Integer status = (Integer) res.get("status");
+        if (status == T_H) {
+            return AnyoujiaResult.ok(String.valueOf(res.get("msg")));
+        }
+        return AnyoujiaResult.build(status,String.valueOf(res.get("msg")));
+    }
+
+    @Override
+    public AnyoujiaResult getTempPwdFromPhp(String locksn) throws Exception {
+
+        Map<String, String> map = new HashMap<>();
+        map.put("sn", locksn);
+        String json = JsonUtils.objectToJson(SortJsonAesc.sortMap(map));
+        InitParam p = new InitParam();
+        p.setMod("Com");
+        p.setFun("code_linshi");
+        String sign =  genarateSign("Com", "code_linshi", json);
+        p.setSign(sign);
+        p.setData(map);
+        String resString = doPhpRequest(p,phpProjectUrl);
+        Map<String,Object> res =  parseResponse(resString);
+        Integer status = (Integer) res.get("status");
+        if (status == T_H) {
+            return AnyoujiaResult.ok(String.valueOf(res.get("msg")));
+        }
+        return AnyoujiaResult.build(status,String.valueOf(res.get("msg")));
+    }
+
+    @Override
+    public AnyoujiaResult updateSetedPwdState(int memberid,String locksn,boolean isAdmin,String phone,int relationid) {
+
+        if(isAdmin) {
+            //只有永久密码被设置后这个标示才能设置为true
+                //不为0，则表示管理员给老人和儿童设置密码
+                if(relationid !=0){
+                    SpMemberRelation oldChild = new SpMemberRelation();
+                    oldChild.setSetedlockpwd(true);
+                    oldChild.setId(relationid);
+                    relationMapper.updateByPrimaryKeySelective(oldChild);
+
+                }else {
+                    SpLockAdmin lock = new SpLockAdmin();
+                    lock.setSetedlockpwd(true);
+                    lock.setUpdatetime(DateUtil.generateTenTime());
+                    SpLockAdminExample example = new SpLockAdminExample();
+                    SpLockAdminExample.Criteria criteria = example.createCriteria();
+                    criteria.andAdminidEqualTo(memberid).andLocksnEqualTo(locksn);
+                    lockMapper.updateByExampleSelective(lock,example);
+                }
+
+        }else {
+            //只有永久密码被设置后这个标示才能设置为true
+                SpMemberRelation user = new SpMemberRelation();
+                user.setSetedlockpwd(true);
+                relationMapper.updateByExampleSelective(user,getExample(phone,locksn));
+        }
+        return AnyoujiaResult.ok();
+    }
+
     private List<SpLockAdmin> getAdminLocks(int adminid) {
         SpLockAdminExample example = new SpLockAdminExample();
         SpLockAdminExample.Criteria criteria = example.createCriteria();
@@ -697,4 +786,5 @@ public class LockServiceImpl implements LockService{
         criteria.andPhoneEqualTo(phone);
         return example;
     }
+
 }

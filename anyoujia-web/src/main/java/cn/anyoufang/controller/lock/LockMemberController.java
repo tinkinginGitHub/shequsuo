@@ -164,7 +164,7 @@ public class LockMemberController extends AbstractController {
               if(ok) {
                   return AnyoujiaResult.ok();
               }
-              return AnyoujiaResult.build(FOUR_H,"添加用户失败");
+              return AnyoujiaResult.build(FOUR_H,"添加失败，已是家庭成员");
           }catch (Exception e) {
               if(log.isInfoEnabled()) {
                   log.info(e.getMessage());
@@ -287,9 +287,9 @@ public class LockMemberController extends AbstractController {
           if(user == null) {
               return AnyoujiaResult.build(FOUR_H_1,"登陆超时");
           }
-         boolean ok =  memberService.isSetLockPwdForever(locksn,user.getPhone(),user.getUid(),relationid);
-          if(ok) {
-              return AnyoujiaResult.ok();
+          Map res =  memberService.isSetLockPwdForever(locksn,user.getPhone(),user.getUid(),relationid);
+          if(res !=null) {
+              return AnyoujiaResult.ok(res);
           }
           return AnyoujiaResult.build(FOUR_H,"暂未设置密码");
       }

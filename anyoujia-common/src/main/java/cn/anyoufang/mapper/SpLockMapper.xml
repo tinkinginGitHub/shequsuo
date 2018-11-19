@@ -11,10 +11,15 @@
     <result column="activetime" property="activetime" jdbcType="INTEGER" />
     <result column="card" property="card" jdbcType="VARCHAR" />
     <result column="community" property="community" jdbcType="INTEGER" />
-    <result column="origin" property="origin" jdbcType="VARCHAR" />
     <result column="p_date" property="pDate" jdbcType="INTEGER" />
     <result column="color" property="color" jdbcType="VARCHAR" />
     <result column="model" property="model" jdbcType="VARCHAR" />
+    <result column="sechar1" property="sechar1" jdbcType="INTEGER" />
+    <result column="sechar2" property="sechar2" jdbcType="INTEGER" />
+    <result column="nos" property="nos" jdbcType="VARCHAR" />
+    <result column="pro_key" property="proKey" jdbcType="VARCHAR" />
+    <result column="checker" property="checker" jdbcType="VARCHAR" />
+    <result column="origin" property="origin" jdbcType="VARCHAR" />
   </resultMap>
 
   <resultMap id="combineSelectResultMap" type="cn.anyoufang.entity.selfdefined.LockCombineInfo">
@@ -28,6 +33,7 @@
     <result column="address" property="address" jdbcType="VARCHAR" />
     <result column="code2" property="code2" jdbcType="VARCHAR" />
   </resultMap>
+
   <sql id="Example_Where_Clause" >
     <where >
       <foreach collection="oredCriteria" item="criteria" separator="or" >
@@ -87,8 +93,8 @@
     </where>
   </sql>
   <sql id="Base_Column_List" >
-    sn, code1, code2, active, ver, addtime, activetime, card, community, origin, p_date, 
-    color, model
+    sn, code1, code2, active, ver, addtime, activetime, card, community, p_date, color, 
+    model, sechar1, sechar2, nos, pro_key, checker, origin
   </sql>
   <select id="selectByExample" resultMap="BaseResultMap" parameterType="cn.anyoufang.entity.SpLockExample" >
     select
@@ -123,14 +129,16 @@
   <insert id="insert" parameterType="cn.anyoufang.entity.SpLock" >
     insert into sp_lock (sn, code1, code2, 
       active, ver, addtime, activetime, 
-      card, community, origin, 
-      p_date, color, model
-      )
+      card, community, p_date, 
+      color, model, sechar1, 
+      sechar2, nos, pro_key, 
+      checker, origin)
     values (#{sn,jdbcType=VARCHAR}, #{code1,jdbcType=VARCHAR}, #{code2,jdbcType=VARCHAR}, 
       #{active,jdbcType=BIT}, #{ver,jdbcType=VARCHAR}, #{addtime,jdbcType=INTEGER}, #{activetime,jdbcType=INTEGER}, 
-      #{card,jdbcType=VARCHAR}, #{community,jdbcType=INTEGER}, #{origin,jdbcType=VARCHAR}, 
-      #{pDate,jdbcType=INTEGER}, #{color,jdbcType=VARCHAR}, #{model,jdbcType=VARCHAR}
-      )
+      #{card,jdbcType=VARCHAR}, #{community,jdbcType=INTEGER}, #{pDate,jdbcType=INTEGER}, 
+      #{color,jdbcType=VARCHAR}, #{model,jdbcType=VARCHAR}, #{sechar1,jdbcType=INTEGER}, 
+      #{sechar2,jdbcType=INTEGER}, #{nos,jdbcType=VARCHAR}, #{proKey,jdbcType=VARCHAR}, 
+      #{checker,jdbcType=VARCHAR}, #{origin,jdbcType=VARCHAR})
   </insert>
   <insert id="insertSelective" parameterType="cn.anyoufang.entity.SpLock" >
     insert into sp_lock
@@ -162,9 +170,6 @@
       <if test="community != null" >
         community,
       </if>
-      <if test="origin != null" >
-        origin,
-      </if>
       <if test="pDate != null" >
         p_date,
       </if>
@@ -173,6 +178,24 @@
       </if>
       <if test="model != null" >
         model,
+      </if>
+      <if test="sechar1 != null" >
+        sechar1,
+      </if>
+      <if test="sechar2 != null" >
+        sechar2,
+      </if>
+      <if test="nos != null" >
+        nos,
+      </if>
+      <if test="proKey != null" >
+        pro_key,
+      </if>
+      <if test="checker != null" >
+        checker,
+      </if>
+      <if test="origin != null" >
+        origin,
       </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides="," >
@@ -203,9 +226,6 @@
       <if test="community != null" >
         #{community,jdbcType=INTEGER},
       </if>
-      <if test="origin != null" >
-        #{origin,jdbcType=VARCHAR},
-      </if>
       <if test="pDate != null" >
         #{pDate,jdbcType=INTEGER},
       </if>
@@ -214,6 +234,24 @@
       </if>
       <if test="model != null" >
         #{model,jdbcType=VARCHAR},
+      </if>
+      <if test="sechar1 != null" >
+        #{sechar1,jdbcType=INTEGER},
+      </if>
+      <if test="sechar2 != null" >
+        #{sechar2,jdbcType=INTEGER},
+      </if>
+      <if test="nos != null" >
+        #{nos,jdbcType=VARCHAR},
+      </if>
+      <if test="proKey != null" >
+        #{proKey,jdbcType=VARCHAR},
+      </if>
+      <if test="checker != null" >
+        #{checker,jdbcType=VARCHAR},
+      </if>
+      <if test="origin != null" >
+        #{origin,jdbcType=VARCHAR},
       </if>
     </trim>
   </insert>
@@ -253,9 +291,6 @@
       <if test="record.community != null" >
         community = #{record.community,jdbcType=INTEGER},
       </if>
-      <if test="record.origin != null" >
-        origin = #{record.origin,jdbcType=VARCHAR},
-      </if>
       <if test="record.pDate != null" >
         p_date = #{record.pDate,jdbcType=INTEGER},
       </if>
@@ -264,6 +299,24 @@
       </if>
       <if test="record.model != null" >
         model = #{record.model,jdbcType=VARCHAR},
+      </if>
+      <if test="record.sechar1 != null" >
+        sechar1 = #{record.sechar1,jdbcType=INTEGER},
+      </if>
+      <if test="record.sechar2 != null" >
+        sechar2 = #{record.sechar2,jdbcType=INTEGER},
+      </if>
+      <if test="record.nos != null" >
+        nos = #{record.nos,jdbcType=VARCHAR},
+      </if>
+      <if test="record.proKey != null" >
+        pro_key = #{record.proKey,jdbcType=VARCHAR},
+      </if>
+      <if test="record.checker != null" >
+        checker = #{record.checker,jdbcType=VARCHAR},
+      </if>
+      <if test="record.origin != null" >
+        origin = #{record.origin,jdbcType=VARCHAR},
       </if>
     </set>
     <if test="_parameter != null" >
@@ -281,10 +334,15 @@
       activetime = #{record.activetime,jdbcType=INTEGER},
       card = #{record.card,jdbcType=VARCHAR},
       community = #{record.community,jdbcType=INTEGER},
-      origin = #{record.origin,jdbcType=VARCHAR},
       p_date = #{record.pDate,jdbcType=INTEGER},
       color = #{record.color,jdbcType=VARCHAR},
-      model = #{record.model,jdbcType=VARCHAR}
+      model = #{record.model,jdbcType=VARCHAR},
+      sechar1 = #{record.sechar1,jdbcType=INTEGER},
+      sechar2 = #{record.sechar2,jdbcType=INTEGER},
+      nos = #{record.nos,jdbcType=VARCHAR},
+      pro_key = #{record.proKey,jdbcType=VARCHAR},
+      checker = #{record.checker,jdbcType=VARCHAR},
+      origin = #{record.origin,jdbcType=VARCHAR}
     <if test="_parameter != null" >
       <include refid="Update_By_Example_Where_Clause" />
     </if>
@@ -316,9 +374,6 @@
       <if test="community != null" >
         community = #{community,jdbcType=INTEGER},
       </if>
-      <if test="origin != null" >
-        origin = #{origin,jdbcType=VARCHAR},
-      </if>
       <if test="pDate != null" >
         p_date = #{pDate,jdbcType=INTEGER},
       </if>
@@ -327,6 +382,24 @@
       </if>
       <if test="model != null" >
         model = #{model,jdbcType=VARCHAR},
+      </if>
+      <if test="sechar1 != null" >
+        sechar1 = #{sechar1,jdbcType=INTEGER},
+      </if>
+      <if test="sechar2 != null" >
+        sechar2 = #{sechar2,jdbcType=INTEGER},
+      </if>
+      <if test="nos != null" >
+        nos = #{nos,jdbcType=VARCHAR},
+      </if>
+      <if test="proKey != null" >
+        pro_key = #{proKey,jdbcType=VARCHAR},
+      </if>
+      <if test="checker != null" >
+        checker = #{checker,jdbcType=VARCHAR},
+      </if>
+      <if test="origin != null" >
+        origin = #{origin,jdbcType=VARCHAR},
       </if>
     </set>
     where sn = #{sn,jdbcType=VARCHAR}
@@ -341,10 +414,15 @@
       activetime = #{activetime,jdbcType=INTEGER},
       card = #{card,jdbcType=VARCHAR},
       community = #{community,jdbcType=INTEGER},
-      origin = #{origin,jdbcType=VARCHAR},
       p_date = #{pDate,jdbcType=INTEGER},
       color = #{color,jdbcType=VARCHAR},
-      model = #{model,jdbcType=VARCHAR}
+      model = #{model,jdbcType=VARCHAR},
+      sechar1 = #{sechar1,jdbcType=INTEGER},
+      sechar2 = #{sechar2,jdbcType=INTEGER},
+      nos = #{nos,jdbcType=VARCHAR},
+      pro_key = #{proKey,jdbcType=VARCHAR},
+      checker = #{checker,jdbcType=VARCHAR},
+      origin = #{origin,jdbcType=VARCHAR}
     where sn = #{sn,jdbcType=VARCHAR}
   </update>
 
@@ -356,17 +434,18 @@
     sc.address,
     sc.cname,
     sl.sn,
+    sl.pro_key,
     sl.code2
     FROM
     sp_lock sl
     JOIN sp_community sc ON sl.community = sc.cid
     <where>
-    <if test="locksns != null and locksns.size()!=0">
-    sl.sn in
-      <foreach collection="locksns" item="item" open="(" close=")" separator=",">
-        #{item}
-      </foreach>
-    </if>
+      <if test="locksns != null and locksns.size()!=0">
+        sl.sn in
+        <foreach collection="locksns" item="item" open="(" close=")" separator=",">
+          #{item}
+        </foreach>
+      </if>
     </where>
   </select>
 
@@ -383,17 +462,28 @@
     sp_lock sl
     JOIN sp_community sc ON sl.community = sc.cid
     WHERE
-      sl.sn =#{sn,jdbcType=VARCHAR}
+    sl.sn =#{sn,jdbcType=VARCHAR}
   </select>
 
-  <select id="selectLockActiveByLocksn" resultType="java.util.Map">
+  <select id="selectLockActiveByLocksnOrProkey" resultType="java.util.Map" parameterType="java.util.Map">
     SELECT
     sl.active,
     sc.address,
-    sc.cname
+    sc.cname,
+    sl.pro_key,
+    sl.sn
     FROM
     sp_lock sl
     JOIN sp_community sc ON sl.community = sc.cid
-    WHERE sl.sn =#{sn,jdbcType=VARCHAR}
+    <where>
+        <if test="params.locksn !=null">
+          sl.sn = #{params.locksn}
+        </if>
+        <if test="params.prokey !=null">
+            AND sl.pro_key=#{params.prokey}
+        </if>
+    </where>
   </select>
+
+
 </mapper>

@@ -44,6 +44,19 @@ public class LockCombineInfo implements Serializable {
     private String code2;
 
 
+    /**
+     * 产品码
+     */
+    private String prokey;
+
+
+    public String getProkey() {
+        return prokey;
+    }
+
+    public void setProkey(String prokey) {
+        this.prokey = prokey;
+    }
 
     public String getCode2() {
         return code2;

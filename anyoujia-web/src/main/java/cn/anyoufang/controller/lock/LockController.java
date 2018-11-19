@@ -159,7 +159,32 @@ public class LockController extends AbstractController {
         if(res == null) {
             return AnyoujiaResult.build(FIVE_H,"系统异常");
         }
-        return AnyoujiaResult.build(Integer.valueOf(res.get("code")),res.get("msg"));
+        String code = res.get("code");
+        if(code == null){
+            return AnyoujiaResult.ok(res);
+        }
+        return AnyoujiaResult.build(Integer.valueOf(code),res.get("msg"));
+    }
+
+    @RequestMapping("/ppstate")
+    public AnyoujiaResult updateSetedPermenatePwdStatus(String locksn,
+                                                        @RequestParam(required = false,defaultValue = "0") int relationid,
+                                                        HttpServletRequest request){
+        if(StringUtil.isEmpty(locksn)) {
+            return AnyoujiaResult.build(FOUR_H,"参数异常");
+        }
+        SpMember user = getUser(request,loginService);
+        if(user == null) {
+            AnyoujiaResult.build(FOUR_H_1,"登录超时");
+        }
+        int memberid = user.getUid();
+        String phone = user.getPhone();
+        boolean isAdmin = false;
+        List<SpLockAdmin> lockAdmin = loginService.getLockAdmin(user.getUid(),locksn);
+        if(!lockAdmin.isEmpty()) {
+            isAdmin = true;
+        }
+       return lockService.updateSetedPwdState(memberid,locksn,isAdmin,phone,relationid);
     }
 
     /**
@@ -225,7 +250,7 @@ public class LockController extends AbstractController {
     @RequestMapping("/delpwd")
     @LockOperateLog(operateTypeDesc = "删除密码")
     public AnyoujiaResult delLockPwd(@RequestParam String locksn,
-                                     @RequestParam(required = false,defaultValue = "-1") int relationid,
+                                     @RequestParam(required = false,defaultValue = "-1") int relationid, int pwdid,
                                      HttpServletRequest request) {
 
         if(StringUtil.isEmpty(locksn)) {
@@ -237,7 +262,7 @@ public class LockController extends AbstractController {
              return AnyoujiaResult.build(FOUR_H_1,"登录超时");
         }
 
-        if(memberService.deletePermentPwd(member.getUid(),locksn,member.getPhone(),relationid)) {
+        if(memberService.deletePermentPwd(member.getUid(),locksn,member.getPhone(),relationid,pwdid)) {
             return AnyoujiaResult.ok();
         }
         return AnyoujiaResult.build(FOUR_H,"删除超时,请重试");
@@ -279,10 +304,48 @@ public class LockController extends AbstractController {
      * @return
      */
     @RequestMapping("/activeinfo")
-    public AnyoujiaResult getActiveInfo(@RequestParam String locksn) {
+    public AnyoujiaResult getActiveInfo(@RequestParam(required = false) String locksn,
+                                        @RequestParam(required = false) String prokey) {
+        if(StringUtil.isEmpty(locksn)&&StringUtil.isEmpty(prokey)) {
+            return AnyoujiaResult.build(FOUR_H,"参数不能为空");
+        }
+        return lockService.getLockActiveAndAddress(locksn,prokey);
+    }
+
+    /**
+     * 获取工程码
+     * @param locksn
+     * @return
+     */
+    @RequestMapping("/productnum")
+    public AnyoujiaResult getProductNum(@RequestParam String locksn){
+
         if(StringUtil.isEmpty(locksn)) {
             return AnyoujiaResult.build(FOUR_H,"锁序列号不能为空");
         }
-        return lockService.getLockActiveAndAddress(locksn);
+        try {
+           return lockService.getProuctNum(locksn);
+        } catch (Exception e) {
+            if(LOGGER.isInfoEnabled()){
+                LOGGER.info("获取工程码发生系统异常： " + e.getMessage());
+            }
+            return AnyoujiaResult.build(FIVE_H,"获取工程码发生系统异常");
+        }
     }
+
+    @RequestMapping("/temppwd")
+    public AnyoujiaResult getTempPwdFromPhp(@RequestParam String locksn) {
+        if(StringUtil.isEmpty(locksn)) {
+            return AnyoujiaResult.build(FOUR_H,"锁序列号不能为空");
+        }
+        try {
+            return lockService.getTempPwdFromPhp(locksn);
+        } catch (Exception e) {
+            if(LOGGER.isInfoEnabled()){
+                LOGGER.info("获取临时密码发生系统异常： " + e.getMessage());
+            }
+            return AnyoujiaResult.build(FIVE_H,"获取临时密码发生系统异常");
+        }
+    }
+
 }

@@ -219,6 +219,39 @@ public class TestLockInterface {
         p.setData(map);
         System.out.println(doPhpRequest(p));
     }
+    /**
+     * 测试获取锁临时密码
+     */
+    @Test
+    public void testTempPwdLock()throws Exception{
+        Map<String, String> map = new HashMap<>();
+        map.put("sn", "777");
+        String json = JsonUtils.objectToJson(SortJsonAesc.sortMap(map));
+        InitParam p = new InitParam();
+        p.setMod("Com");
+        p.setFun("code_linshi");
+        String sign =  genarateSign("Com", "code_linshi", json);
+        p.setSign(sign);
+        p.setData(map);
+        System.out.println(doPhpRequest(p));
+    }
+    /**
+     * 测试获取工程码接口
+     * @throws Exception
+     */
+    @Test
+    public void testProductNumForLock()throws Exception{
+        Map<String, String> map = new HashMap<>();
+        map.put("sn", "777");
+        String json = JsonUtils.objectToJson(SortJsonAesc.sortMap(map));
+        InitParam p = new InitParam();
+        p.setMod("Com");
+        p.setFun("code_gongcheng");
+        String sign =  genarateSign("Com", "code_gongcheng", json);
+        p.setSign(sign);
+        p.setData(map);
+        System.out.println(doPhpRequest(p));
+    }
 
     public Map<String, Object> parseResponse(String response) {
         Map<String, Object> map = JsonUtils.jsonToMap(response);

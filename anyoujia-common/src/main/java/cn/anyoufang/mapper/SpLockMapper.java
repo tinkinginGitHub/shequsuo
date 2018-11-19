@@ -47,10 +47,8 @@ public interface SpLockMapper {
 
     /**
      * 自定义关联查询获取锁状态和地址
-     * @param locksn
+     * @param params
      * @return
      */
-    Map<String,String> selectLockActiveByLocksn(@Param("sn") String locksn);
-
-
+    Map<String,String> selectLockActiveByLocksnOrProkey(@Param("params") Map<String,String> params);
 }
