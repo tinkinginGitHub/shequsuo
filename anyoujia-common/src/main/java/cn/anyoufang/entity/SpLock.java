@@ -19,13 +19,23 @@ public class SpLock {
 
     private Integer community;
 
-    private String origin;
-
     private Integer pDate;
 
     private String color;
 
     private String model;
+
+    private Integer sechar1;
+
+    private Integer sechar2;
+
+    private String nos;
+
+    private String proKey;
+
+    private String checker;
+
+    private String origin;
 
     public String getSn() {
         return sn;
@@ -99,14 +109,6 @@ public class SpLock {
         this.community = community;
     }
 
-    public String getOrigin() {
-        return origin;
-    }
-
-    public void setOrigin(String origin) {
-        this.origin = origin == null ? null : origin.trim();
-    }
-
     public Integer getpDate() {
         return pDate;
     }
@@ -129,5 +131,53 @@ public class SpLock {
 
     public void setModel(String model) {
         this.model = model == null ? null : model.trim();
+    }
+
+    public Integer getSechar1() {
+        return sechar1;
+    }
+
+    public void setSechar1(Integer sechar1) {
+        this.sechar1 = sechar1;
+    }
+
+    public Integer getSechar2() {
+        return sechar2;
+    }
+
+    public void setSechar2(Integer sechar2) {
+        this.sechar2 = sechar2;
+    }
+
+    public String getNos() {
+        return nos;
+    }
+
+    public void setNos(String nos) {
+        this.nos = nos == null ? null : nos.trim();
+    }
+
+    public String getProKey() {
+        return proKey;
+    }
+
+    public void setProKey(String proKey) {
+        this.proKey = proKey == null ? null : proKey.trim();
+    }
+
+    public String getChecker() {
+        return checker;
+    }
+
+    public void setChecker(String checker) {
+        this.checker = checker == null ? null : checker.trim();
+    }
+
+    public String getOrigin() {
+        return origin;
+    }
+
+    public void setOrigin(String origin) {
+        this.origin = origin == null ? null : origin.trim();
     }
 }

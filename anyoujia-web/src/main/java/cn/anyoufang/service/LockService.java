@@ -100,9 +100,10 @@ public interface LockService {
     /**
      * 获取锁激活状态和地址
      * @param locksn
+     * @param prokey
      * @return
      */
-    AnyoujiaResult getLockActiveAndAddress(String locksn);
+    AnyoujiaResult getLockActiveAndAddress(String locksn,String prokey);
 
     /**
      * 调用PHP比对锁地址和小区地址是否匹配
@@ -111,5 +112,28 @@ public interface LockService {
      * @return
      */
     AnyoujiaResult callPhpToActiveLock(String locksn,int uid) throws Exception;
+
+    /**
+     * 从PHP获取工程码
+     * @param locksn
+     * @return
+     * @throws Exception
+     */
+    AnyoujiaResult getProuctNum(String locksn) throws Exception;
+
+    /**
+     * 从PHP获取临时密码
+     * @param locksn
+     * @return
+     */
+    AnyoujiaResult getTempPwdFromPhp(String locksn) throws Exception;
+
+    /**
+     * 更新设置永久密码状态
+     * @param memberid
+     * @param locksn
+     * @return
+     */
+    AnyoujiaResult updateSetedPwdState(int memberid,String locksn,boolean isAdmin,String phone,int relationid);
 
 }
