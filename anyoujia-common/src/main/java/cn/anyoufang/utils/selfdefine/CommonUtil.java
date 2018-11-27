@@ -66,14 +66,14 @@ public class CommonUtil {
                 int userid = job.getInt("userid");
                 String nickname = job.getString("nickname");
                 int isAlarm = job.getInt("isalarm");
-                //int userType = job.getInt("user_type");
+                int userType = job.getInt("user_type");
                 record.setIsAlarm(isAlarm);
                 record.setOpentime(opentime);
                 record.setStatus(status);
                 record.setPwdType(pwdType);
                 record.setNickname(nickname);
                 record.setPwdRecordId(userid);
-               // record.setUserType(userType);
+                record.setUserType(userType);
                 res.add(record);
             }
         }

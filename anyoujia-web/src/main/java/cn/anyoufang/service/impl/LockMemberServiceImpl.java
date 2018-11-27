@@ -769,13 +769,16 @@ public class LockMemberServiceImpl implements LockMemberService {
      */
     @Override
     public boolean manageUser(String locksn, int seqid, int state) {
-
-        long timestamp = System.currentTimeMillis() / 1000;
+        long timestamp = DateUtil.generateTenTime();
         //locksn seqid state temptime
         StringBuilder sb = new StringBuilder();
         String ss = sb.append(locksn).append(seqid).append(state).append(timestamp).append(lockSalt).toString();
         String sign = Md5Utils.md5(ss, "UTF-8");
-        String param = "method=edit.lock.user&seqid=" + seqid + "&temptime=" + timestamp + "&state=" + state + "&sign=" + sign + "&locksn=" + locksn;
+        StringBuilder toCombine = new StringBuilder("method=edit.lock.user&seqid=").append(seqid);
+        String param =  toCombine.append("&temptime=").append(timestamp).
+                        append("&state=").append(state).
+                        append("&sign=").append(sign).
+                        append("&locksn=").append(locksn).toString();
         String result = SimulateGetAndPostUtil.sendPost(url, param);
         if (CommonUtil.successResponse(result)) {
             //删除状态做更新

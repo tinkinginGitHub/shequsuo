@@ -79,7 +79,7 @@ public interface LockService {
      * @param page
      * @return
      */
-    AnyoujiaResult getLockRecords(String locksn, int isalarm , int page);
+    AnyoujiaResult getLockRecords(String locksn, int isalarm , int page,int begintime);
 
     /**
      * 获取单个门锁详情

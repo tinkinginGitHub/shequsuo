@@ -58,11 +58,11 @@ public class LockController extends AbstractController {
     @RequestMapping("/records")
     public AnyoujiaResult getLockRecords(@RequestParam String locksn,
                                          @RequestParam int isalarm ,
-                                         @RequestParam int page) {
+                                         @RequestParam int page,@RequestParam(required = false,defaultValue = "-1") int begintime) {
         if(StringUtil.isEmpty(locksn)) {
             return AnyoujiaResult.build(FOUR_H,"参数异常");
         }
-        return lockService.getLockRecords(locksn,isalarm,page);
+        return lockService.getLockRecords(locksn,isalarm,page,begintime);
     }
 
     /**
