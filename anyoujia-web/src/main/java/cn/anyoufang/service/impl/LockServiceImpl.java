@@ -736,7 +736,11 @@ public class LockServiceImpl implements LockService{
         Map<String,Object> res =  parseResponse(resString);
         Integer status = (Integer) res.get("status");
         if (status == T_H) {
-            return AnyoujiaResult.ok(String.valueOf(res.get("msg")));
+           String msg =  String.valueOf(res.get("msg"));
+            if("null".equalsIgnoreCase(msg)){
+                return AnyoujiaResult.build(FOUR_H,"获取临时密码失败");
+            }
+            return AnyoujiaResult.ok(msg);
         }
         return AnyoujiaResult.build(status,String.valueOf(res.get("msg")));
     }

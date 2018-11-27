@@ -524,6 +524,8 @@ public class LockMemberServiceImpl implements LockMemberService {
                         res.put("setedpwd", setedlockpwd);
                         return res;
                     }
+                }{
+                    return null;
                 }
             }
         }

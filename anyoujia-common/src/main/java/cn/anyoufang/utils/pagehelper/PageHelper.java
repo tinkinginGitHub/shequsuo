@@ -27,7 +27,11 @@ package cn.anyoufang.utils.pagehelper;
 import org.apache.ibatis.executor.Executor;
 import org.apache.ibatis.mapping.MappedStatement;
 import org.apache.ibatis.mapping.SqlSource;
-import org.apache.ibatis.plugin.*;
+import org.apache.ibatis.plugin.Interceptor;
+import org.apache.ibatis.plugin.Intercepts;
+import org.apache.ibatis.plugin.Invocation;
+import org.apache.ibatis.plugin.Plugin;
+import org.apache.ibatis.plugin.Signature;
 import org.apache.ibatis.session.ResultHandler;
 import org.apache.ibatis.session.RowBounds;
 
@@ -171,11 +175,8 @@ public class PageHelper implements Interceptor {
      */
     @Override
     public Object plugin(Object target) {
-        if (target instanceof Executor) {
-            return Plugin.wrap(target, this);
-        } else {
-            return target;
-        }
+        //根据target判断的是否具有接口，接口是否有对应拦截的注解，如果没有就返回原对象，有，则返回代理对象
+       return Plugin.wrap(target,this);
     }
 
     /**

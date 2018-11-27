@@ -33,7 +33,8 @@
     <result column="address" property="address" jdbcType="VARCHAR" />
     <result column="code2" property="code2" jdbcType="VARCHAR" />
   </resultMap>
-
+  <!--开启二级缓存-->
+  <cache/>
   <sql id="Example_Where_Clause" >
     <where >
       <foreach collection="oredCriteria" item="criteria" separator="or" >
@@ -426,7 +427,7 @@
     where sn = #{sn,jdbcType=VARCHAR}
   </update>
 
-  <select id="selectLockInfoByCombinetable" resultMap="combineSelectResultMap">
+  <select id="selectLockInfoByCombinetable" resultMap="combineSelectResultMap" useCache="true">
     SELECT sl.model,
     sl.origin,
     sl.color,
@@ -449,7 +450,7 @@
     </where>
   </select>
 
-  <select id="selectLockInfoByLocksn" resultMap="combineSelectResultMap">
+  <select id="selectLockInfoByLocksn" resultMap="combineSelectResultMap" useCache="true">
     SELECT sl.model,
     sl.origin,
     sl.color,
@@ -465,7 +466,7 @@
     sl.sn =#{sn,jdbcType=VARCHAR}
   </select>
 
-  <select id="selectLockActiveByLocksnOrProkey" resultType="java.util.Map" parameterType="java.util.Map">
+  <select id="selectLockActiveByLocksnOrProkey" resultType="java.util.Map" parameterType="java.util.Map" useCache="true">
     SELECT
     sl.active,
     sc.address,
@@ -484,6 +485,5 @@
         </if>
     </where>
   </select>
-
 
 </mapper>
