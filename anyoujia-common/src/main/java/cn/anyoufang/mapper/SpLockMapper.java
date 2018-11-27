@@ -30,7 +30,6 @@ public interface SpLockMapper {
     int updateByPrimaryKeySelective(SpLock record);
 
     int updateByPrimaryKey(SpLock record);
-
     /**
      * 自定义连表查询锁型号地址等信息
      * @param list

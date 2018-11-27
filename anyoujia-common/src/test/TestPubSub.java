@@ -2,12 +2,20 @@ import cn.anyoufang.utils.RedisMsgPubSubListener;
 import org.junit.Test;
 import redis.clients.jedis.Jedis;
 
+import java.util.regex.Pattern;
+
 /**
  * @author daiping
  */
 public class TestPubSub {
 
 
+    public static void main(String[] args) {
+        String s = "<content>";
+        String ss = "ss";
+        Pattern compile = Pattern.compile("<");
+        System.out.println(s.matches(compile.pattern()));
+    }
     @Test
     public void pubsubjava() {
         // TODO Auto-generated method stub

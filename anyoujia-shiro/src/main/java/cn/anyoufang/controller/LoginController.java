@@ -157,15 +157,14 @@ public class LoginController extends AbstractController {
      * @param bname
      * @param gender
      * @param phone
-     * @param request
      * @return
      */
     @RequestMapping("/addtioninfo")
-    public AnyoujiaResult additionalInfo(@RequestParam String avatar,
+    public AnyoujiaResult additionalInfo(@RequestParam(required = false) String avatar,
                                          @RequestParam String bname,
                                          @RequestParam int gender,
-                                         @RequestParam String phone,HttpServletRequest request) {
-        if(StringUtil.stringParamisEmpty(avatar,bname,phone)) {
+                                         @RequestParam String phone) {
+        if(StringUtil.stringParamisEmpty(bname,phone)) {
          return AnyoujiaResult.build(FOUR_H,"参数不能为空");
         }
         boolean addOk;
