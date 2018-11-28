@@ -8,7 +8,7 @@
         <setting name="mapUnderscoreToCamelCase" value="true"/>
 
         <!-- 打印查询语句 指定 MyBatis 所用日志的具体实现，未指定时将自动查找。 -->
-        <setting name="logImpl" value="STDOUT_LOGGING"/>
+        <setting name="logImpl" value="LOG4J"/>
 
         <!--全局地开启或关闭配置文件中的所有映射器已经配置的任何缓存。-->
         <setting name="cacheEnabled" value="true"/>

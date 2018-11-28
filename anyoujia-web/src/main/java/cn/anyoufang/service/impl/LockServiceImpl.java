@@ -668,13 +668,14 @@ public class LockServiceImpl implements LockService {
         final Map<String, String> params = new HashMap<>(2);
         params.put("prokey", prokey);
         params.put("locksn", locksn);
-        Map<String, String> data = lockinfoMapper.selectLockActiveByLocksnOrProkey(params);
+        Map<String,Object> data = lockinfoMapper.selectLockActiveByLocksnOrProkey(params);
         if (data == null || data.size() == 0) {
             return AnyoujiaResult.build(T_H_1, "暂未找到设备，请重试");
         }
         String active = StateEnum.NONACTIVE.getCode();
-
-        if ("true".equalsIgnoreCase(data.get("active"))) {
+        Object o = data.get("active");
+        String s = Boolean.toString((Boolean) o);
+        if ("true".equalsIgnoreCase(s)) {
             active = StateEnum.ACTIVED.getCode();
         }
         Map<String, String> res = new HashMap<>();
@@ -682,8 +683,8 @@ public class LockServiceImpl implements LockService {
         StringBuilder sb = new StringBuilder();
         String address = sb.append(data.get("cname")).append(data.get("address")).toString();
         res.put("address", address);
-        res.put("prokey", data.get("pro_key"));
-        res.put("locksn", data.get("sn"));
+        res.put("prokey", String.valueOf(data.get("active")));
+        res.put("locksn", String.valueOf(data.get("sn")));
         return AnyoujiaResult.ok(res);
     }
 
