@@ -49,5 +49,5 @@ public interface SpLockMapper {
      * @param params
      * @return
      */
-    Map<String,String> selectLockActiveByLocksnOrProkey(@Param("params") Map<String,String> params);
+    Map<String,Object> selectLockActiveByLocksnOrProkey(@Param("params") Map params);
 }

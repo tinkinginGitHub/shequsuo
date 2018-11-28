@@ -405,7 +405,7 @@
     </set>
     where sn = #{sn,jdbcType=VARCHAR}
   </update>
-  <update id="updateByPrimaryKey" parameterType="cn.anyoufang.entity.SpLock" >
+  <update id="updateByPrimaryKey" parameterType="cn.anyoufang.entity.SpLock" flushCache="true">
     update sp_lock
     set code1 = #{code1,jdbcType=VARCHAR},
       code2 = #{code2,jdbcType=VARCHAR},
