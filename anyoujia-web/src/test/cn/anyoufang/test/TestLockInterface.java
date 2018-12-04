@@ -62,9 +62,9 @@ public class TestLockInterface {
     public void testLockDetails() {
         long timestamp = System.currentTimeMillis()/1000;
         StringBuilder sb = new StringBuilder();
-        String ss = sb.append("5CCF7F1BA457").append(timestamp).append(s).toString();
+        String ss = sb.append("0B4700440A49").append(timestamp).append(s).toString();
         String sss = Md5Utils.md5(ss,"UTF-8");
-        String param = "method=get.lock.info&locksn=5CCF7F1BA456&temptime="+timestamp+"&sign="+sss;
+        String param = "method=get.lock.info&locksn=0B4700440A49&temptime="+timestamp+"&sign="+sss;
         String result = SimulateGetAndPostUtil.sendPost(url,param);
         System.out.println(result);
     }
@@ -165,9 +165,9 @@ public class TestLockInterface {
         long timestamp = System.currentTimeMillis()/1000;
         //locksn seqid state temptime
         StringBuilder sb = new StringBuilder();
-        String ss = sb.append("555444").append(7483659).append(2).append(timestamp).append(s).toString();
+        String ss = sb.append("0B4700440A49").append(36492).append(1).append(timestamp).append(s).toString();
         String sign = Md5Utils.md5(ss,"UTF-8");
-        String param = "method=edit.lock.user&seqid="+7483659+"&temptime="+timestamp+"&state="+2+"&sign="+sign+"&locksn="+555444;
+        String param = "method=edit.lock.user&seqid="+36492+"&temptime="+timestamp+"&state="+1+"&sign="+sign+"&locksn="+"0B4700440A49";
         String result = SimulateGetAndPostUtil.sendPost(url,param);
         System.out.println(result);
     }

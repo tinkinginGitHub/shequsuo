@@ -319,7 +319,6 @@ public class LockController extends AbstractController {
      */
     @RequestMapping("/productnum")
     public AnyoujiaResult getProductNum(@RequestParam String locksn){
-
         if(StringUtil.isEmpty(locksn)) {
             return AnyoujiaResult.build(FOUR_H,"锁序列号不能为空");
         }

@@ -683,7 +683,7 @@ public class LockServiceImpl implements LockService {
         StringBuilder sb = new StringBuilder();
         String address = sb.append(data.get("cname")).append(data.get("address")).toString();
         res.put("address", address);
-        res.put("prokey", String.valueOf(data.get("active")));
+        res.put("prokey", String.valueOf(data.get("pro_key")));
         res.put("locksn", String.valueOf(data.get("sn")));
         return AnyoujiaResult.ok(res);
     }
