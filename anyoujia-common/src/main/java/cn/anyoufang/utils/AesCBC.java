@@ -1,9 +1,6 @@
 package cn.anyoufang.utils;
 
 
-import sun.misc.BASE64Decoder;
-import sun.misc.BASE64Encoder;
-
 import javax.crypto.Cipher;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
@@ -35,7 +32,13 @@ public class AesCBC {
         }
         return instance;
     }
-    // 加密
+
+    /**
+     * 加密
+     * @param sSrc
+     * @return
+     * @throws Exception
+     */
     public String encrypt(String sSrc) throws Exception {
 
         byte[] raw = sKey.getBytes("utf-8");
@@ -46,10 +49,15 @@ public class AesCBC {
         cipher.init(Cipher.ENCRYPT_MODE, skeySpec, iv);
         byte[] encrypted = cipher.doFinal(sSrc.getBytes(encodingFormat));
         //此处使用BASE64做转码。
-        String result = new BASE64Encoder().encode(encrypted).replaceAll("\r|\n", "");;
+        String result = org.apache.commons.codec.binary.Base64.encodeBase64String(encrypted).replaceAll("\r|\n", "");;
         return result;
     }
-    // 解密
+
+    /**
+     * 解密
+     * @param sSrc
+     * @return
+     */
     public String decrypt(String sSrc){
         try {
             byte[] raw = sKey.getBytes("ASCII");
@@ -57,7 +65,7 @@ public class AesCBC {
             Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
             IvParameterSpec iv = new IvParameterSpec(ivParameter.getBytes());
             cipher.init(Cipher.DECRYPT_MODE, skeySpec, iv);
-            byte[] encrypted1 = new BASE64Decoder().decodeBuffer(sSrc);//先用base64解密
+            byte[] encrypted1 =org.apache.commons.codec.binary.Base64.decodeBase64(sSrc);
             byte[] original = cipher.doFinal(encrypted1);
             String originalString = new String(original,encodingFormat);
             return originalString;

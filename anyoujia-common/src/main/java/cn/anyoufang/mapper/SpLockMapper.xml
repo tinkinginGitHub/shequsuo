@@ -463,7 +463,7 @@
     sp_lock sl
     JOIN sp_community sc ON sl.community = sc.cid
     WHERE
-    sl.sn =#{sn,jdbcType=VARCHAR}
+    sl.sn = #{sn,jdbcType=VARCHAR}
   </select>
 
   <select id="selectLockActiveByLocksnOrProkey" resultType="java.util.Map" parameterType="java.util.Map">
@@ -477,13 +477,12 @@
     sp_lock sl
     JOIN sp_community sc ON sl.community = sc.cid
     <where>
-        <if test="params.locksn !=null">
-          sl.sn = #{params.locksn}
+        <if test="params.code2 !=null">
+          sl.code2 = #{params.code2}
         </if>
         <if test="params.prokey !=null">
-            AND sl.pro_key=#{params.prokey}
+            AND sl.pro_key = #{params.prokey}
         </if>
     </where>
   </select>
-
 </mapper>

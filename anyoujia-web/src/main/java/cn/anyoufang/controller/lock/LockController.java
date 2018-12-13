@@ -300,7 +300,7 @@ public class LockController extends AbstractController {
 
     /**
      * 用于根据锁SN查询锁激活状态信息
-     * @param locksn
+     * @param locksn => 是指的code2，这里没有改成code2这个名字是不想改动太多参数
      * @return
      */
     @RequestMapping("/activeinfo")

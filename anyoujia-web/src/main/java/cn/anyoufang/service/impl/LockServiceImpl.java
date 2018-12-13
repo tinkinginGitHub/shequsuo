@@ -664,10 +664,10 @@ public class LockServiceImpl implements LockService {
      * 0表示未激活状态,1表示已经激活
      */
     @Override
-    public AnyoujiaResult getLockActiveAndAddress(String locksn, String prokey) {
+    public AnyoujiaResult getLockActiveAndAddress(String code2, String prokey) {
         final Map<String, String> params = new HashMap<>(2);
         params.put("prokey", prokey);
-        params.put("locksn", locksn);
+        params.put("code2", code2);
         Map<String,Object> data = lockinfoMapper.selectLockActiveByLocksnOrProkey(params);
         if (data == null || data.size() == 0) {
             return AnyoujiaResult.build(T_H_1, "暂未找到设备，请重试");
