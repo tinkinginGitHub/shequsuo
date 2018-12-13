@@ -99,11 +99,11 @@ public interface LockService {
 
     /**
      * 获取锁激活状态和地址
-     * @param locksn
+     * @param code2
      * @param prokey
      * @return
      */
-    AnyoujiaResult getLockActiveAndAddress(String locksn,String prokey);
+    AnyoujiaResult getLockActiveAndAddress(String code2,String prokey);
 
     /**
      * 调用PHP比对锁地址和小区地址是否匹配

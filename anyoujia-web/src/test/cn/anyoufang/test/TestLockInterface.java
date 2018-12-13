@@ -193,7 +193,6 @@ public class TestLockInterface {
         Map<String, String> toJson =  data1.getData();
 
         String json = JsonUtils.objectToJson(SortJsonAesc.sortMap(toJson));
-        System.out.println(json);
         InitParam p = new InitParam();
         p.setMod("Alarm");
         p.setFun("receive");
@@ -201,14 +200,13 @@ public class TestLockInterface {
         p.setSign(sign);
         Map<String, String> data = new HashMap<>(tempMap);
         p.setData(data);
-       //Map<String,Object> res =  parseResponse();
         System.out.println(doPhpRequest(p));
     }
 
     @Test
     public void testActiveLock()throws Exception{
         Map<String, String> map = new HashMap<>();
-        map.put("sn", "1123");
+        map.put("sn", "1111");
         map.put("uid", "36479");
         String json = JsonUtils.objectToJson(SortJsonAesc.sortMap(map));
         InitParam p = new InitParam();
@@ -225,7 +223,7 @@ public class TestLockInterface {
     @Test
     public void testTempPwdLock()throws Exception{
         Map<String, String> map = new HashMap<>();
-        map.put("sn", "777");
+        map.put("sn", "1111");
         String json = JsonUtils.objectToJson(SortJsonAesc.sortMap(map));
         InitParam p = new InitParam();
         p.setMod("Com");
@@ -242,7 +240,7 @@ public class TestLockInterface {
     @Test
     public void testProductNumForLock()throws Exception{
         Map<String, String> map = new HashMap<>();
-        map.put("sn", "777");
+        map.put("sn", "1111");
         String json = JsonUtils.objectToJson(SortJsonAesc.sortMap(map));
         InitParam p = new InitParam();
         p.setMod("Com");

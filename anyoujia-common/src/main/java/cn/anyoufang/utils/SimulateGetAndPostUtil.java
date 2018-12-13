@@ -2,7 +2,6 @@ package cn.anyoufang.utils;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import sun.reflect.misc.MethodUtil;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -19,7 +18,7 @@ import java.util.Map;
  */
 public class SimulateGetAndPostUtil {
 
-    private static final Logger logger = LoggerFactory.getLogger(MethodUtil.class);
+    private static final Logger logger = LoggerFactory.getLogger(SimulateGetAndPostUtil.class);
 
     /**
      *
