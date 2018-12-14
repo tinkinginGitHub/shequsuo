@@ -52,11 +52,15 @@ public class HandlePhpRequestUtil {
             if (object instanceof String) {
                 String msg = (String) object;
                 data.put("msg", msg);
-            } else {
-                json = (JSONObject) map.get("data");
+            }else if(object instanceof Integer){
+                Integer msg = (Integer) object;
+                data.put("msg",msg);
+            }else if(object instanceof  JSONObject) {
+                json = (JSONObject)object;
                 data.putAll(JsonUtils.jsonToMap(json));
+            }else {
+                data.put("msg",object);
             }
-
         }
         data.put("status", status);
         return data;
