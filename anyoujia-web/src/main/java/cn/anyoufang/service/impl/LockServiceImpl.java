@@ -689,7 +689,8 @@ public class LockServiceImpl implements LockService {
     }
 
     /**
-     * 调用PHP比对锁地址和小区地址是否匹配
+     * 调用PHP接口比对锁地址和小区地址是否匹配
+     *
      */
     @Override
     public AnyoujiaResult callPhpToActiveLock(String locksn, int uid) throws Exception {
