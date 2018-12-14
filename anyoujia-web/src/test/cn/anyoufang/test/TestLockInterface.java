@@ -172,6 +172,19 @@ public class TestLockInterface {
         System.out.println(result);
     }
 
+    /**
+     * 测试调用硬件云删除接口删除门锁
+     */
+    @Test
+    public void delete() {
+        StringBuilder sb = new StringBuilder();
+        String ss = sb.append("0B4700440A49").append(36492).append(s).toString();
+        String sign = Md5Utils.md5(ss,"UTF-8");
+        String param = "method=delete.lock.info&userid="+36492+"&sign="+sign+"&locksn="+"0B4700440A49";
+        String result = SimulateGetAndPostUtil.sendPost(url,param);
+        System.out.println(result);
+    }
+
     @Test
     public void alarm() throws Exception {
         Data data1 = new Data();
