@@ -30,6 +30,7 @@ public abstract class AbstractController {
 	protected  static final int FOUR_H_1 = HttpCodeEnum.FOUR_HUNDRED1.getCode();
 	protected  static final int FIVE_H = HttpCodeEnum.FIVE_HUNDRED.getCode();
 	protected  static final int FOUR_H_4 = HttpCodeEnum.FOUR_HUNDRED4.getCode();
+	protected  static final int FOUR_H_3 = 403;
 
 
 	protected  static final String FAMILY = UsertypeEnum.ONE.getCode();
@@ -88,16 +89,4 @@ public abstract class AbstractController {
 	protected Map<String,Object> parseSession(String session){
        return StringUtil.parseSession(session);
 	}
-
-    /**
-     * springmvc 异常处理
-     */
-//    @ExceptionHandler(Exception.class)
-//    public AnyoujiaResult handleException(Exception e) {
-//        if(logger.isInfoEnabled()) {
-//            logger.info(e.getMessage());
-//        }
-//        return AnyoujiaResult.build(400,"系统异常");
-//    }
-
 }

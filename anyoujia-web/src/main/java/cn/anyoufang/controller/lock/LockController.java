@@ -76,13 +76,13 @@ public class LockController extends AbstractController {
      */
     @RequestMapping("/setuser")
     @LockOperateLog(operateTypeDesc="添加指纹")
-    public AnyoujiaResult setLockUserFingerPassword(@RequestParam String fingerid,
+    public AnyoujiaResult setLockUserFingerPassword(@RequestParam int fingerid,
                                                     @RequestParam String locksn,
                                                     @RequestParam int endtime,
                                                     @RequestParam int usertype,
                                                     @RequestParam(required = false) String fingerdesc,
                                                     HttpServletRequest request,@RequestParam(required = false,defaultValue = "0") int relationid) {
-        if(StringUtil.isEmpty(locksn) || StringUtil.isEmpty(fingerid)) {
+        if(StringUtil.isEmpty(locksn)) {
             return AnyoujiaResult.build(FOUR_H,"参数异常");
         }
         SpMember user =  getUser(request,loginService);
@@ -90,7 +90,6 @@ public class LockController extends AbstractController {
             AnyoujiaResult.build(FOUR_H_1,"登录超时");
         }
         String nickname;
-        int memberid = user.getUid();
         String phone = user.getPhone();
         boolean isAdmin = false;
         List<SpLockAdmin> lockAdmin = loginService.getLockAdmin(user.getUid(),locksn);
@@ -106,7 +105,40 @@ public class LockController extends AbstractController {
             isAdmin = true;
         }
 
-        return lockService.setLockUserFingerPassword(memberid,locksn,endtime,usertype,nickname,phone,fingerdesc,fingerid,isAdmin,relationid);
+        return lockService.setLockUserFingerPassword(locksn,endtime,usertype,nickname,phone,fingerdesc,fingerid,isAdmin,relationid);
+    }
+
+    @RequestMapping("/fingerid")
+    public  AnyoujiaResult getFingerId(HttpServletRequest request, @RequestParam String locksn,@RequestParam int endtime,
+                                       @RequestParam(required = false) String fingerdesc,
+                                       @RequestParam(required = false,defaultValue = "0") int relationid){
+        if(StringUtil.isEmpty(locksn)) {
+            return AnyoujiaResult.build(FOUR_H,"参数异常");
+        }
+        SpMember user =  getUser(request,loginService);
+        if(user == null) {
+            AnyoujiaResult.build(FOUR_H_1,"登录超时");
+        }
+        int memberid = user.getUid();
+       return lockService.getFingerIdForFrontEnd(memberid, relationid, locksn, fingerdesc, endtime);
+    }
+
+    @RequestMapping("/permid")
+    public AnyoujiaResult getPermPwdId(@RequestParam int ptype,
+                                       @RequestParam String locksn,
+                                       @RequestParam(required = false,defaultValue = "0") int endtime,
+                                       HttpServletRequest request, @RequestParam(required = false,defaultValue = "0") int relationid){
+
+        if(StringUtil.isEmpty(locksn)) {
+            return AnyoujiaResult.build(FOUR_H,"参数异常");
+        }
+        SpMember user = getUser(request,loginService);
+        if(user == null) {
+            AnyoujiaResult.build(FOUR_H_1,"登录超时");
+        }
+        int memberid = user.getUid();
+        return lockService.getPermPwdIdForFront(memberid,relationid,locksn,endtime,ptype);
+
     }
 
 
@@ -182,7 +214,7 @@ public class LockController extends AbstractController {
         boolean isAdmin = false;
         List<SpLockAdmin> lockAdmin = loginService.getLockAdmin(user.getUid(),locksn);
         if(!lockAdmin.isEmpty()) {
-            isAdmin = true;
+           isAdmin = true;
         }
        return lockService.updateSetedPwdState(memberid,locksn,isAdmin,phone,relationid);
     }
@@ -239,6 +271,25 @@ public class LockController extends AbstractController {
             }
             return AnyoujiaResult.build(FIVE_H,"程序异常");
         }
+    }
+
+    @RequestMapping("/unbound")
+    @LockOperateLog(operateTypeDesc = "锁解绑")
+    public AnyoujiaResult unboundLock(@RequestParam String locksn,HttpServletRequest request){
+        if (StringUtil.isEmpty(locksn)) {
+            return AnyoujiaResult.build(FOUR_H, "参数异常");
+        }
+        SpMember user = getUser(request, loginService);
+        if (user == null) {
+            return AnyoujiaResult.build(FOUR_H, "登录超时");
+        }
+        int uid = user.getUid();
+        List<SpLockAdmin> lockAdmin = loginService.getLockAdmin(uid,locksn);
+        if(lockAdmin.isEmpty()){
+            return AnyoujiaResult.build(FOUR_H_3,"该锁已解绑或资源暂不可访问");
+        }
+        SpLockAdmin spLockAdmin = lockAdmin.get(0);
+        return lockService.unboundLock(locksn,spLockAdmin.getId());
     }
 
     /**
@@ -333,12 +384,13 @@ public class LockController extends AbstractController {
     }
 
     @RequestMapping("/temppwd")
-    public AnyoujiaResult getTempPwdFromPhp(@RequestParam String locksn) {
+    public AnyoujiaResult getTempPwdFromPhp(@RequestParam String locksn,
+                                            @RequestParam(required = false,defaultValue = "-1") String timestamp) {
         if(StringUtil.isEmpty(locksn)) {
             return AnyoujiaResult.build(FOUR_H,"锁序列号不能为空");
         }
         try {
-            return lockService.getTempPwdFromPhp(locksn);
+            return lockService.getTempPwdFromPhp(locksn,timestamp);
         } catch (Exception e) {
             if(LOGGER.isInfoEnabled()){
                 LOGGER.info("获取临时密码发生系统异常： " + e.getMessage());

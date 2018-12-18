@@ -189,7 +189,7 @@ public class LockMemberServiceImpl implements LockMemberService {
                 handleSetedFinger(getOldChildFingerListInternal(locksn, realtionid), locksn, isDelete);
                 if (isDelete) {
                     relationMapper.deleteByPrimaryKey(userid);
-                    return true;
+                    return isDelete;
                 }
 
             } else {
@@ -221,7 +221,7 @@ public class LockMemberServiceImpl implements LockMemberService {
             }
             if (isDelete) {
                 relationMapper.deleteByPrimaryKey(userid);
-                return true;
+                return isDelete;
             }
         } catch (Exception e) {
             if (LOGGER.isInfoEnabled()) {
@@ -318,7 +318,7 @@ public class LockMemberServiceImpl implements LockMemberService {
     }
 
     /**
-     * TODO 分布式事务
+     *
      * 分别删除单个手指指纹
      */
     @Override
@@ -339,7 +339,7 @@ public class LockMemberServiceImpl implements LockMemberService {
 
     /**
      * 移除永久密码
-     * TODO 分布式事务
+     *
      */
     @Override
     public boolean deletePermentPwd(int memberid, String locksn, String phone, int relationid,int pwdid) {
@@ -444,7 +444,6 @@ public class LockMemberServiceImpl implements LockMemberService {
         SpActionRecordsExample.Criteria criteria = example.createCriteria();
         SpLockAdmin adminLock = isNotAdminLock(memberid, locksn);
         if (adminLock == null) {
-            //SpMemberRelation memberRelation = isMemberRelation(member.getPhone(), locksn);
             criteria.andMemberidEqualTo(memberid).andLocksnEqualTo(locksn).andActiontimeGreaterThanOrEqualTo(begintime);
         } else {
 

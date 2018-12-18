@@ -113,27 +113,37 @@ public class LockServiceImpl implements LockService {
                                           String nickname,
                                           String phone,
                                           boolean isAdmin, String motive, int relationid) {
-
-        //保存记录并生成seqid
-        SpLockPassword lockPassword = new SpLockPassword();
-        lockPassword.setLocksn(locksn);
-        lockPassword.setMemberid(memberid);
-        lockPassword.setPtype(ptype);
-        lockPassword.setExpired(false);
-        lockPassword.setMotive(motive);
-        if (relationid != 0) {
-            lockPassword.setRelationid(relationid);
-        }
-        //临时密码的过期时间，永久密码的删除时间,这里不做判断，因为在删除永久密码的时候会更新删除时间
-        lockPassword.setDeltime(endtime);
-        lockPassword.setAddtime(DateUtil.generateTenTime());
-        passwordMapper.insertSelective(lockPassword);
-        int seqid = lockPassword.getPwdid();
+        int seqid;
         if (ptype == 1) {
-            //update by代平：永久密码不通过硬件接口，直接返回所需要的id接口(2018.11.16)
-            Map<String, String> res = new HashMap<>(1);
-            res.put("pwdid", String.valueOf(seqid));
-            return res;
+            SpLockPasswordExample example = new SpLockPasswordExample();
+            SpLockPasswordExample.Criteria criteria = example.createCriteria();
+            criteria.andMemberidEqualTo(memberid).andLocksnEqualTo(locksn).andExpiredEqualTo(false);
+            List<SpLockPassword> lockPasswords = passwordMapper.selectByExample(example);
+            if(!lockPasswords.isEmpty()){
+                SpLockPassword lockPassword = lockPasswords.get(0);
+                seqid = lockPassword.getPwdid();
+            }else{
+                Map<String,String> res = new HashMap<>(2);
+                res.put("status","201");
+                res.put("msg","暂无数据");
+                return res;
+            }
+        }else {
+            //保存记录并生成seqid
+            SpLockPassword lockPassword = new SpLockPassword();
+            lockPassword.setLocksn(locksn);
+            lockPassword.setMemberid(memberid);
+            lockPassword.setPtype(ptype);
+            lockPassword.setExpired(false);
+            lockPassword.setMotive(motive);
+            if (relationid != 0) {
+                lockPassword.setRelationid(relationid);
+            }
+            //临时密码的过期时间，永久密码的删除时间,这里不做判断，因为在删除永久密码的时候会更新删除时间
+            lockPassword.setDeltime(endtime);
+            lockPassword.setAddtime(DateUtil.generateTenTime());
+            passwordMapper.insertSelective(lockPassword);
+            seqid = lockPassword.getPwdid();
         }
         long timestamp = DateUtil.generateTenTime();
         StringBuilder sb = new StringBuilder();
@@ -209,43 +219,42 @@ public class LockServiceImpl implements LockService {
     /**
      * 设置用户指纹密码
      *
-     * @param memberid   用户id
      * @param usertype   2:指纹 3：IC卡
      * @param fingerdesc 指纹描述
      */
     @Override
-    public AnyoujiaResult setLockUserFingerPassword(int memberid,
-                                                    String locksn,
+    public AnyoujiaResult setLockUserFingerPassword(String locksn,
                                                     int endtime,
                                                     int usertype,
                                                     String nickname,
-                                                    String phone, String fingerdesc, String fingerid, boolean isAdmin, int relationid) {
-
-        //添加指纹记录
-        // ptype 类型 1: 永久 2：一次 3：限时(暂时指纹只有永久类型)
+                                                    String phone, String fingerdesc, int fingerid, boolean isAdmin, int relationid) {
+//
+//        //添加指纹记录
+//        // ptype 类型 1: 永久 2：一次 3：限时(暂时指纹只有永久类型)
+//        int ptype = 1;
+//        SpLockFinger lockFinger = new SpLockFinger();
+//        lockFinger.setFingerdesc(fingerdesc);
+//        lockFinger.setFingerid(fingerid);
+//        lockFinger.setLocksn(locksn);
+//        lockFinger.setExpired(false);
+//        if (relationid != 0) {
+//            lockFinger.setRelationid(relationid);
+//        }
+//        //临时指纹的过期时间，永久指纹的删除时间,这里不做判断，因为在删除永久指纹的时候会更新删除时间
+//        lockFinger.setDeltime(endtime);
+//        lockFinger.setMemberid(memberid);
+//        lockFinger.setPtype(ptype);
+//        lockFinger.setAddtime(DateUtil.generateTenTime());
+//        fingerMapper.insertSelective(lockFinger);
+//        int seqid = lockFinger.getId();
         int ptype = 1;
-        SpLockFinger lockFinger = new SpLockFinger();
-        lockFinger.setFingerdesc(fingerdesc);
-        lockFinger.setFingerid(fingerid);
-        lockFinger.setLocksn(locksn);
-        lockFinger.setExpired(false);
-        if (relationid != 0) {
-            lockFinger.setRelationid(relationid);
-        }
-        //临时指纹的过期时间，永久指纹的删除时间,这里不做判断，因为在删除永久指纹的时候会更新删除时间
-        lockFinger.setDeltime(endtime);
-        lockFinger.setMemberid(memberid);
-        lockFinger.setPtype(ptype);
-        lockFinger.setAddtime(DateUtil.generateTenTime());
-        fingerMapper.insertSelective(lockFinger);
-        int seqid = lockFinger.getId();
         long timestamp = DateUtil.generateTenTime();
         StringBuilder sb = new StringBuilder();
         String param = sb.append(endtime)
                 .append(locksn)
                 .append(nickname)
                 .append(ptype)
-                .append(seqid)
+                .append(fingerid)
                 .append(timestamp)
                 .append(usertype)
                 .append(lockSalt).toString();
@@ -253,7 +262,7 @@ public class LockServiceImpl implements LockService {
         StringBuilder toCombine = new StringBuilder("method=set.lock.user&ptype=").append(ptype);
         String combineParam = toCombine.append("&temptime=").append(timestamp).
                 append("&sign=").append(sign).
-                append("&seqid=").append(seqid).
+                append("&seqid=").append(fingerid).
                 append("&locksn=").append(locksn).
                 append("&endtime=").append(endtime).
                 append("&ptype=").append(ptype).append("&nickname=").append(nickname).append("&usertype=").append(usertype).toString();
@@ -266,7 +275,7 @@ public class LockServiceImpl implements LockService {
             return AnyoujiaResult.build(T_H, String.valueOf(data.get("message")));
         }
         //不成功则删除无用记录
-        fingerMapper.deleteByPrimaryKey(seqid);
+        fingerMapper.deleteByPrimaryKey(fingerid);
         return AnyoujiaResult.build(state, String.valueOf(data.get("message")));
     }
 
@@ -736,10 +745,13 @@ public class LockServiceImpl implements LockService {
     }
 
     @Override
-    public AnyoujiaResult getTempPwdFromPhp(String locksn) throws Exception {
+    public AnyoujiaResult getTempPwdFromPhp(String locksn, String timestamp) throws Exception {
 
         Map<String, String> map = new HashMap<>();
         map.put("sn", locksn);
+        if("-1" != timestamp){
+            map.put("timstamp",String.valueOf(timestamp));
+        }
         String json = JsonUtils.objectToJson(SortJsonAesc.sortMap(map));
         InitParam p = new InitParam();
         p.setMod("Com");
@@ -789,6 +801,90 @@ public class LockServiceImpl implements LockService {
             relationMapper.updateByExampleSelective(user, getExample(phone, locksn));
         }
         return AnyoujiaResult.ok();
+    }
+
+    @Override
+    public AnyoujiaResult getFingerIdForFrontEnd(int memberid,int relationid,String locksn,String fingerdesc,int endtime) {
+
+        //添加指纹记录
+        // ptype 类型 1: 永久 2：一次 3：限时(暂时指纹只有永久类型)
+        int ptype = 1;
+        SpLockFinger lockFinger = new SpLockFinger();
+        lockFinger.setFingerdesc(fingerdesc);
+        lockFinger.setFingerid("");
+        lockFinger.setLocksn(locksn);
+        lockFinger.setExpired(false);
+        if (relationid != 0) {
+            lockFinger.setRelationid(relationid);
+        }
+        //临时指纹的过期时间，永久指纹的删除时间,这里不做判断，因为在删除永久指纹的时候会更新删除时间
+        lockFinger.setDeltime(endtime);
+        lockFinger.setMemberid(memberid);
+        lockFinger.setPtype(ptype);
+        lockFinger.setAddtime(DateUtil.generateTenTime());
+        fingerMapper.insertSelective(lockFinger);
+        int seqid = lockFinger.getId();
+        return AnyoujiaResult.ok(seqid);
+    }
+
+
+    /**
+     * 解绑锁
+     */
+    @Override
+    public AnyoujiaResult unboundLock(String locksn, int userid) {
+
+        StringBuilder sb = new StringBuilder();
+        String ss = sb.append(locksn).append(userid).append(lockSalt).toString();
+        String sign = Md5Utils.md5(ss,"UTF-8");
+        String param = new StringBuilder("method=delete.lock.info&userid=").append(userid).
+                                         append("&sign=").append(sign).
+                                         append("&locksn=").append(locksn).toString();
+        String result = SimulateGetAndPostUtil.sendPost(url,param);
+        String code,message;
+        int status;
+       try{
+           Map<String, Object> data = JsonUtils.jsonToMap(result);
+           code = String.valueOf(data.get("code"));
+           message = String.valueOf(data.get("message"));
+           status =  Integer.valueOf(code);
+       }catch (Exception e){
+           return AnyoujiaResult.ok(result);
+       }
+       if(status == T_H){
+           lockMapper.deleteByPrimaryKey(userid);
+           SpLock lock = new SpLock();
+           lock.setSn(locksn);
+           lock.setActive(false);
+           lock.setActivetime(0);
+           lockinfoMapper.updateByPrimaryKeySelective(lock);
+       }
+        return AnyoujiaResult.build(status,message);
+    }
+
+    /**
+     * 为前端获取密码id
+     */
+    @Override
+    public AnyoujiaResult getPermPwdIdForFront(int memberid, int relationid, String locksn, int endtime,int ptype) {
+
+        //保存记录并生成seqid
+        SpLockPassword lockPassword = new SpLockPassword();
+        lockPassword.setLocksn(locksn);
+        lockPassword.setMemberid(memberid);
+        lockPassword.setPtype(ptype);
+        lockPassword.setExpired(false);
+        lockPassword.setMotive("");
+        if (relationid != 0) {
+            lockPassword.setRelationid(relationid);
+        }
+        //临时密码的过期时间，永久密码的删除时间,这里不做判断，因为在删除永久密码的时候会更新删除时间
+        lockPassword.setDeltime(endtime);
+        lockPassword.setAddtime(DateUtil.generateTenTime());
+        passwordMapper.insertSelective(lockPassword);
+        int seqid = lockPassword.getPwdid();
+        return AnyoujiaResult.ok(seqid);
+
     }
 
     private List<SpLockAdmin> getAdminLocks(int adminid) {
