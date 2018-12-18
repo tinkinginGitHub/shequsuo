@@ -43,6 +43,6 @@ public interface SpMemberMapper {
      * @param uid
      * @return
      */
-    Map<String,String> selectByIdJoinFind(Integer uid);
+    Map<String,Object> selectByIdJoinFind(Integer uid);
 
 }

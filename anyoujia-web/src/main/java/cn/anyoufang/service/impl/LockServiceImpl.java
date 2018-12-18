@@ -32,7 +32,6 @@ import cn.anyoufang.utils.JsonUtils;
 import cn.anyoufang.utils.Md5Utils;
 import cn.anyoufang.utils.SimulateGetAndPostUtil;
 import cn.anyoufang.utils.SortJsonAesc;
-import cn.anyoufang.utils.StringUtil;
 import cn.anyoufang.utils.pagehelper.PageHelper;
 import cn.anyoufang.utils.selfdefine.CommonUtil;
 import org.slf4j.Logger;
@@ -65,6 +64,8 @@ public class LockServiceImpl implements LockService {
     private static final int FIVE_H = HttpCodeEnum.FIVE_HUNDRED.getCode();
     private static final int T_H_1 = HttpCodeEnum.TWO_HUNDRED1.getCode();
     private static final String T_H_1_MSG = HttpCodeEnum.TWO_HUNDRED1.getValue();
+
+    private static int delimeterForFingerAndPwdId = 470101011;
 
     @Value("${lock.salt}")
     private String lockSalt;
@@ -228,25 +229,6 @@ public class LockServiceImpl implements LockService {
                                                     int usertype,
                                                     String nickname,
                                                     String phone, String fingerdesc, int fingerid, boolean isAdmin, int relationid) {
-//
-//        //添加指纹记录
-//        // ptype 类型 1: 永久 2：一次 3：限时(暂时指纹只有永久类型)
-//        int ptype = 1;
-//        SpLockFinger lockFinger = new SpLockFinger();
-//        lockFinger.setFingerdesc(fingerdesc);
-//        lockFinger.setFingerid(fingerid);
-//        lockFinger.setLocksn(locksn);
-//        lockFinger.setExpired(false);
-//        if (relationid != 0) {
-//            lockFinger.setRelationid(relationid);
-//        }
-//        //临时指纹的过期时间，永久指纹的删除时间,这里不做判断，因为在删除永久指纹的时候会更新删除时间
-//        lockFinger.setDeltime(endtime);
-//        lockFinger.setMemberid(memberid);
-//        lockFinger.setPtype(ptype);
-//        lockFinger.setAddtime(DateUtil.generateTenTime());
-//        fingerMapper.insertSelective(lockFinger);
-//        int seqid = lockFinger.getId();
         int ptype = 1;
         long timestamp = DateUtil.generateTenTime();
         StringBuilder sb = new StringBuilder();
@@ -521,36 +503,37 @@ public class LockServiceImpl implements LockService {
                 LockRecord lr = iterator.next();
                 int userid = lr.getPwdRecordId();
                 int oldChildId;
-                //470101011 一个神奇的数字！！！
-                if (isUseridSmaller(userid, 470101011)) {
+                if (isUseridSmaller(userid, delimeterForFingerAndPwdId)) {
                     SpLockPassword slp = passwordMapper.selectByPrimaryKey(userid);
                     if (slp != null) {
-                        if ((oldChildId = slp.getRelationid()) != 0) {
+                        if ( slp.getRelationid() !=null&&((oldChildId =slp.getRelationid()) != 0)) {
                             //老人儿童
                             SpMemberRelation sr = relationMapper.selectByPrimaryKey(oldChildId);
                             lr.setRelation(sr.getUserrelation());
                         } else {
-                            Map<String, String> sr = memberMapper.selectByIdJoinFind(slp.getMemberid());
+                            Map<String, Object> sr = memberMapper.selectByIdJoinFind(slp.getMemberid());
                             if (sr != null) {
-                                lr.setHeadurl(sr.get("avatar"));
-                                lr.setRelation(sr.get("userrelation"));
-                                lr.setGender(StringUtil.getInt(sr.get("gender")));
+                                lr.setHeadurl(String.valueOf(sr.get("avatar")));
+                                lr.setRelation(String.valueOf(sr.get("userrelation")));
+                                Integer gender = (Integer) sr.get("gender");
+                                lr.setGender(gender);
                             }
                         }
                     }
                 } else {
                     SpLockFinger slf = fingerMapper.selectByPrimaryKey(userid);
                     if (slf != null) {
-                        if ((oldChildId = slf.getRelationid()) != 0) {
+                        if (slf.getRelationid() !=null&&((oldChildId = slf.getRelationid()) != 0)) {
                             //老人儿童
                             SpMemberRelation sr = relationMapper.selectByPrimaryKey(oldChildId);
                             lr.setRelation(sr.getUserrelation());
                         } else {
-                            Map<String, String> sr = memberMapper.selectByIdJoinFind(slf.getMemberid());
+                            Map<String, Object> sr = memberMapper.selectByIdJoinFind(slf.getMemberid());
                             if (sr != null) {
-                                lr.setHeadurl(sr.get("avatar"));
-                                lr.setRelation(sr.get("userrelation"));
-                                lr.setGender(StringUtil.getInt(sr.get("gender")));
+                                lr.setHeadurl(String.valueOf(sr.get("avatar")));
+                                lr.setRelation(String.valueOf(sr.get("userrelation")));
+                                Integer gender = (Integer) sr.get("gender");
+                                lr.setGender(gender);
                             }
                         }
                     }
@@ -561,8 +544,8 @@ public class LockServiceImpl implements LockService {
         return AnyoujiaResult.build(CommonUtil.paseResFromHardware(res), CommonUtil.getMessage(res));
     }
 
-    private boolean isUseridSmaller(int userid, int pwdOrFingerId) {
-        return pwdOrFingerId < userid;
+    private boolean isUseridSmaller(int userid, int delimeterForFingerAndPwdId) {
+        return delimeterForFingerAndPwdId > userid;
     }
 
     @Override
