@@ -367,16 +367,6 @@ public class LoginServiceImpl implements LoginService {
         return example;
     }
 
-
-//    @Override
-//    public boolean isExist(String phone) {
-//        List<SpMember> user = memberMapper.selectByExample(createExample(phone));
-//        if (!user.isEmpty()) {
-//            return true;
-//        }
-//        return false;
-//    }
-
     @Override
     public boolean checkByCode(String phone, String code) {
         String temp = Md5Utils.md5(phone, "utf-8");
@@ -427,7 +417,6 @@ public class LoginServiceImpl implements LoginService {
         if (!list.isEmpty()) {
             return true;
         }
-
         return false;
     }
 

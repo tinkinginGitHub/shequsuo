@@ -52,9 +52,9 @@
     <!--<context:annotation-config /> 下面的component-scan 包含了annotation-config属性并且默认是true-->
 	<context:component-scan base-package="cn.anyoufang.controller" />
 
-	<!--暂时注释掉定时任务-->
-	<!--<task:annotation-driven scheduler="myScheduler" mode="proxy" />-->
-	<!--<task:scheduler id="myScheduler" pool-size="10"/>-->
+	<!--定时任务-->
+	<!--<task:annotation-driven scheduler="myScheduler" />-->
+	<!--<task:scheduler id="myScheduler" pool-size="10" />-->
 	<mvc:interceptors>
        <bean class="cn.anyoufang.interceptor.ProcessInterceptor"/>
 		<bean class="cn.anyoufang.interceptor.LockOperationInterceptor"/>

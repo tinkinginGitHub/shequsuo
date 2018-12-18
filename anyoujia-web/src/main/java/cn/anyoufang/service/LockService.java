@@ -35,7 +35,6 @@ public interface LockService {
 
     /**
      * 设置用户指纹密码
-     * @param seqid
      * @param locksn
      * @param endtime
      * @param usertype
@@ -47,12 +46,11 @@ public interface LockService {
      * @return
      */
 
-    AnyoujiaResult setLockUserFingerPassword( int seqid,
-                                              String locksn,
+    AnyoujiaResult setLockUserFingerPassword(String locksn,
                                               int endtime,
                                               int usertype,
                                               String nickname,
-                                              String phone,String fingerdesc,String fingerid,boolean isAdmin, int relationid);
+                                              String phone,String fingerdesc,int fingerid,boolean isAdmin, int relationid);
 
 
     /**
@@ -124,9 +122,10 @@ public interface LockService {
     /**
      * 从PHP获取临时密码
      * @param locksn
+     * @param timestamp
      * @return
      */
-    AnyoujiaResult getTempPwdFromPhp(String locksn) throws Exception;
+    AnyoujiaResult getTempPwdFromPhp(String locksn, String timestamp) throws Exception;
 
     /**
      * 更新设置永久密码状态
@@ -135,5 +134,34 @@ public interface LockService {
      * @return
      */
     AnyoujiaResult updateSetedPwdState(int memberid,String locksn,boolean isAdmin,String phone,int relationid);
+
+    /**
+     * 获取指纹id给前端
+     * @param memberid
+     * @param relationid
+     * @param locksn
+     * @param fingerdesc
+     * @param endtime
+     * @return
+     */
+    AnyoujiaResult getFingerIdForFrontEnd(int memberid,int relationid,String locksn,String fingerdesc,int endtime);
+
+    /**
+     * 解绑锁
+     * @param locksn
+     * @param userid
+     * @return
+     */
+    AnyoujiaResult unboundLock(String locksn,int userid);
+
+    /**
+     * 为前端获取密码id
+     * @param memberid
+     * @param relationid
+     * @param locksn
+     * @param endtime
+     * @return
+     */
+    AnyoujiaResult getPermPwdIdForFront(int memberid, int relationid, String locksn, int endtime,int ptype);
 
 }
