@@ -89,7 +89,7 @@ public class LockController extends AbstractController {
         if(user == null) {
             AnyoujiaResult.build(FOUR_H_1,"登录超时");
         }
-        String nickname;
+        String nickname =user.getBname();
         String phone = user.getPhone();
         boolean isAdmin = false;
         List<SpLockAdmin> lockAdmin = loginService.getLockAdmin(user.getUid(),locksn);
@@ -97,12 +97,9 @@ public class LockController extends AbstractController {
             String relationUsername = loginService.getMemberRelation(locksn,phone);
             if(relationUsername != null) {
                 nickname = relationUsername;
-            }else {
-                nickname = user.getBname();
             }
         }else {
-            nickname = "我";
-            isAdmin = true;
+             isAdmin = true;
         }
 
         return lockService.setLockUserFingerPassword(locksn,endtime,usertype,nickname,phone,fingerdesc,fingerid,isAdmin,relationid);
@@ -170,7 +167,7 @@ public class LockController extends AbstractController {
         if(user == null) {
             AnyoujiaResult.build(FOUR_H_1,"登录超时");
         }
-        String nickname;
+        String nickname =user.getBname();
         int memberid = user.getUid();
         String phone = user.getPhone();
         boolean isAdmin = false;
@@ -179,11 +176,8 @@ public class LockController extends AbstractController {
              String relation = loginService.getMemberRelation(locksn,phone);
              if(relation != null) {
                  nickname = relation;
-             }else {
-                 nickname = user.getBname();
              }
          }else {
-            nickname = "我";
             isAdmin = true;
          }
 
