@@ -511,13 +511,23 @@ public class LockServiceImpl implements LockService {
                             SpMemberRelation sr = relationMapper.selectByPrimaryKey(oldChildId);
                             lr.setRelation(sr.getUserrelation());
                         } else {
-                            Map<String, Object> sr = memberMapper.selectByIdJoinFind(slp.getMemberid());
+                            Integer memberid = slp.getMemberid();
+                            Map<String, Object> sr = memberMapper.selectByIdJoinFind(memberid);
                             if (sr != null) {
                                 lr.setHeadurl(String.valueOf(sr.get("avatar")));
                                 lr.setRelation(String.valueOf(sr.get("userrelation")));
                                 Integer gender = (Integer) sr.get("gender");
                                 lr.setGender(gender);
+                                lr.setRelationType(String.valueOf(sr.get("usertype")));
+                            }else {
+                                SpMember member = memberMapper.selectByPrimaryKey(memberid);
+                                if(member !=null){
+                                    lr.setHeadurl(member.getAvatar());
+                                    lr.setRelation("自己");
+                                    lr.setGender(member.getGender());
+                                }
                             }
+
                         }
                     }
                 } else {
@@ -528,12 +538,21 @@ public class LockServiceImpl implements LockService {
                             SpMemberRelation sr = relationMapper.selectByPrimaryKey(oldChildId);
                             lr.setRelation(sr.getUserrelation());
                         } else {
-                            Map<String, Object> sr = memberMapper.selectByIdJoinFind(slf.getMemberid());
+                            Integer memberid = slf.getMemberid();
+                            Map<String, Object> sr = memberMapper.selectByIdJoinFind(memberid);
                             if (sr != null) {
                                 lr.setHeadurl(String.valueOf(sr.get("avatar")));
                                 lr.setRelation(String.valueOf(sr.get("userrelation")));
                                 Integer gender = (Integer) sr.get("gender");
                                 lr.setGender(gender);
+                                lr.setRelationType(String.valueOf(sr.get("usertype")));
+                            }else {
+                                SpMember member = memberMapper.selectByPrimaryKey(memberid);
+                                if(member !=null){
+                                    lr.setHeadurl(member.getAvatar());
+                                    lr.setRelation("自己");
+                                    lr.setGender(member.getGender());
+                                }
                             }
                         }
                     }

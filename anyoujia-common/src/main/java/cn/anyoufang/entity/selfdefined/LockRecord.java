@@ -20,6 +20,15 @@ public class LockRecord implements Serializable {
     private String relation;
     private int status;
     private int pwdRecordId;
+    private String relationType;
+
+    public String getRelationType() {
+        return relationType;
+    }
+
+    public void setRelationType(String relationType) {
+        this.relationType = relationType;
+    }
 
     public int getUserType() {
         return userType;

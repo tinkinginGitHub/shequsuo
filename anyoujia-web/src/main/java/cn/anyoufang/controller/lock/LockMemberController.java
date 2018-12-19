@@ -158,6 +158,11 @@ public class LockMemberController extends AbstractController {
           if(admin == null) {
               return AnyoujiaResult.build(FOUR_H_1,"登陆超时");
           }
+          String phone1 = admin.getPhone();
+          phone =  phone !=null? phone.trim() :phone;
+          if(phone1 != null && phone1.equalsIgnoreCase(phone)){
+              return AnyoujiaResult.build(FOUR_H,"不能自己添加自己");
+          }
         int adminId = admin.getUid();
           try {
               boolean ok = memberService.addUser(usertype,username,phone,relation,locksn,finger,pwd,adminId,endtime);

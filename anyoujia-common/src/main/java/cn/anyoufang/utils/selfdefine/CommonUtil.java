@@ -139,7 +139,7 @@ public class CommonUtil {
                      temppwd.setSeqid(job.getInt("seqid"));
                      temppwd.setNickname(job.getString("nickname"));
                      temppwd.setCreatetime(job.getInt("createtime"));
-                     temppwd.setPwd(job.getInt("pwds"));
+                     temppwd.setPwd(job.getString("pwds"));
                      temppwd.setExpire(job.getInt("endtime"));
                      temppwd.setPtype(ptype);
                      temppwd.setStatus(job.getInt("visible"));

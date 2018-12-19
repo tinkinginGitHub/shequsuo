@@ -22,10 +22,19 @@ public class Temppwd implements Serializable {
      * 目的
      */
     private String motive;
+
+    public String getPwd() {
+        return pwd;
+    }
+
+    public void setPwd(String pwd) {
+        this.pwd = pwd;
+    }
+
     /**
      * 临时密码
      */
-    private int pwd;
+    private String pwd;
     /**
      * 有效期
      */
@@ -65,14 +74,6 @@ public class Temppwd implements Serializable {
 
     public void setMotive(String motive) {
         this.motive = motive;
-    }
-
-    public int getPwd() {
-        return pwd;
-    }
-
-    public void setPwd(int pwd) {
-        this.pwd = pwd;
     }
 
     public int getExpire() {
