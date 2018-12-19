@@ -366,7 +366,8 @@
     SELECT
 	sm.avatar,
 	sm.gender,
-    smr.userrelation
+    smr.userrelation,
+    smr.usertype
   FROM
 	sp_member sm
   JOIN
