@@ -94,9 +94,13 @@ public interface LockMemberService {
      * 判断是否已经设置永久密码
      * @param locksn
      * @param phone
-     * @return boolean
+     * @param memberid
+     * @param relationid
+     * @param othermemberid
+     * @return
      */
-    Map isSetLockPwdForever(String locksn, String phone, int memberid, int relationid);
+
+    Map isSetLockPwdForever(String locksn, String phone, int memberid, int relationid, int othermemberid);
 
     /**
      * 删除锁密码用户相关信息

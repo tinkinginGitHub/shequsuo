@@ -298,7 +298,8 @@ public class LockMemberController extends AbstractController {
      */
       @RequestMapping("/admin/checksetedpwd")
       public AnyoujiaResult isSetLockPwdForever(@RequestParam String locksn,HttpServletRequest request,
-                                                @RequestParam(required = false,defaultValue = "-1") int relationid) {
+                                                @RequestParam(required = false,defaultValue = "-1") int relationid,
+                                                @RequestParam(required = false,defaultValue = "-1") int othermemberid) {
           if(StringUtil.isEmpty(locksn)) {
               return AnyoujiaResult.build(FOUR_H,"参数异常");
           }
@@ -306,7 +307,7 @@ public class LockMemberController extends AbstractController {
           if(user == null) {
               return AnyoujiaResult.build(FOUR_H_1,"登陆超时");
           }
-          Map res =  memberService.isSetLockPwdForever(locksn,user.getPhone(),user.getUid(),relationid);
+          Map res =  memberService.isSetLockPwdForever(locksn,user.getPhone(),user.getUid(),relationid,othermemberid);
           if(res !=null) {
               return AnyoujiaResult.ok(res);
           }

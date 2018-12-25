@@ -505,9 +505,8 @@ public class LockMemberServiceImpl implements LockMemberService {
      * @Date 2018.11.15.16.42修改by 代平：若已经设置密码则返回密码id
      */
     @Override
-    public Map isSetLockPwdForever(String locksn, String phone, int memberid, int relationid) {
+    public Map isSetLockPwdForever(String locksn, String phone, int memberid, int relationid, int othermemberid) {
         Map res = new HashMap(2);
-
         if (relationid != -1) {
             //老人和儿童
             SpMemberRelation relation = relationMapper.selectByPrimaryKey(relationid);
@@ -530,14 +529,24 @@ public class LockMemberServiceImpl implements LockMemberService {
                 }
             }
         }
+        SpLockAdmin adminLock;
+        if(othermemberid != -1) {
+            adminLock =  isNotAdminLock(othermemberid, locksn);
+            SpMember member = memberMapper.selectByPrimaryKey(othermemberid);
+            phone = member !=null ? member.getPhone() : "";
+        }else {
+            adminLock =  isNotAdminLock(memberid, locksn);
+        }
 
-        SpLockAdmin adminLock = isNotAdminLock(memberid, locksn);
         SpMemberRelation memberRelation = null;
         if (adminLock == null && (memberRelation = isMemberRelation(phone, locksn)) == null) {
             return null;
         }
 
         if ((adminLock != null && adminLock.getSetedlockpwd() || (memberRelation != null && memberRelation.getSetedlockpwd()))) {
+            if(othermemberid != -1){
+                memberid =othermemberid;
+            }
             SpLockPasswordExample spexample = new SpLockPasswordExample();
             SpLockPasswordExample.Criteria criteria = spexample.createCriteria();
             criteria.andMemberidEqualTo(memberid).andLocksnEqualTo(locksn).andExpiredEqualTo(false);
