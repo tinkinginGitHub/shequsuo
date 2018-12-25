@@ -63,11 +63,6 @@ public class LockOperationInterceptor extends HandlerInterceptorAdapter {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-//        String token = request.getHeader("token");
-//        //token失效
-//        if(token != null) {
-//            updateLogin(request,loginService);
-//        }
         if (handler instanceof HandlerMethod) {
             HandlerMethod methodHandler = (HandlerMethod) handler;
             LockOperateLog operateLog = methodHandler.getMethod().getAnnotation(LockOperateLog.class);

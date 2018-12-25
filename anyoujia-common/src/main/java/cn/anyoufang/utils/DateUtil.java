@@ -269,8 +269,8 @@ public class DateUtil {
 	}
 
 
-	public static boolean isNotExpired(int end,int deadline) {
-		Date time = new Date(Long.valueOf(end+"000"));
+	public static boolean isNotExpired(int addtime,int deadline) {
+		Date time = new Date(Long.valueOf(addtime+"000"));
 		long from = time.getTime();
 		long to = System.currentTimeMillis();
 		int days = (int) ((to - from)/(1000 * 60 * 60 * 24));

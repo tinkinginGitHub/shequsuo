@@ -116,7 +116,6 @@ public interface LoginService {
      */
     boolean updateAdditionalUserInfo(String avatar,String bname,String phone,int gender);
 
-    // boolean isExist(String phone);
 
     /**
      * 调用PHP鉴权中心注册

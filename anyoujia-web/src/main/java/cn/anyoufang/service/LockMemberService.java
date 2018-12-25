@@ -85,9 +85,10 @@ public interface LockMemberService {
      * 获取用户指纹列表
      * @param memberid
      * @param locksn
+     * @param othermemberid
      * @return
      */
-    List<SpLockFinger> getFingerList(int memberid,String locksn,int relationid);
+    List<SpLockFinger> getFingerList(int memberid,String locksn,int relationid,int othermemberid);
 
     /**
      * 判断是否已经设置永久密码

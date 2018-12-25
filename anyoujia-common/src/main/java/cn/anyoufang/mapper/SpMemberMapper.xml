@@ -362,7 +362,7 @@
         sla.locksn =#{sla.locksn,jdbcType=VARCHAR}
   </select>
 
-  <select id="selectByIdJoinFind" resultType="java.util.Map" parameterType="java.lang.Integer">
+  <select id="selectByIdJoinFind" resultType="java.util.Map">
     SELECT
 	sm.avatar,
 	sm.gender,
@@ -375,6 +375,6 @@
   ON
       sm.phone = smr.phone
    WHERE
-	sm.uid = #{sm.uid,jdbcType=INTEGER};
+	sm.uid = #{param1,jdbcType=INTEGER} AND smr.locksn = #{param2,jdbcType=VARCHAR};
   </select>
 </mapper>

@@ -144,7 +144,9 @@ public class LockMemberServiceImpl implements LockMemberService {
 
         user.setParentid(adminId);
         user.setLocksn(locksn);
-        user.setAddtime(DateUtil.generateTenTime());
+        int ten = DateUtil.generateTenTime();
+        user.setAddtime(ten);
+        user.setUpdatetime(ten);
         int index = relationMapper.insertSelective(user);
         if (index == SqlStatus.ONE) {
             return true;
@@ -295,8 +297,13 @@ public class LockMemberServiceImpl implements LockMemberService {
         StringBuilder sb = new StringBuilder();
         String param = sb.append(locksn).append(seqid).append(timestamp).append(lockSalt).toString();
         String sign = Md5Utils.md5(param, "UTF-8");
-        String combineParam = "method=del.lock.pwd&locksn=" + locksn + "&seqid=" + seqid + "&temptime=" + timestamp + "&sign=" + sign;
-        return SimulateGetAndPostUtil.sendPost(url, combineParam);
+        StringBuilder params = new StringBuilder("method=del.lock.pwd&locksn=");
+        String combineParam =  params.append(locksn).
+                                      append("&seqid=").append(seqid).
+                                      append("&temptime=").append(timestamp).
+                                      append("&sign=").append(sign).toString();
+        String res = SimulateGetAndPostUtil.sendPost(url, combineParam);
+        return res;
     }
 
     /**
@@ -349,9 +356,6 @@ public class LockMemberServiceImpl implements LockMemberService {
             return false;
         }
         if (relationid != -1) {
-//            SpLockPasswordExample example = new SpLockPasswordExample();
-//            SpLockPasswordExample.Criteria criteria = example.createCriteria();
-//            criteria.andLocksnEqualTo(locksn).andRelationidEqualTo(relationid).andPtypeEqualTo(PwdTypeEnum.ONE.getCode());
             if (dodelInHardare(lockPasswords1, locksn)) {
                 SpMemberRelation updateRe = new SpMemberRelation();
                 updateRe.setId(relationid);
@@ -367,14 +371,6 @@ public class LockMemberServiceImpl implements LockMemberService {
                 return false;
             }
         }
-//        SpLockPasswordExample example = new SpLockPasswordExample();
-//        SpLockPasswordExample.Criteria criteria = example.createCriteria();
-//        criteria.andLocksnEqualTo(locksn).andMemberidEqualTo(memberid).andPtypeEqualTo(PwdTypeEnum.ONE.getCode()).andExpiredEqualTo(false);
-//        List<SpLockPassword> lockPasswords = passwordMapper.selectByExample(example);
-//        if (lockPasswords.isEmpty()) {
-//            return false;
-//        }
-
         if (dodelInHardare(lockPasswords1, locksn)) {
             //管理员删除密码或者用户删除密码
             SpLockAdmin adminLock = isNotAdminLock(memberid, locksn);
@@ -490,12 +486,18 @@ public class LockMemberServiceImpl implements LockMemberService {
      * 获取用户指纹列表
      */
     @Override
-    public List<SpLockFinger> getFingerList(int memberid, String locksn, int relationid) {
+    public List<SpLockFinger> getFingerList(int memberid, String locksn, int relationid,int othermemberid) {
 
-        if (relationid == 0) {
+        if (relationid != 0) {
+            //获取老人小孩
+            return getOldChildFingerListInternal(locksn, relationid);
+        }else if(othermemberid != 0){
+            //获取其他普通用户
+            return getFingerListInternal(locksn,othermemberid);
+        }else{
+            //获取本人
             return getFingerListInternal(locksn, memberid);
         }
-        return getOldChildFingerListInternal(locksn, relationid);
     }
 
     /**
@@ -569,20 +571,23 @@ public class LockMemberServiceImpl implements LockMemberService {
             SpMemberRelation user = iterator.next();
             String phone = user.getPhone();
             int end = user.getEndtime();
+            int addtime = user.getAddtime();
             String usertype = user.getUsertype();
 
             if (UsertypeEnum.THREE.getCode().equals(usertype)) {
-
                 //检查被添加租户是否注册，未注册再判断是否过期
                 if (!loginService.checkAccount1(phone)) {
-
-                    if (DateUtil.isNotExpired(end, deadline)) {
+                    if (DateUtil.isNotExpired(addtime, deadline)) {
                         validMembers.add(user);
                     } else {
                         invalidMembers.add(user);
                     }
                 } else {
-                    validMembers.add(user);
+                    if(end <= DateUtil.generateTenTime()){
+                        invalidMembers.add(user);
+                    }else {
+                        validMembers.add(user);
+                    }
                 }
 
             } else {
@@ -625,17 +630,25 @@ public class LockMemberServiceImpl implements LockMemberService {
         boolean expired;
         boolean notExpired;
         if (status == SqlStatus.ZERO) {
+            //这个分支表示关闭
             state = 3;
-            expired = true;
-            notExpired = false;
+            //0,无效
+            expired = false;
+            //1 有效
+            notExpired = true;
 
         } else {
+            //这个分支表示开启
             state = 2;
-            expired = false;
-            notExpired = true;
+            expired = true;
+            notExpired = false;
         }
         SpMemberRelation relation = relationMapper.selectByPrimaryKey(id);
-        SpMember registed = loginService.getUserByAccount(relation.getPhone());
+        String phone = relation.getPhone();
+        SpMember registed = null;
+        if(phone !=null){
+            registed = loginService.getUserByAccount(phone);
+        }
         SpMemberRelation user = new SpMemberRelation();
         if (registed != null) {
             int uid = registed.getUid();
@@ -670,8 +683,10 @@ public class LockMemberServiceImpl implements LockMemberService {
         //更新成员列表指纹或密码权限
         if (PtypeAuthEnum.FINGER.getCode() == type) {
             if (status == SqlStatus.ZERO) {
+                //关闭
                 user.setFingerpwdauth(false);
             } else {
+                //开启
                 user.setFingerpwdauth(true);
             }
 

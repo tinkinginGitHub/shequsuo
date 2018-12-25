@@ -231,4 +231,44 @@ public class CommonUtil {
         }
         return false;
     }
+
+    /**
+     * 0表示app用户密码开门
+     1表示永久性密码开门
+     2一次性密码开门
+     3限时密码开门
+     4表示钥匙开门
+     5表示指纹开门
+     6表示卡开门
+     10表示APP试开
+     11表示密码试开
+     15表示指纹试开
+     * @param usertype
+     * @return
+     */
+    public static boolean checkIfPwdRecord(int usertype){
+        int[] passwordOpenTypes = {0,1,2,3,11};
+        for(int i =0;i<passwordOpenTypes.length;i++){
+            if(usertype == passwordOpenTypes[i]){
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     5表示指纹开门
+     15表示指纹试开
+     * @param usertype
+     * @return
+     */
+    public static boolean checkIfFingerRecord(int usertype){
+        int[] fingerOpenTypes = {5, 15};
+        for(int i =0;i<fingerOpenTypes.length;i++){
+            if(fingerOpenTypes[i] == usertype){
+                return true;
+            }
+        }
+        return false;
+    }
 }

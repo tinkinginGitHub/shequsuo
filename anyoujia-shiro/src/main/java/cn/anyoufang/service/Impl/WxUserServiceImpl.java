@@ -48,7 +48,6 @@ public class WxUserServiceImpl implements WxUserService {
             if(jsonObject.get("session_key") == null || jsonObject.get("openid") == null) {
                 return null;
             }
-          //  String sessionKey = jsonObject.get("session_key").getAsString();
             String openId = jsonObject.get("openid").getAsString();
 
            List<ResultWx> list =  wxMapper.selectByOpenid(openId);
@@ -78,8 +77,6 @@ public class WxUserServiceImpl implements WxUserService {
             if(jsonObject.get("session_key") == null || jsonObject.get("openid") == null) {
                 return null;
             }
-            //TODO sessionKey 处理
-           // String sessionKey = jsonObject.get("session_key").getAsString();
             String openId = jsonObject.get("openid").getAsString();
             return openId;
         }
