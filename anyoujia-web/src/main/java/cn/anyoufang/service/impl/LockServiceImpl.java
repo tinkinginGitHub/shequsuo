@@ -4,6 +4,7 @@ import cn.anyoufang.entity.SpLock;
 import cn.anyoufang.entity.SpLockAdmin;
 import cn.anyoufang.entity.SpLockAdminExample;
 import cn.anyoufang.entity.SpLockFinger;
+import cn.anyoufang.entity.SpLockFingerExample;
 import cn.anyoufang.entity.SpLockPassword;
 import cn.anyoufang.entity.SpLockPasswordExample;
 import cn.anyoufang.entity.SpMember;
@@ -39,6 +40,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
@@ -64,8 +66,11 @@ public class LockServiceImpl implements LockService {
     private static final int FIVE_H = HttpCodeEnum.FIVE_HUNDRED.getCode();
     private static final int T_H_1 = HttpCodeEnum.TWO_HUNDRED1.getCode();
     private static final String T_H_1_MSG = HttpCodeEnum.TWO_HUNDRED1.getValue();
-
-    private static int delimeterForFingerAndPwdId = 470101011;
+    /**
+     * 魔法数字，临时使用来区分指纹id和密码id,指纹，密码两张表都是使用的id自增长，最终会有相同的时候。
+     * 已有替代方案是通过返回的usertype来区分是指纹还是密码记录
+     */
+    private static final int delimeterForFingerAndPwdId = 470101011;
 
     @Value("${lock.salt}")
     private String lockSalt;
@@ -114,6 +119,14 @@ public class LockServiceImpl implements LockService {
                                           String nickname,
                                           String phone,
                                           boolean isAdmin, String motive, int relationid) {
+
+        if(isAdmin && relationid != 0){
+            SpMemberRelation relation = relationMapper.selectByPrimaryKey(relationid);
+            if(relation != null){
+                String username = relation.getUsername();
+                nickname = username;
+            }
+        }
         int seqid;
         if (ptype == 1) {
             SpLockPasswordExample example = new SpLockPasswordExample();
@@ -229,6 +242,14 @@ public class LockServiceImpl implements LockService {
                                                     int usertype,
                                                     String nickname,
                                                     String phone, String fingerdesc, int fingerid, boolean isAdmin, int relationid) {
+        //管理员给其他老人儿童添加指纹
+        if(isAdmin && relationid != 0){
+            SpMemberRelation relation = relationMapper.selectByPrimaryKey(relationid);
+            if(relation != null){
+                String username = relation.getUsername();
+                nickname = username;
+            }
+        }
         int ptype = 1;
         long timestamp = DateUtil.generateTenTime();
         StringBuilder sb = new StringBuilder();
@@ -254,6 +275,14 @@ public class LockServiceImpl implements LockService {
         int state = Integer.valueOf(code);
 
         if (state == T_H) {
+            SpLockFinger finger = new SpLockFinger();
+            finger.setId(fingerid);
+            finger.setFingerdesc(fingerdesc);
+            finger.setExpired(false);
+            if(relationid !=0){
+                finger.setRelationid(relationid);
+            }
+            fingerMapper.updateByPrimaryKeySelective(finger);
             return AnyoujiaResult.build(T_H, String.valueOf(data.get("message")));
         }
         //不成功则删除无用记录
@@ -502,8 +531,9 @@ public class LockServiceImpl implements LockService {
             while (iterator.hasNext()) {
                 LockRecord lr = iterator.next();
                 int userid = lr.getPwdRecordId();
+                int usertype = lr.getUserType();
                 int oldChildId;
-                if (isUseridSmaller(userid, delimeterForFingerAndPwdId)) {
+                if (isUseridSmaller(userid, delimeterForFingerAndPwdId) || CommonUtil.checkIfPwdRecord(usertype)) {
                     SpLockPassword slp = passwordMapper.selectByPrimaryKey(userid);
                     if (slp != null) {
                         if ( slp.getRelationid() !=null&&((oldChildId =slp.getRelationid()) != 0)) {
@@ -512,7 +542,7 @@ public class LockServiceImpl implements LockService {
                             lr.setRelation(sr.getUserrelation());
                         } else {
                             Integer memberid = slp.getMemberid();
-                            Map<String, Object> sr = memberMapper.selectByIdJoinFind(memberid);
+                            Map<String, Object> sr = memberMapper.selectByIdJoinFind(memberid,locksn);
                             if (sr != null) {
                                 lr.setHeadurl(String.valueOf(sr.get("avatar")));
                                 lr.setRelation(String.valueOf(sr.get("userrelation")));
@@ -530,7 +560,7 @@ public class LockServiceImpl implements LockService {
 
                         }
                     }
-                } else {
+                } else if(CommonUtil.checkIfFingerRecord(usertype)) {
                     SpLockFinger slf = fingerMapper.selectByPrimaryKey(userid);
                     if (slf != null) {
                         if (slf.getRelationid() !=null&&((oldChildId = slf.getRelationid()) != 0)) {
@@ -539,7 +569,7 @@ public class LockServiceImpl implements LockService {
                             lr.setRelation(sr.getUserrelation());
                         } else {
                             Integer memberid = slf.getMemberid();
-                            Map<String, Object> sr = memberMapper.selectByIdJoinFind(memberid);
+                            Map<String, Object> sr = memberMapper.selectByIdJoinFind(memberid,locksn);
                             if (sr != null) {
                                 lr.setHeadurl(String.valueOf(sr.get("avatar")));
                                 lr.setRelation(String.valueOf(sr.get("userrelation")));
@@ -815,7 +845,7 @@ public class LockServiceImpl implements LockService {
         lockFinger.setFingerdesc(fingerdesc);
         lockFinger.setFingerid("");
         lockFinger.setLocksn(locksn);
-        lockFinger.setExpired(false);
+        lockFinger.setExpired(true);
         if (relationid != 0) {
             lockFinger.setRelationid(relationid);
         }
@@ -834,6 +864,7 @@ public class LockServiceImpl implements LockService {
      * 解绑锁
      */
     @Override
+    @Transactional(rollbackFor = RuntimeException.class)
     public AnyoujiaResult unboundLock(String locksn, int userid) {
 
         StringBuilder sb = new StringBuilder();
@@ -860,8 +891,38 @@ public class LockServiceImpl implements LockService {
            lock.setActive(false);
            lock.setActivetime(0);
            lockinfoMapper.updateByPrimaryKeySelective(lock);
+           updateFingers(locksn);
+           updatePwds(locksn);
+           removeMembers(locksn);
        }
         return AnyoujiaResult.build(status,message);
+    }
+
+    private void removeMembers(String locksn) {
+        SpMemberRelationExample example = new SpMemberRelationExample();
+        SpMemberRelationExample.Criteria criteria = example.createCriteria();
+        criteria.andLocksnEqualTo(locksn);
+        relationMapper.deleteByExample(example);
+    }
+
+    private void  updateFingers(String locksn){
+        SpLockFingerExample example = new SpLockFingerExample();
+        SpLockFingerExample.Criteria criteria = example.createCriteria();
+        criteria.andExpiredEqualTo(false).andLocksnEqualTo(locksn);
+        SpLockFinger finger = new SpLockFinger();
+        finger.setLocksn(locksn);
+        finger.setExpired(true);
+        fingerMapper.updateByExampleSelective(finger,example);
+    }
+
+    private void updatePwds(String locksn){
+        SpLockPasswordExample example = new SpLockPasswordExample();
+        SpLockPasswordExample.Criteria criteria = example.createCriteria();
+        criteria.andExpiredEqualTo(false).andLocksnEqualTo(locksn);
+        SpLockPassword password = new SpLockPassword();
+        password.setLocksn(locksn);
+        password.setExpired(true);
+        passwordMapper.updateByExampleSelective(password,example);
     }
 
     /**

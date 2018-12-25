@@ -102,4 +102,21 @@ public class UUID {
     public static String getUUID() {
         return java.util.UUID.randomUUID().toString().replace("-", "");
     }
+
+    /**
+     * 根据一个数获取伪随机数
+     * @param x
+     * @return
+     */
+    public static int xorShift(int x){
+        int y=x;
+        y ^= x >>6;
+        y ^= y <<21;
+        y ^= y >>7;
+        return y;
+    }
+
+    public static void main(String[] args) {
+        System.out.println(xorShift(470101137));
+    }
 }

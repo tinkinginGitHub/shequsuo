@@ -49,7 +49,8 @@ public class GetUserWxInfoController extends AbstractController {
     @SuppressWarnings({ "resource", "deprecation" })
     @RequestMapping("/getCode")
     @ApiOperation(value = "获取用户微信信息并保存",httpMethod = "POST",response = AnyoujiaResult.class)
-    public AnyoujiaResult handleWxLogin(@RequestParam String code, HttpServletRequest request) {
+    public AnyoujiaResult handleWxLogin(@RequestParam String code, HttpServletRequest request,
+                                        @RequestParam(required = false) String phone) {
 
       ResultWx res;
         try {
@@ -65,6 +66,11 @@ public class GetUserWxInfoController extends AbstractController {
             return AnyoujiaResult.build(FOUR_H,"尚未绑定微信账号");
         }
         String account = res.getPhone();
+        if(phone !=null){
+            if(!phone.equalsIgnoreCase(account)){
+                return AnyoujiaResult.build(FOUR_H,"手机号和微信号不匹配");
+            }
+        }
         String pwd = res.getPassword();
         String loginIp = IPUtils.getIpAddr(request);
         Map<String, Object> loginResult;

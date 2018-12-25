@@ -66,9 +66,10 @@ public class LockMemberController extends AbstractController {
         for(SpMemberRelation user:list) {
             Map data = new HashMap();
             String type =  user.getUsertype();
+            String phone = user.getPhone();
             data.put("fingerpwdauth",user.getFingerpwdauth());
             data.put("lockpwdauth",user.getLockpwdauth());
-            data.put("phone",user.getPhone());
+            data.put("phone",phone);
             data.put("usertype",type);
             data.put("relation",user.getUserrelation());
             data.put("username",user.getUsername());
@@ -76,10 +77,22 @@ public class LockMemberController extends AbstractController {
             data.put("endtime",user.getEndtime());
             data.put("relationid",user.getId());
            if(FAMILY.equals(type)) {
+               SpMember member = loginService.getUserByAccount(phone);
+               int uid = 0;
+               if(member != null){
+                   uid = member.getUid();
+               }
+               data.put("memberid",uid);
                family.add(data);
            }else if (OLDCHILD.equals(type)) {
                oldChild.add(data);
            }else {
+               SpMember member = loginService.getUserByAccount(phone);
+               int uid = 0;
+               if(member != null){
+                   uid = member.getUid();
+               }
+               data.put("memberid",uid);
                renters.add(data);
            }
         }
@@ -242,7 +255,8 @@ public class LockMemberController extends AbstractController {
      */
       @RequestMapping("/admin/fingerlist")
       public  AnyoujiaResult getFingerList(@RequestParam String locksn,
-                                           @RequestParam(required = false,defaultValue = "0") int relationid, HttpServletRequest request) {
+                                           @RequestParam(required = false,defaultValue = "0") int relationid,
+                                           HttpServletRequest request,@RequestParam(required = false,defaultValue = "0")int othermemberid) {
           if(StringUtil.isEmpty(locksn)) {
               return AnyoujiaResult.build(FOUR_H,"参数异常");
           }
@@ -250,7 +264,7 @@ public class LockMemberController extends AbstractController {
           if(user == null) {
               return AnyoujiaResult.build(FOUR_H_1,"登陆超时");
           }
-          List<SpLockFinger> res = memberService.getFingerList(user.getUid(),locksn,relationid);
+          List<SpLockFinger> res = memberService.getFingerList(user.getUid(),locksn,relationid,othermemberid);
           return AnyoujiaResult.ok(res);
       }
 

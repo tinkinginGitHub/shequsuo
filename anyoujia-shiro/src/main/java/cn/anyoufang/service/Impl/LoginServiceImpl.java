@@ -60,10 +60,7 @@ public class LoginServiceImpl implements LoginService {
      * http状态码
      */
     private static final int T_H = HttpCodeEnum.TWO_HUNDRED.getCode();
-    private static final int FOUR_H_1 = HttpCodeEnum.FOUR_HUNDRED1.getCode();
     private static final int FOUR_H = HttpCodeEnum.FOUR_HUNDRED.getCode();
-    private static final int FIVE_H = HttpCodeEnum.FIVE_HUNDRED.getCode();
-
     @Autowired
     private SpMemberMapper memberMapper;
 

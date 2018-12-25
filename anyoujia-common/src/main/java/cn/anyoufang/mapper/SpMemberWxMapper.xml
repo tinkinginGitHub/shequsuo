@@ -244,13 +244,17 @@
       uid = #{uid,jdbcType=INTEGER}
     where wx = #{wx,jdbcType=INTEGER}
   </update>
+
   <select id="selectByOpenid" parameterType="java.lang.String" resultMap="BaseResultMap1">
     SELECT
     sm.phone,sm.password
     FROM
     sp_member sm
     JOIN sp_member_wx smw ON sm.uid = smw.uid
-    WHERE
-    smw.openid = #{smw.openid,jdbcType=VARCHAR};
+    <where>
+      <if test="_parameter !=null">
+        smw.openid = #{smw.openid,jdbcType=VARCHAR};
+      </if>
+    </where>
   </select>
 </mapper>

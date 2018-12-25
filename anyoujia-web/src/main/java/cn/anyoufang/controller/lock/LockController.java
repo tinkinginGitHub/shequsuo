@@ -93,12 +93,7 @@ public class LockController extends AbstractController {
         String phone = user.getPhone();
         boolean isAdmin = false;
         List<SpLockAdmin> lockAdmin = loginService.getLockAdmin(user.getUid(),locksn);
-        if(lockAdmin.isEmpty()) {
-            String relationUsername = loginService.getMemberRelation(locksn,phone);
-            if(relationUsername != null) {
-                nickname = relationUsername;
-            }
-        }else {
+        if(!lockAdmin.isEmpty()) {
              isAdmin = true;
         }
 
@@ -169,15 +164,9 @@ public class LockController extends AbstractController {
         }
         String nickname =user.getBname();
         int memberid = user.getUid();
-        String phone = user.getPhone();
         boolean isAdmin = false;
          List<SpLockAdmin> lockAdmin = loginService.getLockAdmin(user.getUid(),locksn);
-         if(lockAdmin.isEmpty()) {
-             String relation = loginService.getMemberRelation(locksn,phone);
-             if(relation != null) {
-                 nickname = relation;
-             }
-         }else {
+         if(!lockAdmin.isEmpty()) {
             isAdmin = true;
          }
 
