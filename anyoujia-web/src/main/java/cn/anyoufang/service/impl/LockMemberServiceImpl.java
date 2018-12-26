@@ -515,7 +515,7 @@ public class LockMemberServiceImpl implements LockMemberService {
                 if (setedlockpwd) {
                     SpLockPasswordExample spexample = new SpLockPasswordExample();
                     SpLockPasswordExample.Criteria criteria = spexample.createCriteria();
-                    criteria.andRelationidEqualTo(relationid).andLocksnEqualTo(locksn).andExpiredEqualTo(false);
+                    criteria.andRelationidEqualTo(relationid).andLocksnEqualTo(locksn).andExpiredEqualTo(false).andPtypeEqualTo(1);
                     List<SpLockPassword> lockPasswords = passwordMapper.selectByExample(spexample);
                     if (!lockPasswords.isEmpty()) {
                         SpLockPassword lockPassword = lockPasswords.get(0);
@@ -549,7 +549,7 @@ public class LockMemberServiceImpl implements LockMemberService {
             }
             SpLockPasswordExample spexample = new SpLockPasswordExample();
             SpLockPasswordExample.Criteria criteria = spexample.createCriteria();
-            criteria.andMemberidEqualTo(memberid).andLocksnEqualTo(locksn).andExpiredEqualTo(false);
+            criteria.andMemberidEqualTo(memberid).andLocksnEqualTo(locksn).andExpiredEqualTo(false).andPtypeEqualTo(1).andRelationidEqualTo(0);
             List<SpLockPassword> lockPasswords = passwordMapper.selectByExample(spexample);
             if (!lockPasswords.isEmpty()) {
                 SpLockPassword lockPassword = lockPasswords.get(0);
