@@ -79,6 +79,9 @@ public class LockServiceImpl implements LockService {
     @Value("${lock.url}")
     private String url;
 
+    @Value("${mqtt.loadbalance}")
+    private String mqtturl;
+
     @Value("${deadline}")
     private int deadline;
 
@@ -330,10 +333,10 @@ public class LockServiceImpl implements LockService {
             return AnyoujiaResult.build(FIVE_H, "添加锁发生异常，请重新操作");
         }
         StringBuilder sb = new StringBuilder();
-        final int id = lock.getId();
-        String param = sb.append(locksn).append(timestamp).append(id).append(lockSalt).toString();
+        final int uid = lock.getId();
+        String param = sb.append(locksn).append(timestamp).append(uid).append(lockSalt).toString();
         String sign = Md5Utils.md5(param, "UTF-8");
-        StringBuilder toCombine = new StringBuilder("method=register.lock.info&userid=").append(id);
+        StringBuilder toCombine = new StringBuilder("method=register.lock.info&userid=").append(uid);
         String combineParam = toCombine.append("&locksn=").append(locksn).
                 append("&temptime=").append(timestamp).
                 append("&sign=").append(sign).toString();
@@ -350,6 +353,8 @@ public class LockServiceImpl implements LockService {
         String state = String.valueOf(data.get("code"));
         Integer status = Integer.valueOf(state);
         if (status == T_H) {
+            String s = SimulateGetAndPostUtil.sendGet(mqtturl + uid, null);
+            log.info("开启mqtt订阅: " + s);
             SpLock spLock = new SpLock();
             spLock.setSn(locksn);
             spLock.setActive(true);
@@ -357,7 +362,7 @@ public class LockServiceImpl implements LockService {
             lockinfoMapper.updateByPrimaryKeySelective(spLock);
         } else {
             //如果不成功，则删除无用数据，防止不能再次添加
-            lockMapper.deleteByPrimaryKey(id);
+            lockMapper.deleteByPrimaryKey(uid);
         }
         return AnyoujiaResult.build(status, String.valueOf(data.get("message")));
     }
