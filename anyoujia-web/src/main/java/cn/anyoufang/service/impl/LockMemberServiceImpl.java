@@ -644,7 +644,7 @@ public class LockMemberServiceImpl implements LockMemberService {
             //0,无效
             expired = false;
             //1 有效
-            notExpired = true;
+            notExpired = false;
 
         } else {
             //这个分支表示开启
