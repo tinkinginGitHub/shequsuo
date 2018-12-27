@@ -273,7 +273,7 @@ public class LockMemberServiceImpl implements LockMemberService {
     private List<SpLockFinger> getFingerListInternal(String locksn, int memberId) {
         SpLockFingerExample example = new SpLockFingerExample();
         SpLockFingerExample.Criteria criteria = example.createCriteria();
-        criteria.andMemberidEqualTo(memberId).andLocksnEqualTo(locksn).andExpiredEqualTo(false);
+        criteria.andMemberidEqualTo(memberId).andLocksnEqualTo(locksn).andExpiredEqualTo(false).andRelationidIsNull();
         return fingerMapper.selectByExample(example);
     }
 

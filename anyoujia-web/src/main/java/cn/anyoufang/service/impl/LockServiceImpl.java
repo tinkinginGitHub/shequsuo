@@ -134,7 +134,11 @@ public class LockServiceImpl implements LockService {
         if (ptype == 1) {
             SpLockPasswordExample example = new SpLockPasswordExample();
             SpLockPasswordExample.Criteria criteria = example.createCriteria();
-            criteria.andMemberidEqualTo(memberid).andLocksnEqualTo(locksn).andExpiredEqualTo(false);
+            if(relationid != 0){
+                criteria.andMemberidEqualTo(memberid).andLocksnEqualTo(locksn).andExpiredEqualTo(false).andRelationidEqualTo(relationid);
+            }else {
+                criteria.andMemberidEqualTo(memberid).andLocksnEqualTo(locksn).andExpiredEqualTo(false).andRelationidIsNull();
+            }
             List<SpLockPassword> lockPasswords = passwordMapper.selectByExample(example);
             if(!lockPasswords.isEmpty()){
                 SpLockPassword lockPassword = lockPasswords.get(0);
