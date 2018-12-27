@@ -100,6 +100,15 @@ public class LockController extends AbstractController {
         return lockService.setLockUserFingerPassword(locksn,endtime,usertype,nickname,phone,fingerdesc,fingerid,isAdmin,relationid);
     }
 
+    /**
+     * 给前端生成指纹id
+     * @param request
+     * @param locksn
+     * @param endtime
+     * @param fingerdesc
+     * @param relationid
+     * @return
+     */
     @RequestMapping("/fingerid")
     public  AnyoujiaResult getFingerId(HttpServletRequest request, @RequestParam String locksn,@RequestParam int endtime,
                                        @RequestParam(required = false) String fingerdesc,
@@ -115,6 +124,15 @@ public class LockController extends AbstractController {
        return lockService.getFingerIdForFrontEnd(memberid, relationid, locksn, fingerdesc, endtime);
     }
 
+    /**
+     * 为前端生成永久密码id
+     * @param ptype
+     * @param locksn
+     * @param endtime
+     * @param request
+     * @param relationid
+     * @return
+     */
     @RequestMapping("/permid")
     public AnyoujiaResult getPermPwdId(@RequestParam int ptype,
                                        @RequestParam String locksn,

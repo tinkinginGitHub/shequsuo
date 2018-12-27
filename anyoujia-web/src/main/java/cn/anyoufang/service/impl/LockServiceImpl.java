@@ -458,6 +458,11 @@ public class LockServiceImpl implements LockService {
         if (member != null && !member.isEmpty()) {
             res.addAll(member);
         }
+        combineBasicinfo(combineInfos,res);
+        return AnyoujiaResult.ok(res);
+    }
+
+    private void combineBasicinfo(List<LockCombineInfo> combineInfos,List<Lock> res) {
         if (!combineInfos.isEmpty()) {
             String locksn;
             for (Lock lock : res) {
@@ -484,12 +489,10 @@ public class LockServiceImpl implements LockService {
                             String adminPhone = nicknameAndPhone.get("phone");
                             lock.setNickname(adminPhone);
                         }
-
                     }
                 }
             }
         }
-        return AnyoujiaResult.ok(res);
     }
 
     private String getLockResFromHardare(SpLockAdmin adminLock) {
@@ -505,8 +508,8 @@ public class LockServiceImpl implements LockService {
         return SimulateGetAndPostUtil.sendPost(url, combineParam);
     }
 
-    @Override
-    public AnyoujiaResult getLockRecords(String locksn, int isalarm, int page, int begintime) {
+
+    private String lockRecordsFromHardware(int begintime,int isalarm,String locksn,int page){
         long timestamp = DateUtil.generateTenTime();
         StringBuilder sb = new StringBuilder();
         if (begintime != -1) {
@@ -527,6 +530,12 @@ public class LockServiceImpl implements LockService {
         }
         String combineParam = p.toString();
         String res = SimulateGetAndPostUtil.sendPost(url, combineParam);
+        return res;
+    }
+
+    @Override
+    public AnyoujiaResult getLockRecords(String locksn, int isalarm, int page, int begintime) {
+        String res = lockRecordsFromHardware(begintime, isalarm, locksn, page);
         if (CommonUtil.successResponse(res)) {
             List<LockRecord> list = CommonUtil.getRecords(res);
             if (list.isEmpty()) {
