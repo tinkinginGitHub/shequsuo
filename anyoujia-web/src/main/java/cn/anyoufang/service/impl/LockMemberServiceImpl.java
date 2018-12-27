@@ -549,7 +549,7 @@ public class LockMemberServiceImpl implements LockMemberService {
             }
             SpLockPasswordExample spexample = new SpLockPasswordExample();
             SpLockPasswordExample.Criteria criteria = spexample.createCriteria();
-            criteria.andMemberidEqualTo(memberid).andLocksnEqualTo(locksn).andExpiredEqualTo(false).andPtypeEqualTo(1).andRelationidEqualTo(0);
+            criteria.andMemberidEqualTo(memberid).andLocksnEqualTo(locksn).andExpiredEqualTo(false).andPtypeEqualTo(1).andRelationidIsNull();
             List<SpLockPassword> lockPasswords = passwordMapper.selectByExample(spexample);
             if (!lockPasswords.isEmpty()) {
                 SpLockPassword lockPassword = lockPasswords.get(0);
@@ -750,10 +750,10 @@ public class LockMemberServiceImpl implements LockMemberService {
             if (!manageUser(locksn, id1, state)) {
                 return false;
             }
-            SpLockFinger sf = new SpLockFinger();
-            sf.setExpired(expired);
-            sf.setId(id1);
-            fingerMapper.updateByPrimaryKeySelective(sf);
+//            SpLockFinger sf = new SpLockFinger();
+//            //sf.setExpired(expired);
+//            sf.setId(id1);
+//            fingerMapper.updateByPrimaryKeySelective(sf);
 
         }
         return true;
@@ -769,10 +769,10 @@ public class LockMemberServiceImpl implements LockMemberService {
                 if (!manageUser(locksn, pwdid, state)) {
                     return false;
                 }
-                SpLockPassword sp = new SpLockPassword();
-                sp.setPwdid(pwdid);
-                sp.setExpired(expired);
-                passwordMapper.updateByPrimaryKeySelective(sp);
+//                SpLockPassword sp = new SpLockPassword();
+//                sp.setPwdid(pwdid);
+                //sp.setExpired(expired);
+               // passwordMapper.updateByPrimaryKeySelective(sp);
             }
         }
         return true;

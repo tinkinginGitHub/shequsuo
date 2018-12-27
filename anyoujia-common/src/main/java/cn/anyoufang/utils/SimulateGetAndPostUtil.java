@@ -9,8 +9,6 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.URL;
 import java.net.URLConnection;
-import java.util.List;
-import java.util.Map;
 
 /**
  * 本类主要用于服务端模拟发送GET和POST请求
@@ -96,18 +94,9 @@ public class SimulateGetAndPostUtil {
             connection.setRequestProperty("accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8");
             connection.setRequestProperty("connection", "Keep-Alive");
             connection.setRequestProperty("user-agent", "Mozilla/5.0 (compatible; MSIE 6.0; Windows NT 5.1;SV1)");
-            //Authorization:
-           // connection.setRequestProperty("Authorization","Basic YWRtaW46YWRtaW4=");
             connection.setRequestProperty("Accept-Encoding","gzip, deflate");
             // 建立实际的连接
             connection.connect();
-            // 获取所有响应头字段
-            Map<String, List<String>> map = connection.getHeaderFields();
-            // 遍历所有的响应头字段
-//            for (String key : map.keySet()) {
-//                System.out.println(key + "--->" + map.get(key));
-//            }
-            // 定义 BufferedReader输入流来读取URL的响应
             in = new BufferedReader(new InputStreamReader(
                     connection.getInputStream()));
             String line;

@@ -10,7 +10,6 @@ import cn.anyoufang.utils.SortJsonAesc;
 import net.sf.json.JSONObject;
 import org.junit.Test;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -300,8 +299,7 @@ public class TestLockInterface {
     }
 
     public static void main(String[] args) {
-        String[] s = new String[]{"page","pagesize"};
-        Arrays.sort(s);
-        System.out.println(s[0]);
+        String s = SimulateGetAndPostUtil.sendGet("http://47.104.195.116:8081/api/bound/36596" + 36595, null);
+        System.out.println(s);
     }
 }
