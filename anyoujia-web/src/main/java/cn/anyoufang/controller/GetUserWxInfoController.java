@@ -69,6 +69,8 @@ public class GetUserWxInfoController extends AbstractController {
         if(phone !=null){
             if(!phone.equalsIgnoreCase(account)){
                 return AnyoujiaResult.build(FOUR_H,"手机号和微信号不匹配");
+            }else{
+                return AnyoujiaResult.build(TWO_H,"手机号和微信匹配");
             }
         }
         String pwd = res.getPassword();

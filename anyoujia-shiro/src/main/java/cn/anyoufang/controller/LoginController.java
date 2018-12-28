@@ -251,7 +251,7 @@ public class LoginController extends AbstractController {
                 return AnyoujiaResult.build(FOUR_H, "该号码已经注册");
             }
         }
-        String res = "";
+        String res;
         try {
             res =  loginService.sendVerifCode(phone);
         } catch (ClientException e) {
