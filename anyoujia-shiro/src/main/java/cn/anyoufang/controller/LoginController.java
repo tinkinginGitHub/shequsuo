@@ -153,11 +153,11 @@ public class LoginController extends AbstractController {
 
     /**
      * gender 0未知，1男，2女
-     * @param avatar
-     * @param bname
-     * @param gender
-     * @param phone
-     * @return
+     * @param avatar 头像
+     * @param bname  昵称
+     * @param gender  性别
+     * @param phone  手机号
+     * @return AnyoujiaResult
      */
     @RequestMapping("/addtioninfo")
     public AnyoujiaResult additionalInfo(@RequestParam(required = false) String avatar,
@@ -492,5 +492,19 @@ public class LoginController extends AbstractController {
             return AnyoujiaResult.build(FOUR_H_1, "请登录");
         }
         return AnyoujiaResult.build(FOUR_H_1, "请登录");
+    }
+
+
+    @RequestMapping("/checkbyphone")
+    public AnyoujiaResult checkUserByPhone(@RequestParam String phone) {
+
+        if(StringUtil.isEmpty(phone)){
+            return AnyoujiaResult.build(FOUR_H,"请输入有效手机号");
+        }
+        SpMember userByAccount = loginService.getUserByAccount(phone);
+        if(userByAccount == null){
+            return AnyoujiaResult.build(TWO_H1,"手机号暂未注册");
+        }
+        return AnyoujiaResult.ok();
     }
 }
