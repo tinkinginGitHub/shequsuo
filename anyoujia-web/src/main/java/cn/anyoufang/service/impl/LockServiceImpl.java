@@ -740,7 +740,7 @@ public class LockServiceImpl implements LockService {
         Map<String, String> res = new HashMap<>();
         res.put("active", active);
         StringBuilder sb = new StringBuilder();
-        String address = sb.append(data.get("cname")).append(data.get("address")).toString();
+        String address = sb.append(data.get("address")).append(data.get("cname")).toString();
         res.put("address", address);
         res.put("prokey", String.valueOf(data.get("pro_key")));
         res.put("locksn", String.valueOf(data.get("sn")));
