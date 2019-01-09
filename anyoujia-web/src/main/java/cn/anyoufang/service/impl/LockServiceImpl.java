@@ -3,6 +3,7 @@ package cn.anyoufang.service.impl;
 import cn.anyoufang.entity.SpLock;
 import cn.anyoufang.entity.SpLockAdmin;
 import cn.anyoufang.entity.SpLockAdminExample;
+import cn.anyoufang.entity.SpLockExample;
 import cn.anyoufang.entity.SpLockFinger;
 import cn.anyoufang.entity.SpLockFingerExample;
 import cn.anyoufang.entity.SpLockPassword;
@@ -479,8 +480,8 @@ public class LockServiceImpl implements LockService {
                         }
                         lock.setModel(l.getModel());
                         lock.setOrigin(l.getOrigin());
-                        StringBuilder sb = new StringBuilder(l.getCname());
-                        String address = sb.append(l.getAddress()).toString();
+                        StringBuilder sb = new StringBuilder(l.getAddress());
+                        String address = sb.append(l.getCname()).toString();
                         lock.setAddress(address);
                         lock.setCode2(l.getCode2());
                         lock.setProducttime(l.getProducttime());
@@ -724,27 +725,38 @@ public class LockServiceImpl implements LockService {
      */
     @Override
     public AnyoujiaResult getLockActiveAndAddress(String code2, String prokey) {
-        final Map<String, String> params = new HashMap<>(2);
-        params.put("prokey", prokey);
-        params.put("code2", code2);
-        Map<String,Object> data = lockinfoMapper.selectLockActiveByLocksnOrProkey(params);
-        if (data == null || data.size() == 0) {
+//        final Map<String, String> params = new HashMap<>(2);
+//        params.put("prokey", prokey);
+//        params.put("code2", code2);
+//        Map<String,Object> data = lockinfoMapper.selectLockActiveByLocksnOrProkey(params);
+        SpLockExample example = new SpLockExample();
+        SpLockExample.Criteria criteria = example.createCriteria();
+        if(prokey !=null) {
+            criteria.andProKeyEqualTo(prokey);
+        }
+        if(code2 !=null) {
+            criteria.andCode2EqualTo(code2);
+        }
+        List<SpLock> spLocks = lockinfoMapper.selectByExample(example);
+        if(spLocks == null || spLocks.isEmpty()){
             return AnyoujiaResult.build(T_H_1, "暂未找到设备，请重试");
         }
-        String active = StateEnum.NONACTIVE.getCode();
-        Object o = data.get("active");
-        String s = Boolean.toString((Boolean) o);
-        if ("true".equalsIgnoreCase(s)) {
-            active = StateEnum.ACTIVED.getCode();
+        SpLock spLock = spLocks.get(0);
+        if(spLock !=null) {
+            String active = StateEnum.NONACTIVE.getCode();
+            Boolean o = spLock.getActive();
+            String s = Boolean.toString(o);
+            if ("true".equalsIgnoreCase(s)) {
+                active = StateEnum.ACTIVED.getCode();
+            }
+            Map<String, String> res = new HashMap<>();
+            res.put("active", active);
+            res.put("address", "");
+            res.put("prokey", spLock.getProKey());
+            res.put("locksn", spLock.getSn());
+            return AnyoujiaResult.ok(res);
         }
-        Map<String, String> res = new HashMap<>();
-        res.put("active", active);
-        StringBuilder sb = new StringBuilder();
-        String address = sb.append(data.get("address")).append(data.get("cname")).toString();
-        res.put("address", address);
-        res.put("prokey", String.valueOf(data.get("pro_key")));
-        res.put("locksn", String.valueOf(data.get("sn")));
-        return AnyoujiaResult.ok(res);
+        return AnyoujiaResult.build(T_H_1, "暂未找到设备，请重试");
     }
 
     /**
