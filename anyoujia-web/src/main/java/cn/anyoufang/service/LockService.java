@@ -164,4 +164,13 @@ public interface LockService {
      */
     AnyoujiaResult getPermPwdIdForFront(int memberid, int relationid, String locksn, int endtime,int ptype);
 
+
+    /**
+     * 连表查询
+     * @param code2
+     * @param prokey
+     * @return
+     */
+    AnyoujiaResult combineSelectInfo(String code2, String prokey);
+
 }
