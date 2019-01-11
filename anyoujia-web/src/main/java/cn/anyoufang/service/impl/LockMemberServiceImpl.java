@@ -187,8 +187,7 @@ public class LockMemberServiceImpl implements LockMemberService {
                 SpLockPasswordExample.Criteria criteria = example.createCriteria();
                 criteria.andLocksnEqualTo(locksn).andRelationidEqualTo(realtionid).andExpiredEqualTo(false);
                 List<SpLockPassword> lockPasswords = passwordMapper.selectByExample(example);
-                handleSetedPwd(lockPasswords, locksn, isDelete);
-                handleSetedFinger(getOldChildFingerListInternal(locksn, realtionid), locksn, isDelete);
+                isDelete = handleSetedPwd(lockPasswords, locksn) && handleSetedFinger(getOldChildFingerListInternal(locksn, realtionid), locksn);
                 if (isDelete) {
                     relationMapper.deleteByPrimaryKey(userid);
                     return isDelete;
@@ -212,13 +211,13 @@ public class LockMemberServiceImpl implements LockMemberService {
                         SpLockPasswordExample.Criteria criteria = example.createCriteria();
                         criteria.andLocksnEqualTo(locksn).andMemberidEqualTo(memberId).andExpiredEqualTo(false);
                         List<SpLockPassword> lockPasswords = passwordMapper.selectByExample(example);
-                        handleSetedPwd(lockPasswords, locksn, isDelete);
+                       isDelete = handleSetedPwd(lockPasswords, locksn);
 
                     }
                 }
                 if (relationUser.getFingerpwdauth()) {
                     List<SpLockFinger> fingers = getFingerListInternal(locksn, memberId);
-                    handleSetedFinger(fingers, locksn, isDelete);
+                   isDelete = handleSetedFinger(fingers, locksn);
                 }
             }
             if (isDelete) {
@@ -235,36 +234,50 @@ public class LockMemberServiceImpl implements LockMemberService {
         return false;
     }
 
-    private void handleSetedPwd(List<SpLockPassword> lockPasswords, String locksn, boolean isDelete) {
-        if (!lockPasswords.isEmpty()) {
-            SpLockPassword lockPassword = lockPasswords.get(0);
-            int seqPwdid = lockPassword.getPwdid();
-            String res = delLockPwd(locksn, seqPwdid);
-            if (CommonUtil.successResponse(res)) {
-                SpLockPassword lPwd = new SpLockPassword();
-                lPwd.setExpired(true);
-                lPwd.setPwdid(seqPwdid);
-                passwordMapper.updateByPrimaryKeySelective(lPwd);
-            } else {
-                isDelete = false;
+    private boolean handleSetedPwd(List<SpLockPassword> lockPasswords, String locksn) {
+        boolean isDelete = false;
+        if (lockPasswords !=null) {
+            Iterator<SpLockPassword> iterator = lockPasswords.iterator();
+            while(iterator.hasNext()) {
+                SpLockPassword lockPassword = iterator.next();
+                int seqPwdid = lockPassword.getPwdid();
+                String res = delLockPwd(locksn, seqPwdid);
+                if (CommonUtil.successResponse(res)) {
+                    SpLockPassword lPwd = new SpLockPassword();
+                    lPwd.setExpired(true);
+                    lPwd.setPwdid(seqPwdid);
+                    passwordMapper.updateByPrimaryKeySelective(lPwd);
+                    isDelete = true;
+                } else {
+                   // return false;
+                }
             }
+            return isDelete;
         }
+        return false;
     }
 
-    private void handleSetedFinger(List<SpLockFinger> fingers, String locksn, boolean isDelete) {
-        if (!fingers.isEmpty()) {
-            SpLockFinger finger = fingers.get(0);
-            int seqFingerid = finger.getId();
-            String res = delLockPwd(locksn, seqFingerid);
-            if (CommonUtil.successResponse(res)) {
-                SpLockFinger finger1 = new SpLockFinger();
-                finger1.setExpired(true);
-                finger1.setId(seqFingerid);
-                fingerMapper.updateByPrimaryKeySelective(finger1);
-            } else {
-                isDelete = false;
+    private boolean handleSetedFinger(List<SpLockFinger> fingers, String locksn) {
+        boolean isDelete = false;
+        if(fingers !=null) {
+            Iterator<SpLockFinger> iterator = fingers.iterator();
+            while(iterator.hasNext()){
+                SpLockFinger finger = iterator.next();
+                int seqFingerid = finger.getId();
+                String res = delLockPwd(locksn, seqFingerid);
+                if (CommonUtil.successResponse(res)) {
+                    SpLockFinger finger1 = new SpLockFinger();
+                    finger1.setExpired(true);
+                    finger1.setId(seqFingerid);
+                    fingerMapper.updateByPrimaryKeySelective(finger1);
+                    isDelete = true;
+                } else {
+                    //return false;
+                }
             }
+            return isDelete;
         }
+        return false;
     }
 
     /**
@@ -750,11 +763,6 @@ public class LockMemberServiceImpl implements LockMemberService {
             if (!manageUser(locksn, id1, state)) {
                 return false;
             }
-//            SpLockFinger sf = new SpLockFinger();
-//            //sf.setExpired(expired);
-//            sf.setId(id1);
-//            fingerMapper.updateByPrimaryKeySelective(sf);
-
         }
         return true;
     }
@@ -769,10 +777,6 @@ public class LockMemberServiceImpl implements LockMemberService {
                 if (!manageUser(locksn, pwdid, state)) {
                     return false;
                 }
-//                SpLockPassword sp = new SpLockPassword();
-//                sp.setPwdid(pwdid);
-                //sp.setExpired(expired);
-               // passwordMapper.updateByPrimaryKeySelective(sp);
             }
         }
         return true;
@@ -793,7 +797,6 @@ public class LockMemberServiceImpl implements LockMemberService {
     @Override
     public boolean manageUser(String locksn, int seqid, int state) {
         long timestamp = DateUtil.generateTenTime();
-        //locksn seqid state temptime
         StringBuilder sb = new StringBuilder();
         String ss = sb.append(locksn).append(seqid).append(state).append(timestamp).append(lockSalt).toString();
         String sign = Md5Utils.md5(ss, "UTF-8");

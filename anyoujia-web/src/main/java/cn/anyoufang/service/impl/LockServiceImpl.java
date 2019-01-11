@@ -725,10 +725,11 @@ public class LockServiceImpl implements LockService {
      */
     @Override
     public AnyoujiaResult getLockActiveAndAddress(String code2, String prokey) {
-//        final Map<String, String> params = new HashMap<>(2);
-//        params.put("prokey", prokey);
-//        params.put("code2", code2);
-//        Map<String,Object> data = lockinfoMapper.selectLockActiveByLocksnOrProkey(params);
+
+        AnyoujiaResult result = combineSelectInfo(code2, prokey);
+        if( result !=null) {
+            return result;
+        }
         SpLockExample example = new SpLockExample();
         SpLockExample.Criteria criteria = example.createCriteria();
         if(prokey !=null) {
@@ -757,6 +758,37 @@ public class LockServiceImpl implements LockService {
             return AnyoujiaResult.ok(res);
         }
         return AnyoujiaResult.build(T_H_1, "暂未找到设备，请重试");
+    }
+
+    /**
+     * 连表查询
+     * @param code2
+     * @param prokey
+     * @return
+     */
+    @Override
+    public AnyoujiaResult combineSelectInfo(String code2, String prokey) {
+        final Map<String, String> params = new HashMap<>(2);
+        params.put("prokey", prokey);
+        params.put("code2", code2);
+        Map<String,Object> data = lockinfoMapper.selectLockActiveByLocksnOrProkey(params);
+        if (data == null || data.size() == 0) {
+            return null;
+        }
+        String active = StateEnum.NONACTIVE.getCode();
+        Object o = data.get("active");
+        String s = Boolean.toString((Boolean) o);
+        if ("true".equalsIgnoreCase(s)) {
+            active = StateEnum.ACTIVED.getCode();
+        }
+        Map<String, String> res = new HashMap<>();
+        res.put("active", active);
+        StringBuilder sb = new StringBuilder();
+        String address = sb.append(data.get("cname")).append(data.get("address")).toString();
+        res.put("address", address);
+        res.put("prokey", String.valueOf(data.get("pro_key")));
+        res.put("locksn", String.valueOf(data.get("sn")));
+        return AnyoujiaResult.ok(res);
     }
 
     /**
