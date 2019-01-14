@@ -377,6 +377,8 @@ public class LoginController extends AbstractController {
             int id = user.getUid();
             if (loginService.updateSecurityPwd(oldPwd, newPwd, id)) {
                 return AnyoujiaResult.build(TWO_H, "重置成功");
+            }else {
+                return AnyoujiaResult.build(FOUR_H,"密码错误");
             }
         }
         return AnyoujiaResult.build(FOUR_H_1, "请重新登录");
