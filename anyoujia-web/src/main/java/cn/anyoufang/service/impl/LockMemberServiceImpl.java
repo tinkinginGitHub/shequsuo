@@ -451,13 +451,8 @@ public class LockMemberServiceImpl implements LockMemberService {
         int memberid = member.getUid();
         SpActionRecordsExample example = new SpActionRecordsExample();
         SpActionRecordsExample.Criteria criteria = example.createCriteria();
-        SpLockAdmin adminLock = isNotAdminLock(memberid, locksn);
-        if (adminLock == null) {
-            criteria.andMemberidEqualTo(memberid).andLocksnEqualTo(locksn).andActiontimeGreaterThanOrEqualTo(begintime);
-        } else {
-
-            criteria.andLocksnEqualTo(locksn).andActiontimeGreaterThanOrEqualTo(begintime);
-        }
+//        SpLockAdmin adminLock = isNotAdminLock(memberid, locksn);
+        criteria.andMemberidEqualTo(memberid).andLocksnEqualTo(locksn).andActiontimeGreaterThanOrEqualTo(begintime);
         //按添加时间降序
         example.setOrderByClause("actiontime DESC");
         PageHelper.startPage(page, pagesize);
