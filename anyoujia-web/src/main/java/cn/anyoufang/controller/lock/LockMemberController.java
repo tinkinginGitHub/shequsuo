@@ -338,6 +338,7 @@ public class LockMemberController extends AbstractController {
 
     /**
      * 获取设置记录
+     *
      * @param locksn
      * @param page
      * @param begintime
@@ -355,7 +356,13 @@ public class LockMemberController extends AbstractController {
           }
           SpMember user = getUser(request,loginService);
           if(user == null) {
-              return AnyoujiaResult.build(FOUR_H_1,"登陆超时");
+              updateLogin(request,loginService);
+              SpMember user1 = getUser(request,loginService);
+              if(user1 == null) {
+                  return AnyoujiaResult.build(FOUR_H_1,"登陆超时");
+              }else {
+                  user = user1;
+              }
           }
           List<SetRecord> res =  memberService.getSetRecords(user,locksn,page,begintime);
           if(res == null || res.isEmpty()) {
