@@ -50,6 +50,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import static cn.anyoufang.utils.HandlePhpRequestUtil.doPhpRequest;
 import static cn.anyoufang.utils.HandlePhpRequestUtil.genarateSign;
@@ -469,6 +470,10 @@ public class LockServiceImpl implements LockService {
 
     private void combineBasicinfo(List<LockCombineInfo> combineInfos,List<Lock> res) {
         if (!combineInfos.isEmpty()) {
+            List<Lock> nonOut = checkLockInfo(combineInfos, res);
+            if (nonOut.size() > 0) {
+                doSingleSelect(nonOut);
+            }
             String locksn;
             for (Lock lock : res) {
                 for (LockCombineInfo l : combineInfos) {
@@ -495,6 +500,51 @@ public class LockServiceImpl implements LockService {
                             lock.setNickname(adminPhone);
                         }
                     }
+                }
+            }
+
+
+        }else {
+            doSingleSelect(res);
+        }
+    }
+
+    /**
+     * lambda操作列表
+     * @param combineInfos
+     * @param res
+     * @return
+     */
+    private List<Lock> checkLockInfo(List<LockCombineInfo> combineInfos,List<Lock> res) {
+        List<String> combineSns =  combineInfos.stream().map(e -> e.getSn()).collect(Collectors.toList());
+        return res.stream().filter(e -> !combineSns.contains(e. getLocksn())).collect(Collectors.toList());
+    }
+
+    /**
+     * 单独处理没有地址的锁逻辑
+     * @param res
+     */
+    private void doSingleSelect(List<Lock> res) {
+        for (Lock lock : res) {
+            SpLock spLock = lockinfoMapper.selectByPrimaryKey(lock.getLocksn());
+            if(spLock !=null){
+                lock.setModel(spLock.getModel());
+                lock.setProkey(spLock.getProKey());
+                lock.setCode2(spLock.getCode2());
+                lock.setOrigin(spLock.getOrigin());
+                lock.setProducttime(spLock.getpDate());
+                String color = spLock.getColor();
+                if (color != null) {
+                    String[] c = color.split(",");
+                    lock.setColor(c[1]);
+                }
+                Map<String, String> nicknameAndPhone = memberMapper.selectBySn(spLock.getSn());
+                String adminNickname = nicknameAndPhone.get("bname");
+                if (adminNickname != null) {
+                    lock.setNickname(adminNickname);
+                } else {
+                    String adminPhone = nicknameAndPhone.get("phone");
+                    lock.setNickname(adminPhone);
                 }
             }
         }

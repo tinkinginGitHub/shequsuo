@@ -434,6 +434,7 @@
     sl.p_date,
     sc.address,
     sc.cname,
+    sl.community,
     sl.sn,
     sl.pro_key,
     sl.code2

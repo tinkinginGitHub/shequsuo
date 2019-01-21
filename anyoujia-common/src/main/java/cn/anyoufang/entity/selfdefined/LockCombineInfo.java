@@ -49,6 +49,19 @@ public class LockCombineInfo implements Serializable {
      */
     private String prokey;
 
+    /**
+     *
+     */
+
+    private Integer community;
+
+    public Integer getCommunity() {
+        return community;
+    }
+
+    public void setCommunity(Integer communityId) {
+        this.community = communityId;
+    }
 
     public String getProkey() {
         return prokey;
